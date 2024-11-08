@@ -1,0 +1,30 @@
+{
+    "extends": "@tsconfig/node16/tsconfig.json",
+    "compilerOptions": {
+        "strictNullChecks": true,
+        "module": "commonjs",
+        "target": "es6",
+        "noImplicitAny": true,
+        "outDir": "dist",
+        // "sourceMap": true,Ok
+        "inlineSourceMap": true,
+        "esModuleInterop": true,
+        "declaration": true, // This tells TypeScript to emit an .d.ts definitions file along with your compiled JavaScript,
+        "types": ["jest", "node"]
+    },
+    "include": ["./src/models/types/index.ts"],
+    "exclude": [
+        "node_modules",
+        "dist",
+        // Activate if you don't want to run integration-test during building phase
+        // "integration-test",
+        "**/*.spec.ts",
+        // "**/*.test.ts",
+        "**/*.dev.ts",
+        "**/__mocks__/**/*.ts",
+        "**/__tests__/**/*.ts",
+        "**/__dev__/*",
+        "ts-config.ts",
+        "jest.config.ts"
+    ]
+}

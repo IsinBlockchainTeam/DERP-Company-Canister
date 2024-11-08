@@ -1,0 +1,12 @@
+{
+    "canisters": {
+        "dlterp_company": {
+            "type": "azle",
+            "main": "src/controllers/index.ts",
+            "declarations": {
+                "output": "declarations/dlterp_company",
+                "node_compatibility": true
+            }
+        }
+    }
+}

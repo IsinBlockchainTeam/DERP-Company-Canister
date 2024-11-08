@@ -1,0 +1,22 @@
+{
+    "name": "@derp/company-canister",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "pretest": "tsx test/pretest.ts",
+        "test": "jest",
+        "start-network": "dfx start --clean",
+        "deploy": "set -o allexport; set +o allexport && dfx deploy",
+        "build-types": "npx tsc -p tsconfig-types.json",
+        "generate": "dfx generate"
+    },
+    "dependencies": {
+        "azle": "^0.24.1"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0",
+        "ts-jest": "^29.1.4",
+        "tsx": "^4.15.7",
+        "typescript": "^5.2.2"
+    }
+}
