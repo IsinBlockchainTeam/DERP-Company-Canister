@@ -1,6 +1,6 @@
 import {IDL, query, update} from "azle";
 import {Company, CreateCompanyDTO} from "../models/types/Company";
-import {IDLCompany, IDLCreateCompany} from "../models/IDLs/Company";
+import {IDLCompany, IDLCreateCompany} from "../models/IDLs/IDLCompany";
 
 
 class CompanyInfoController {
@@ -16,6 +16,8 @@ class CompanyInfoController {
     setCompanyInfo(newCompanyInfo: CreateCompanyDTO): void {
         this.companyInfo = Company.fromDTO(newCompanyInfo);
     }
+
+
 
 }
 
