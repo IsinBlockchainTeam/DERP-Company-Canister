@@ -6,7 +6,6 @@ import {StableTreeMapIds} from "./Utils";
 export class TicketAccountingTransactionRepository{
     private static _instance: TicketAccountingTransactionRepository;
     private _ticketTransactions = StableBTreeMap<string, TicketAccountingTransaction>(StableTreeMapIds.TicketAccountingTransaction);
-
     private constructor() {}
     static get instance() {
         if (!TicketAccountingTransactionRepository._instance) {

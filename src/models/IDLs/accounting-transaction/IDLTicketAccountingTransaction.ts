@@ -1,5 +1,6 @@
 import {IDL} from "azle";
 import {
+    IDLAccountingTransactionAdditionalInformation,
     IDLAccountingTransactionHeader,
     IDLAccountingTransactionLineItemTax,
     IDLAccountingTransactionTotals
@@ -7,14 +8,14 @@ import {
 
 
 const IDLTicketTax = IDL.Record({
-    TaxId: IDL.Text,
-    TaxAmount: IDL.Float32,
+    Id: IDL.Text,
+    Amount: IDL.Float32,
     TypeCode: IDL.Text,
     RateApplicablePercent: IDL.Float32,
 });
 
 const IDLTicketLineItemGroup = IDL.Record({
-    GroupId: IDL.Text,
+    Id: IDL.Text,
     Description: IDL.Text,
 });
 
@@ -32,17 +33,17 @@ const IDLTicketLineItem = IDL.Record({
 });
 
 const IDLTicketPaymentDetails = IDL.Record({
-    PaymentID:IDL.Text,
-    PayerAddress:IDL.Text,
-    PayeeAddress:IDL.Text,
-    PaymentCurrencyAmount:IDL.Float32,
-    IssueDate:IDL.Nat,
-    PaymentType:IDL.Text,
-    PaymentCurrency:IDL.Text,
-    ExchangeRate:IDL.Float32,
-    Amount:IDL.Float32,
-    ExternalId:IDL.Text,
-    DocumentURL:IDL.Text,
+    id:IDL.Text,
+    payerAddress:IDL.Text,
+    payeeAddress:IDL.Text,
+    paymentCurrencyAmount:IDL.Float32,
+    issueDate:IDL.Nat,
+    paymentType:IDL.Text,
+    paymentCurrency:IDL.Text,
+    exchangeRate:IDL.Float32,
+    amount:IDL.Float32,
+    externalId:IDL.Text,
+    externalURL:IDL.Text,
 });
 
 
@@ -53,7 +54,7 @@ export const IDLTicketAccountingTransaction = IDL.Record({
     LineItemGroups: IDL.Opt(IDL.Vec(IDLTicketLineItemGroup)),
     LineItem: IDL.Opt(IDL.Vec(IDLTicketLineItem)),
     PaymentDetails: IDL.Opt(IDL.Vec(IDLTicketPaymentDetails)),
-    AdditionalInformation: IDL.Opt(IDL.Text),
+    AdditionalInformation: IDL.Opt(IDLAccountingTransactionAdditionalInformation),
     Header: IDLAccountingTransactionHeader,
     Totals: IDLAccountingTransactionTotals,
 });

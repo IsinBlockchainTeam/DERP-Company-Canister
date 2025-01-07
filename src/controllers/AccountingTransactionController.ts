@@ -26,6 +26,7 @@ class AccountingTransactionController {
     }
 
 
+
 }
 
 export default AccountingTransactionController;

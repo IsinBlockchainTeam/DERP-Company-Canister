@@ -7,10 +7,10 @@ export const IDLAccountingTransactionLineItemTax = IDL.Record({
     RateApplicablePercent: IDL.Float32,
 });
 
-export const IDLAccountingTransactionHeader = IDL.Record({
-    DLTERPId: IDL.Text,
+export const  IDLAccountingTransactionHeader = IDL.Record({
+    DLTERPId: IDL.Opt(IDL.Text),
     Source: IDL.Opt(IDL.Text),
-    TypeCode: IDL.Opt(IDL.Text),
+    TypeCode:IDL.Text,
     TypeKey: IDL.Opt(IDL.Text),
     ExternalReferenceNumber: IDL.Opt(IDL.Text),
     IssueDate: IDL.Opt(IDL.Nat),
@@ -26,4 +26,8 @@ export const IDLAccountingTransactionTotals = IDL.Record({
     TotalExclTax: IDL.Float32,
     TotalInclTax: IDL.Float32,
     TotalTaxAmount: IDL.Float32,
+});
+
+export const IDLAccountingTransactionAdditionalInformation = IDL.Record({
+   Notes: IDL.Opt(IDL.Text),
 });

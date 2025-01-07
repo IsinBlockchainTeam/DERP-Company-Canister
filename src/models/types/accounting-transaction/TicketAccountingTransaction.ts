@@ -119,6 +119,7 @@ export class TicketPaymentDetails {
     }
 }
 
+
 export class TicketAccountingTransaction extends AccountingTransactionWithTotals {
     // ID of the operator that created the transaction
     OperatorId: string | null;
