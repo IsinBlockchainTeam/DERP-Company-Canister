@@ -3,17 +3,20 @@ export class StatementItem {
     name: string;
     category: number;
     currency: string;
+    year: number;
 
     constructor(
         id: number,
         name: string,
         category: number,
-        currency: string
+        currency: string,
+        year: number,
     ) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.currency = currency;
+        this.year = year;
     }
 
     toPresentable(total: number): StatementItemPresentable {
@@ -22,6 +25,7 @@ export class StatementItem {
             this.name,
             this.category,
             this.currency,
+            this.year,
             total,
         );
     }
@@ -35,9 +39,10 @@ export class StatementItemPresentable extends StatementItem {
         name: string,
         category: number,
         currency: string,
+        year: number,
         total: number,
     ) {
-        super(id, name, category, currency);
+        super(id, name, category, currency, year);
         this.total = total;
     }
 }

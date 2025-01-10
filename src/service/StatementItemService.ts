@@ -2,10 +2,12 @@ import { StatementItem } from "../models/types/statement-items/StatementItem";
 import { StatementItemCategory } from "../models/types/statement-items/StatementItemCategory";
 import { StatementItemsCategoriesRepository } from "../repositories/StatementItemsCategoriesRepository";
 import { StatementItemsRepository } from "../repositories/StatementItemsRepository";
+import { MonthlyStatementItemService } from "./MonthlyStatementItemService";
 
 export class StatementItemService {
     private statementItemsRepository = StatementItemsRepository.instance;
     private statementItemsCategoriesRepository = StatementItemsCategoriesRepository.instance;
+    private monthlyStatementItemService = new MonthlyStatementItemService();
 
     storeStatementItemCategory(category: string): StatementItemCategory {
         return this.statementItemsCategoriesRepository.saveStatementItemsCategory(category);
@@ -15,19 +17,19 @@ export class StatementItemService {
         return this.statementItemsCategoriesRepository.getAllStatementItemsCategories();
     }
 
-    storeStatementItem(year: number, item: StatementItem): void {
+    storeStatementItem(item: StatementItem): void {
         const categories = this.statementItemsCategoriesRepository.getAllStatementItemsCategories();
 
         if (categories.find(c => c.id === item.category) === undefined) {
             throw new Error(`Category ${item.category} is not valid. Available: ${categories.map(c => c.id).join(', ')}`);
         }
 
-        this.statementItemsRepository.saveStatementItem(year, item);
+        this.statementItemsRepository.saveStatementItem(item);
     }
 
     getStatementItemTotal(statementItem: StatementItem): number {
-        // TODO: Implement this
-        return 0;
+        const monthlyItems = this.monthlyStatementItemService.getMonthlyStatementItems(statementItem.id);
+        return monthlyItems.reduce((acc, item) => acc + item.total, 0);
     }
 
     getAllStatementItems(year: number, category: number): StatementItem[] {

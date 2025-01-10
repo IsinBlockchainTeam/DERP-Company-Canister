@@ -2,5 +2,5 @@
 .dfx
 .idea
 node_modules
-declarations
+src/declarations
 HACK_BECAUSE_OF_ALLOW_JS/

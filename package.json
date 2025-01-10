@@ -1,16 +1,15 @@
 {
     "name": "@derp/company-canister",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "scripts": {
         "pretest": "tsx test/pretest.ts",
         "test": "jest",
         "start-network": "dfx start --clean",
         "deploy": "set -o allexport; set +o allexport && dfx deploy",
-        "build": "npm run generate && npx tsc -p tsconfig-lib.json",
-        "build-types": "npx tsc -p tsconfig-types.json",
-        "clean": "rm -rf dist && rm -rf declarations",
-        "generate": "npm run clean && set -o allexport; set +o allexport && dfx generate"
+        "build": "npm run generate && mkdir -p dist && cp -r ./src/declarations ./dist && npx tsc -p tsconfig-lib.json",
+        "clean": "rm -rf dist && rm -rf src/declarations",
+        "generate": "npm run clean && set -o allexport; set +o allexport && dfx build --all && dfx generate"
     },
     "dependencies": {
         "azle": "^0.24.1"

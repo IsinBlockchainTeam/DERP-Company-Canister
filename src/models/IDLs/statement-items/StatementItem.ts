@@ -6,6 +6,7 @@ export const IDLStatementItemPresentable = IDL.Record({
     currency: IDL.Text,
     category: IDL.Int32,
     total: IDL.Nat32,
+    year: IDL.Nat32,
 });
 
 export const IDLStatementItem = IDL.Record({
@@ -13,4 +14,5 @@ export const IDLStatementItem = IDL.Record({
     name: IDL.Text,
     currency: IDL.Text,
     category: IDL.Int32,
+    year: IDL.Nat32,
 });

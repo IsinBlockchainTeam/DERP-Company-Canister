@@ -15,7 +15,7 @@
         "node_modules",
         "dist",
         // Activate if you don't want to run integration-test during building phase
-        // "integration-test",
+        "integration-test",
         "**/*.spec.ts",
         // "**/*.test.ts",
         "**/*.dev.ts",

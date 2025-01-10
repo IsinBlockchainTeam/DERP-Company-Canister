@@ -4,7 +4,7 @@
             "type": "azle",
             "main": "src/controllers/index.ts",
             "declarations": {
-                "output": "declarations/dlterp_company",
+                "output": "src/declarations/dlterp_company",
                 "node_compatibility": true
             }
         }
