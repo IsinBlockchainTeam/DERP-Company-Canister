@@ -1,6 +1,4 @@
 import {IDL, query, update} from "azle";
-import {Company, CreateCompanyDTO} from "../models/types/Company";
-import {IDLCompany, IDLCreateCompany} from "../models/IDLs/IDLCompany";
 import {
     CreateTicketAccountingTransactionDto,
     TicketAccountingTransaction
@@ -10,9 +8,6 @@ import {IDLTicketAccountingTransaction} from "../models/IDLs/accounting-transact
 
 
 class AccountingTransactionController {
-
-    companyInfo: Company | {} = {};
-
     @query([], IDL.Vec(IDLTicketAccountingTransaction))
     async getAllTicketAccountingTransactions(): Promise<TicketAccountingTransaction[] | [{}]> {
         const accountingTransactionService: AccountingTransactionService = new AccountingTransactionService();

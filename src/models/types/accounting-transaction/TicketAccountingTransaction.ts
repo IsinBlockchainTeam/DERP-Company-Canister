@@ -1,5 +1,3 @@
-
-
 // Represent a product group in the ticket
 import {
     AccountingTransactionAdditionalInfo, AccountingTransactionHeader,
