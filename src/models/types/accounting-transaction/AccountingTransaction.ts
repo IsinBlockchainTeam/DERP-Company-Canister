@@ -2,11 +2,13 @@
 export enum AccountingTransactionType {
     TICKET = 'TICKET',
     INVOICE = 'INVOICE',
+    BANK_TRX = 'BANK_TRX',
 }
 
 export enum AccountingTransactionSource {
     ERP = 'ERP',
     INTERNAL = 'INTERNAL',
+    BANK = 'BANK',
 }
 
 export enum AccountingTransactionTaxTypeCode {
@@ -53,7 +55,13 @@ export class AccountingTransactionLineItemTax {
 
 export class AccountingTransactionHeader {
     // DLTERP given ID for the transaction
-    DLTERPId: string;
+    DLTERPId: string | null;
+
+    // Currency of the transaction
+    Currency: string | null;
+
+    // Transaction total amount
+    TotalAmount: number | null;
 
     // Source of the ticket, for now it is always "ERP"
     Source: AccountingTransactionSource | null;
@@ -76,9 +84,6 @@ export class AccountingTransactionHeader {
     // Value Date of accounting transaction
     ValueDate: Date | null;
 
-    // Currency of the transaction
-    Currency: string | null;
-
     // Status of the transaction
     Status: AccountingTransactionStatus | null;
 
@@ -93,6 +98,7 @@ export class AccountingTransactionHeader {
 
     constructor(
         DLTERPId: string,
+        TotalAmount: number,
         Source: AccountingTransactionSource | null,
         TypeCode: AccountingTransactionType,
         TypeKey: string | null,
@@ -106,6 +112,7 @@ export class AccountingTransactionHeader {
         Description: string | null
     ) {
         this.DLTERPId = DLTERPId;
+        this.TotalAmount = TotalAmount;
         this.Source = Source;
         this.TypeCode = TypeCode;
         this.TypeKey = TypeKey;

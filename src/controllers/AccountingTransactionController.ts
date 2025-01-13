@@ -19,9 +19,6 @@ class AccountingTransactionController {
         const accountingTransactionService: AccountingTransactionService = new AccountingTransactionService();
         accountingTransactionService.storeTicketAccountingTransaction(newTransaction);
     }
-
-
-
 }
 
 export default AccountingTransactionController;

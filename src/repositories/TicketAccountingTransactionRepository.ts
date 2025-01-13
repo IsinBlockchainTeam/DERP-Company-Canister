@@ -16,10 +16,14 @@ export class TicketAccountingTransactionRepository{
 
     saveTicketAccountingTransaction(ticketAccountingTransaction: TicketAccountingTransaction): void {
         //TODO: check if the ticketAccountingTransaction is valid
-        this._ticketTransactions.insert(ticketAccountingTransaction.Header.DLTERPId, ticketAccountingTransaction);
+        this._ticketTransactions.insert(ticketAccountingTransaction.Header.DLTERPId!, ticketAccountingTransaction);
     }
 
     getAllTicketAccountingTransactions(): TicketAccountingTransaction[] {
         return this._ticketTransactions.values();
+    }
+
+    getTicketAccountingTransactionById(id: string): TicketAccountingTransaction | null {
+        return this._ticketTransactions.get(id);
     }
 }

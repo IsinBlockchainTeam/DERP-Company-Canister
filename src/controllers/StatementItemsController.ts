@@ -10,6 +10,9 @@ import { StatementItemCategory } from "../models/types/statement-items/Statement
 import { DailyStatementItemService } from "../service/DailyStatementItemService";
 import { MonthlyStatementItemService } from "../service/MonthlyStatementItemService";
 import { StatementItemService } from "../service/StatementItemService";
+import { AccountingTransaction } from "../models/types/accounting-transaction/AccountingTransaction";
+import { AccountingTransactionService } from "../service/AccountingTransactionService";
+import { IDLTicketAccountingTransaction } from "../models/IDLs/accounting-transaction/IDLTicketAccountingTransaction";
 
 class StatementItemsController {
     @query([], IDL.Vec(IDLStatementItemCategory))
@@ -18,18 +21,12 @@ class StatementItemsController {
         return statementItemService.getStatementItemCategories();
     }
 
-    @update([IDL.Text], IDLStatementItemCategory)
-    async storeStatementItemCategory(name: string): Promise<StatementItemCategory> {
-        const statementItemService = new StatementItemService();
-        return statementItemService.storeStatementItemCategory(name);
-    }
-
-    @query([IDL.Int32], IDL.Opt(IDLStatementItemPresentable))
-    async getStatementItem(id: number): Promise<StatementItemPresentable | null> {
+    @query([IDL.Int32], IDLStatementItemPresentable)
+    async getStatementItem(id: number): Promise<StatementItemPresentable> {
         const statementItemService = new StatementItemService();
         const statementItem = statementItemService.getStatementItemById(id);
         if (!statementItem) {
-            return null;
+            throw new Error(`Statement item with id ${id} not found`);
         }
 
         const total = statementItemService.getStatementItemTotal(statementItem);
@@ -62,6 +59,36 @@ class StatementItemsController {
 
         const dailyStatementItemService = new DailyStatementItemService();
         return dailyStatementItemService.getDailyStatementItems(statementItem, month).map(i => i.toPresentable())
+    }
+
+    @query([IDL.Int32, IDL.Text], IDL.Vec(IDLTicketAccountingTransaction))
+    async getDailyStatementItemTransactions(statementItemId: number, date: string): Promise<AccountingTransaction[]> {
+        const statementItemsService = new StatementItemService();
+        const statementItem = statementItemsService.getStatementItemById(statementItemId);
+        if (!statementItem) {
+            throw new Error(`Statement item with id ${statementItemId} not found`);
+        }
+
+        const dailyStatementItemService = new DailyStatementItemService();
+        const statement = dailyStatementItemService.getDailyStatementItem(statementItem, new Date(date));
+        if (!statement) {
+            return [];
+        }
+
+        const accountingTransactionService = new AccountingTransactionService();
+        return statement.transactionIds.map((id) => {
+            const transaction = accountingTransactionService.getTicketAccountingTransactionById(id);
+            if (!transaction) {
+                throw new Error(`Transaction with id ${id} not found`);
+            }
+            return transaction;
+        })
+    }
+
+    @update([IDL.Text], IDLStatementItemCategory)
+    async storeStatementItemCategory(name: string): Promise<StatementItemCategory> {
+        const statementItemService = new StatementItemService();
+        return statementItemService.storeStatementItemCategory(name);
     }
 
     @update([IDLStatementItem])

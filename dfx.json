@@ -1,4 +1,5 @@
 {
+    "$schema": "https://internetcomputer.org/assets/files/dfx-json-schema-650beafb3d640d946b677cf0acc5a0e9.json",
     "canisters": {
         "dlterp_company": {
             "type": "azle",
@@ -6,7 +7,15 @@
             "declarations": {
                 "output": "src/declarations/dlterp_company",
                 "node_compatibility": true
+            },
+            "custom": {
+                "experimental": true
             }
+        }
+    },
+    "networks": {
+        "local": {
+            "bind": "127.0.0.1:8000"
         }
     }
 }

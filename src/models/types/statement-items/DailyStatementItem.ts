@@ -2,6 +2,7 @@ export class DailyStatementItem {
     parentStatementItemId: number;
     date: Date;
     total: number;
+    transactionIds: string[] = [];
 
     constructor(
         parentStatementItemId: number,

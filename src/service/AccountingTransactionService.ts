@@ -18,4 +18,7 @@ export class AccountingTransactionService{
         return this.ticketAccountingTransactionRepository.getAllTicketAccountingTransactions();
     }
 
+    getTicketAccountingTransactionById(id: string): TicketAccountingTransaction | null {
+        return this.ticketAccountingTransactionRepository.getTicketAccountingTransactionById(id);
+    }
 }

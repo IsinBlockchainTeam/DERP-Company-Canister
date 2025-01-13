@@ -1,3 +1,4 @@
+import { AccountingTransaction } from "../models/types/accounting-transaction/AccountingTransaction";
 import { DailyStatementItem } from "../models/types/statement-items/DailyStatementItem";
 import { StatementItem } from "../models/types/statement-items/StatementItem";
 import { DailyStatementItemRepository } from "../repositories/DailyStatementItemRepository";

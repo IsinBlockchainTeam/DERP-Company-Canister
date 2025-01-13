@@ -7,7 +7,6 @@ import { MonthlyStatementItemService } from "./MonthlyStatementItemService";
 export class StatementItemService {
     private statementItemsRepository = StatementItemsRepository.instance;
     private statementItemsCategoriesRepository = StatementItemsCategoriesRepository.instance;
-    private monthlyStatementItemService = new MonthlyStatementItemService();
 
     storeStatementItemCategory(category: string): StatementItemCategory {
         return this.statementItemsCategoriesRepository.saveStatementItemsCategory(category);
@@ -28,7 +27,8 @@ export class StatementItemService {
     }
 
     getStatementItemTotal(statementItem: StatementItem): number {
-        const monthlyItems = this.monthlyStatementItemService.getMonthlyStatementItems(statementItem.id);
+        const monthlyStatementItemService = new MonthlyStatementItemService();
+        const monthlyItems = monthlyStatementItemService.getMonthlyStatementItems(statementItem.id);
         return monthlyItems.reduce((acc, item) => acc + item.total, 0);
     }
 

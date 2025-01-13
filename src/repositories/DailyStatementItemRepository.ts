@@ -83,8 +83,12 @@ export class DailyStatementItemRepository {
         monthKey: string,
         parentKey: number,
     } {
+        // delete the time from the date
+        const date = new Date(statementItem.date);
+        date.setHours(0, 0, 0, 0);
+
         return {
-            id: `${statementItem.parentStatementItemId}$${statementItem.date.toISOString().split('T')[0]}`,
+            id: `${statementItem.parentStatementItemId}$${date.toISOString()}`,
             monthKey: `${statementItem.parentStatementItemId}$${statementItem.date.getMonth()}`,
             parentKey: statementItem.parentStatementItemId,
         }
