@@ -14,5 +14,5 @@ export const IDLStatementItem = IDL.Record({
     name: IDL.Text,
     currency: IDL.Text,
     category: IDL.Int32,
-    year: IDL.Nat32,
+    year: IDL.Int32,
 });
