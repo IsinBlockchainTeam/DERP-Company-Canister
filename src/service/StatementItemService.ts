@@ -5,25 +5,38 @@ import { StatementItemsRepository } from "../repositories/StatementItemsReposito
 import { MonthlyStatementItemService } from "./MonthlyStatementItemService";
 
 export class StatementItemService {
-    private statementItemsRepository = StatementItemsRepository.instance;
-    private statementItemsCategoriesRepository = StatementItemsCategoriesRepository.instance;
+    private _statementItemsRepository = StatementItemsRepository.instance;
+    private _statementItemsCategoriesRepository = StatementItemsCategoriesRepository.instance;
 
     storeStatementItemCategory(category: string): StatementItemCategory {
-        return this.statementItemsCategoriesRepository.saveStatementItemsCategory(category);
+        return this._statementItemsCategoriesRepository.saveStatementItemsCategory(category);
     }
 
     getStatementItemCategories(): StatementItemCategory[] {
-        return this.statementItemsCategoriesRepository.getAllStatementItemsCategories();
+        return this._statementItemsCategoriesRepository.getAllStatementItemsCategories();
     }
 
     storeStatementItem(item: StatementItem): void {
-        const categories = this.statementItemsCategoriesRepository.getAllStatementItemsCategories();
+        const categories = this._statementItemsCategoriesRepository.getAllStatementItemsCategories();
 
         if (categories.find(c => c.id === item.category) === undefined) {
             throw new Error(`Category ${item.category} is not valid. Available: ${categories.map(c => c.id).join(', ')}`);
         }
 
-        this.statementItemsRepository.saveStatementItem(item);
+        this._statementItemsRepository.saveStatementItem(item);
+    }
+
+    addTransactionContributions(parentStatementItemId: number, date: Date, record: {
+        amount: number,
+        transactionId: string,
+    }): void {
+        const parentStatementItem = this.getStatementItemById(parentStatementItemId);
+        if (!parentStatementItem) {
+            throw new Error(`Statement item with id ${parentStatementItemId} not found`);
+        }
+
+        const monthlyService = new MonthlyStatementItemService();
+        monthlyService.addTransactionContributions(parentStatementItem, date, record);
     }
 
     getStatementItemTotal(statementItem: StatementItem): number {
@@ -33,12 +46,11 @@ export class StatementItemService {
     }
 
     getAllStatementItems(year: number, category: number): StatementItem[] {
-        const statements = this.statementItemsRepository.getStatementItems(year, category);
-        console.log("statements: ", statements);
+        const statements = this._statementItemsRepository.getStatementItems(year, category);
         return statements;
     }
 
     getStatementItemById(id: number): StatementItem | null {
-        return this.statementItemsRepository.getStatementItemById(id);
+        return this._statementItemsRepository.getStatementItemById(id);
     }
 }

@@ -1,4 +1,6 @@
+import { DailyTransactionRecord } from "../models/types/statement-items/DailyTransactionRecord";
 import { MonthlyStatementItemPresentable } from "../models/types/statement-items/MonthlyStatementItem";
+import { StatementItem } from "../models/types/statement-items/StatementItem";
 import { DailyStatementItemService } from "./DailyStatementItemService";
 import { StatementItemService } from "./StatementItemService";
 
@@ -19,5 +21,13 @@ export class MonthlyStatementItemService {
             const total = dailyStatementItems.reduce((acc, item) => acc + item.total, 0);
             return new MonthlyStatementItemPresentable(parentStatementItemId, m, total);
         });
+    }
+
+    addTransactionContributions(parentStatementItem: StatementItem, date: Date, record: {
+        amount: number,
+        transactionId: string,
+    }): void {
+        const dailyStatementItemsService = new DailyStatementItemService();
+        dailyStatementItemsService.addTransactionContributions(parentStatementItem, date, record);
     }
 }
