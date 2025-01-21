@@ -1,6 +1,7 @@
 import { StableBTreeMap } from "azle";
-import { DailyTransactionRecord } from "../models/types/statement-items/DailyTransactionRecord";
+import { DailyTransactionRecord, DailyTransactionRecordPersisted } from "../models/types/statement-items/DailyTransactionRecord";
 import { StableTreeMapIds } from "./Utils";
+import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
 
 export class DailyTransactionRecordsRepository {
     public static _instance: DailyTransactionRecordsRepository;
@@ -10,7 +11,7 @@ export class DailyTransactionRecordsRepository {
     
 
     // id -> DailyStatementTransactionRecord
-    private _dailyTransactionRecordsById = StableBTreeMap<number, DailyTransactionRecord>(StableTreeMapIds.DailyTransactionRecord);
+    private _dailyTransactionRecordsById = StableBTreeMap<number, DailyTransactionRecordPersisted>(StableTreeMapIds.DailyTransactionRecord);
 
     private constructor() { }
 
@@ -22,14 +23,26 @@ export class DailyTransactionRecordsRepository {
     }
 
     saveDailyTransactionRecord(record: Omit<DailyTransactionRecord, 'id'> | DailyTransactionRecord): DailyTransactionRecord {
+        console.log("Saving daily transaction record", record);
+
+        // ID is given should perform update
         if ("id" in record) {
+            // check that the record exists
             if (!this._dailyTransactionRecordsById.containsKey(record.id)) {
                 throw new Error(`DailyTransactionRecord with id ${record.id} does not exist`);
             }
 
-            this._dailyTransactionRecordsById.insert(record.id, record);
+            // update the record
+            this._dailyTransactionRecordsById.insert(record.id, {
+                id: record.id,
+                date: record.date,
+                parentStatementItemId: record.parentStatementItemId,
+                total: record.total,
+                transactionId: record.transactionId,
+            });
 
-            const key = `${record.parentStatementItemId}$${record.date.toISOString()}`;
+            // update the index parentStatementId+$+date -> id[]
+            const key = this.extractKey(record);
             const records = this._dailyTransactionRecordsByStatement.get(key) || [];
             if (!records.includes(record.id)) {
                 records.push(record.id);
@@ -41,17 +54,25 @@ export class DailyTransactionRecordsRepository {
 
         const id = new Number(this._dailyTransactionRecordsById.len()).valueOf() + 1;
         const recordWithId: DailyTransactionRecord = { ...record, id };
-        console.log("inserting", JSON.stringify(recordWithId));
-        this._dailyTransactionRecordsById.insert(id, recordWithId);
-        console.log("inserting", `${record.parentStatementItemId}$${record.date.toISOString()}`, [id]);
-        this._dailyTransactionRecordsByStatement.insert(`${record.parentStatementItemId}$${record.date.toISOString()}`, [id]);
+        const serializedRecord: DailyTransactionRecordPersisted = {
+            id,
+            date: recordWithId.date,
+            parentStatementItemId: recordWithId.parentStatementItemId,
+            total: recordWithId.total,
+            transactionId: recordWithId.transactionId,
+        };
+
+        this._dailyTransactionRecordsById.insert(id, serializedRecord);
+
+        const key = this.extractKey(recordWithId);
+        this._dailyTransactionRecordsByStatement.insert(key, [id]);
 
         console.log("Saved daily transaction record", recordWithId);
         return recordWithId;
     }
 
-    getDailyTransactionRecords(statementId: number, date: Date): DailyTransactionRecord[] {
-        const key = `${statementId}$${date.toISOString()}`;
+    getDailyTransactionRecords(statementId: number, date: CustomDate): DailyTransactionRecord[] {
+        const key = this.extractKey({ parentStatementItemId: statementId, date });
         const ids = this._dailyTransactionRecordsByStatement.get(key) || [];
         return ids
             .map((id) => this._dailyTransactionRecordsById.get(id))
@@ -60,6 +81,18 @@ export class DailyTransactionRecordsRepository {
     }
 
     getDailyTransactionRecordById(id: number): DailyTransactionRecord | null {
-        return this._dailyTransactionRecordsById.get(id);
+        const record = this._dailyTransactionRecordsById.get(id);
+        if (!record) return null;
+
+        return {
+            ...record
+        }
+    }
+
+    private extractKey(record: Pick<DailyTransactionRecord, 'parentStatementItemId' | 'date'> & {
+        [key: string]: any
+    }): string {
+        const date = record.date;
+        return `${record.parentStatementItemId}$${date.year}-${date.month}-${date.day}`;
     }
 }

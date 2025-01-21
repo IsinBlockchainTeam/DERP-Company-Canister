@@ -1,3 +1,4 @@
+import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
 import { StatementItem } from "../models/types/statement-items/StatementItem";
 import { StatementItemCategory } from "../models/types/statement-items/StatementItemCategory";
 import { StatementItemsCategoriesRepository } from "../repositories/StatementItemsCategoriesRepository";
@@ -26,7 +27,7 @@ export class StatementItemService {
         this._statementItemsRepository.saveStatementItem(item);
     }
 
-    addTransactionContributions(parentStatementItemId: number, date: Date, record: {
+    addTransactionContributions(parentStatementItemId: number, date: CustomDate, record: {
         amount: number,
         transactionId: string,
     }): void {

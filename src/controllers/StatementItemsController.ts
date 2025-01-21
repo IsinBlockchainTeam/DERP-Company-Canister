@@ -1,6 +1,5 @@
 import { IDL, query, update } from "azle";
 import { IDLDailyStatementItemPresentable } from "../models/IDLs/statement-items/DailyStatementItem";
-import { IDLMonthlyStatementItemPresentable } from "../models/IDLs/statement-items/MonthlyStatementItem";
 import { IDLStatementItem, IDLStatementItemPresentable } from "../models/IDLs/statement-items/StatementItem";
 import { IDLStatementItemCategory } from "../models/IDLs/statement-items/StatementItemCategory";
 import { DailyStatementItemPresentable } from "../models/types/statement-items/DailyStatementItem";
@@ -10,9 +9,13 @@ import { StatementItemCategory } from "../models/types/statement-items/Statement
 import { DailyStatementItemService } from "../service/DailyStatementItemService";
 import { MonthlyStatementItemService } from "../service/MonthlyStatementItemService";
 import { StatementItemService } from "../service/StatementItemService";
-import { AccountingTransaction } from "../models/types/accounting-transaction/AccountingTransaction";
+import { AccountingTransaction, CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
 import { AccountingTransactionService } from "../service/AccountingTransactionService";
 import { IDLTicketAccountingTransaction } from "../models/IDLs/accounting-transaction/IDLTicketAccountingTransaction";
+import { IDLCustomDate } from "../models/IDLs/accounting-transaction/IDLAccountingTransaction";
+import { IDLMonthlyStatementItemPresentable } from "../models/IDLs/statement-items/MonthlyStatementItem";
+import { TicketAccountingTransaction } from "../models/types/accounting-transaction/TicketAccountingTransaction";
+import { TicketAccountingTransactionDto } from "../models/types/accounting-transaction/TicketAccountingTransactionDto";
 
 class StatementItemsController {
     @query([], IDL.Vec(IDLStatementItemCategory))
@@ -61,8 +64,8 @@ class StatementItemsController {
         return dailyStatementItemService.getDailyStatementItems(statementItem, month).map(i => i.toPresentable())
     }
 
-    @query([IDL.Int32, IDL.Text], IDL.Vec(IDLTicketAccountingTransaction))
-    async getDailyStatementItemTransactions(statementItemId: number, date: string): Promise<AccountingTransaction[]> {
+    @query([IDL.Int32, IDLCustomDate], IDL.Vec(IDLTicketAccountingTransaction))
+    async getDailyStatementItemTransactions(statementItemId: number, date: CustomDate): Promise<TicketAccountingTransactionDto[]> {
         const statementItemsService = new StatementItemService();
         const statementItem = statementItemsService.getStatementItemById(statementItemId);
         if (!statementItem) {
@@ -70,7 +73,7 @@ class StatementItemsController {
         }
 
         const dailyStatementItemService = new DailyStatementItemService();
-        const statement = dailyStatementItemService.getDailyStatementItem(statementItem, new Date(date));
+        const statement = dailyStatementItemService.getDailyStatementItem(statementItem, date);
         if (!statement) {
             return [];
         }
@@ -81,7 +84,7 @@ class StatementItemsController {
             if (!transaction) {
                 throw new Error(`Transaction with id ${id} not found`);
             }
-            return transaction;
+            return transaction.toDto();
         })
     }
 

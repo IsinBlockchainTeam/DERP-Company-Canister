@@ -1,4 +1,4 @@
-import { DailyTransactionRecord } from "../models/types/statement-items/DailyTransactionRecord";
+import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
 import { MonthlyStatementItemPresentable } from "../models/types/statement-items/MonthlyStatementItem";
 import { StatementItem } from "../models/types/statement-items/StatementItem";
 import { DailyStatementItemService } from "./DailyStatementItemService";
@@ -23,7 +23,7 @@ export class MonthlyStatementItemService {
         });
     }
 
-    addTransactionContributions(parentStatementItem: StatementItem, date: Date, record: {
+    addTransactionContributions(parentStatementItem: StatementItem, date: CustomDate, record: {
         amount: number,
         transactionId: string,
     }): void {

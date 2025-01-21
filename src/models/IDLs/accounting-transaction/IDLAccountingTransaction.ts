@@ -1,5 +1,10 @@
 import {IDL} from "azle";
 
+export const IDLCustomDate = IDL.Record({
+    year: IDL.Int32,
+    month: IDL.Int32,
+    day: IDL.Int32,
+});
 
 export const IDLAccountingTransactionLineItemTax = IDL.Record({
     Amount: IDL.Float32,
@@ -10,16 +15,17 @@ export const IDLAccountingTransactionLineItemTax = IDL.Record({
 export const  IDLAccountingTransactionHeader = IDL.Record({
     DLTERPId: IDL.Opt(IDL.Text),
     Source: IDL.Opt(IDL.Text),
-    TypeCode:IDL.Text,
+    TypeCode: IDL.Text,
     TypeKey: IDL.Opt(IDL.Text),
     ExternalReferenceNumber: IDL.Opt(IDL.Text),
-    IssueDate: IDL.Opt(IDL.Nat),
-    ValueDate: IDL.Opt(IDL.Nat),
+    IssueDate: IDL.Opt(IDLCustomDate),
+    ValueDate: IDL.Opt(IDLCustomDate),
     Currency: IDL.Opt(IDL.Text),
     Status: IDL.Opt(IDL.Text),
     AccountingId: IDL.Opt(IDL.Text),
-    AccountingDate: IDL.Opt(IDL.Nat),
+    AccountingDate: IDL.Opt(IDLCustomDate),
     Description: IDL.Opt(IDL.Text),
+    TotalAmount: IDL.Opt(IDL.Float32),
 });
 
 export const IDLAccountingTransactionTotals = IDL.Record({

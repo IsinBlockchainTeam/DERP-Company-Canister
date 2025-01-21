@@ -1,3 +1,4 @@
+import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
 import { DailyStatementItem } from "../models/types/statement-items/DailyStatementItem";
 import { DailyTransactionRecord } from "../models/types/statement-items/DailyTransactionRecord";
 import { StatementItem } from "../models/types/statement-items/StatementItem";
@@ -12,7 +13,7 @@ export class DailyStatementItemService {
         this._dailyStatementItemsRepository.saveDailyStatementItem(item);
     }
 
-    addTransactionContributions(parentStatementItem: StatementItem, date: Date, record: {
+    addTransactionContributions(parentStatementItem: StatementItem, date: CustomDate, record: {
         amount: number,
         transactionId: string,
     }): void {
@@ -24,17 +25,19 @@ export class DailyStatementItemService {
         }
 
         console.log("Adding transaction contributions", toSave);
-        console.log("this:", this);
-        console.log("repo:", this._dailyTransactionsRecordRepository);
-
         const savedRecord = this._dailyTransactionsRecordRepository.saveDailyTransactionRecord(toSave);
         const dailyStatementItem = this.getDailyStatementItem(parentStatementItem, date);
         if (!dailyStatementItem) {
-            this.saveDailyStatementItem(new DailyStatementItem(parentStatementItem.id, date, savedRecord.total));
+            console.log("Creating the statment item: ", parentStatementItem.id, date, savedRecord.total);
+            this.saveDailyStatementItem(new DailyStatementItem(parentStatementItem.id, date, savedRecord.total, [savedRecord.transactionId]));
             return;
         }
 
+        console.log("Current statement item:", dailyStatementItem);
+        
+        dailyStatementItem.transactionIds.push(savedRecord.transactionId);
         dailyStatementItem.total += savedRecord.total;
+        console.log("Updating the statment item: ", dailyStatementItem);
         this.saveDailyStatementItem(dailyStatementItem);
     }
 
@@ -42,7 +45,7 @@ export class DailyStatementItemService {
         return this._dailyStatementItemsRepository.getDailyStatementItems(parentStatementItem, month);
     }
 
-    getDailyStatementItem(parentStatementItem: StatementItem, date: Date): DailyStatementItem | null {
+    getDailyStatementItem(parentStatementItem: StatementItem, date: CustomDate): DailyStatementItem | null {
         return this._dailyStatementItemsRepository.getDailyStatementItem(parentStatementItem, date);
     }
 }

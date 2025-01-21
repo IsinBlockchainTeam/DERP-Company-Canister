@@ -1,11 +1,10 @@
 {
     "compilerOptions": {
         "strictNullChecks": true,
+        "outDir": "dist",
         "module": "commonjs",
         "target": "ES2020",
         "noImplicitAny": true,
-        "outDir": "dist",
-        // "sourceMap": true,Ok
         "inlineSourceMap": true,
         "esModuleInterop": true,
         "declaration": true, // This tells TypeScript to emit an .d.ts definitions file along with your compiled JavaScript,

@@ -6,5 +6,8 @@
         "moduleResolution": "node",
         "allowJs": true,
         "outDir": "HACK_BECAUSE_OF_ALLOW_JS"
-    }
+    },
+    "exclude": [
+        "dist/",
+    ]
 }

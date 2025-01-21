@@ -1,3 +1,16 @@
+import { AccountingTransactionAdditionalInfoDto, AccountingTransactionDto, AccountingTransactionHeaderDto, AccountingTransactionLineItemTaxDto, AccountingTransactionTotalsDto, AccountingTransactionWithTotalsDto } from "./AccountingTransactionDto";
+
+export class CustomDate {
+    year: number;
+    month: number;
+    day: number;
+
+    constructor(year: number, month: number, day: number) {
+        this.year = year;
+        this.month = month;
+        this.day = day;
+    }
+}
 
 export enum AccountingTransactionType {
     TICKET = 'TICKET',
@@ -21,6 +34,18 @@ export enum AccountingTransactionStatus {
 
 export class AccountingTransactionAdditionalInfo {
     Notes?: string | null;
+
+    constructor(notes: string | null) {
+        this.Notes = notes;
+    }
+
+    toDto(): AccountingTransactionAdditionalInfoDto {
+        return new AccountingTransactionAdditionalInfoDto(this.Notes ? [this.Notes] : []);
+    }
+
+    static fromDto(dto: AccountingTransactionAdditionalInfoDto): AccountingTransactionAdditionalInfo {
+        return new AccountingTransactionAdditionalInfo(dto.Notes ? dto.Notes[0] ?? null : null);
+    }
 }
 
 export class AccountingTransactionTotals {
@@ -36,6 +61,14 @@ export class AccountingTransactionTotals {
         this.TotalExclTax = totalExclTax;
         this.TotalInclTax = totalInclTax;
     }
+
+    toDto(): AccountingTransactionTotalsDto {
+        return new AccountingTransactionTotalsDto(this.TotalTaxAmount, this.TotalExclTax, this.TotalInclTax);
+    }
+
+    static fromDto(dto: AccountingTransactionTotalsDto): AccountingTransactionTotals {
+        return new AccountingTransactionTotals(dto.TotalTaxAmount, dto.TotalExclTax, dto.TotalInclTax);
+    }
 }
 
 export class AccountingTransactionLineItemTax {
@@ -50,6 +83,14 @@ export class AccountingTransactionLineItemTax {
         this.Amount = amount;
         this.TypeCode = typeCode;
         this.RateApplicablePercent = rateApplicablePercent;
+    }
+
+    toDto(): AccountingTransactionLineItemTaxDto {
+        return new AccountingTransactionLineItemTaxDto(this.Amount, this.TypeCode, this.RateApplicablePercent);
+    }
+
+    static fromDto(dto: AccountingTransactionLineItemTaxDto): AccountingTransactionLineItemTax {
+        return new AccountingTransactionLineItemTax(dto.Amount, dto.TypeCode, dto.RateApplicablePercent);
     }
 }
 
@@ -79,10 +120,10 @@ export class AccountingTransactionHeader {
     ExternalReferenceNumber: string | null;
 
     // Issue date of the transaction
-    IssueDate: Date | null;
+    IssueDate: CustomDate | null;
 
     // Value Date of accounting transaction
-    ValueDate: Date | null;
+    ValueDate: CustomDate | null;
 
     // Status of the transaction
     Status: AccountingTransactionStatus | null;
@@ -91,24 +132,24 @@ export class AccountingTransactionHeader {
     AccountingId: string | null;
 
     // Date the transaction was inserted into the external accounting system
-    AccountingDate: Date | null;
+    AccountingDate: CustomDate | null;
 
     // Description of the transaction
     Description: string | null;
 
     constructor(
-        DLTERPId: string,
-        TotalAmount: number,
+        DLTERPId: string | null,
+        TotalAmount: number | null,
         Source: AccountingTransactionSource | null,
         TypeCode: AccountingTransactionType,
         TypeKey: string | null,
         ExternalReferenceNumber: string | null,
-        IssueDate: Date | null,
-        ValueDate: Date | null,
+        IssueDate: CustomDate | null,
+        ValueDate: CustomDate | null,
         Currency: string | null,
         Status: AccountingTransactionStatus | null,
         AccountingId: string | null,
-        AccountingDate: Date | null,
+        AccountingDate: CustomDate | null,
         Description: string | null
     ) {
         this.DLTERPId = DLTERPId;
@@ -125,18 +166,60 @@ export class AccountingTransactionHeader {
         this.AccountingDate = AccountingDate;
         this.Description = Description;
     }
+
+
+    toDto(): AccountingTransactionHeaderDto {
+        return new AccountingTransactionHeaderDto(
+            this.DLTERPId ? [this.DLTERPId] : [],
+            this.TotalAmount ? [this.TotalAmount] : [],
+            this.Source ? [this.Source] : [],
+            this.TypeCode,
+            this.TypeKey ? [this.TypeKey] : [],
+            this.ExternalReferenceNumber ? [this.ExternalReferenceNumber] : [],
+            this.IssueDate ? [this.IssueDate] : [],
+            this.ValueDate ? [this.ValueDate] : [],
+            this.Currency ? [this.Currency] : [],
+            this.Status ? [this.Status] : [],
+            this.AccountingId ? [this.AccountingId] : [],
+            this.AccountingDate ? [this.AccountingDate] : [],
+            this.Description ? [this.Description] : [],
+        );
+    }
+
+    static fromDto(dto: AccountingTransactionHeaderDto): AccountingTransactionHeader {
+        console.log("converting trx dto: ", dto);
+        return new AccountingTransactionHeader(
+            dto.DLTERPId?.length > 0 ? dto.DLTERPId[0] ?? null : null,
+            dto.TotalAmount?.length > 0 ? dto.TotalAmount[0] ?? null : null,
+            dto.Source?.length > 0 ? dto.Source[0] ?? null : null,
+            dto.TypeCode,
+            dto.TypeKey?.length > 0 ? dto.TypeKey[0] ?? null : null,
+            dto.ExternalReferenceNumber?.length > 0 ? dto.ExternalReferenceNumber[0] ?? null : null,
+            dto.IssueDate?.length > 0 ? dto.IssueDate[0] ?? null : null,
+            dto.ValueDate?.length > 0 ? dto.ValueDate[0] ?? null : null,
+            dto.Currency?.length > 0 ? dto.Currency[0] ?? null : null,
+            dto.Status?.length > 0 ? dto.Status[0] ?? null : null,
+            dto.AccountingId?.length > 0 ? dto.AccountingId[0] ?? null : null,
+            dto.AccountingDate?.length > 0 ? dto.AccountingDate[0] ?? null : null,
+            dto.Description?.length > 0 ? dto.Description[0] ?? null : null,
+        );
+    }
 }
 
-export abstract class AccountingTransaction {
+export class AccountingTransaction {
     // Header of the transaction
     Header: AccountingTransactionHeader;
 
     constructor(header: AccountingTransactionHeader) {
         this.Header = header;
     }
+
+    toDto(): AccountingTransactionDto {
+        return new AccountingTransactionDto(this.Header.toDto());
+    }
 }
 
-export abstract class AccountingTransactionWithTotals extends AccountingTransaction {
+export class AccountingTransactionWithTotals extends AccountingTransaction {
     Totals: AccountingTransactionTotals;
 
     constructor(header: AccountingTransactionHeader, totals: AccountingTransactionTotals) {
@@ -144,4 +227,8 @@ export abstract class AccountingTransactionWithTotals extends AccountingTransact
         this.Totals = totals;
     }
 
+    toDto(): AccountingTransactionWithTotalsDto {
+        const dto = super.toDto();
+        return new AccountingTransactionWithTotalsDto(dto.Header, this.Totals.toDto());
+    }
 }

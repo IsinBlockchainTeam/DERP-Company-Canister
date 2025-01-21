@@ -5,7 +5,7 @@ export const IDLStatementItemPresentable = IDL.Record({
     name: IDL.Text,
     currency: IDL.Text,
     category: IDL.Int32,
-    total: IDL.Nat32,
+    total: IDL.Float32,
     year: IDL.Nat32,
 });
 

@@ -8,10 +8,12 @@ export * from "./models/types/statement-items/DailyTransactionRecord"
 
 export * from "./models/types/accounting-transaction/AccountingTransaction"
 export * from "./models/types/accounting-transaction/TicketAccountingTransaction"
+export * from "./models/types/accounting-transaction/AccountingTransactionDto"
+export * from "./models/types/accounting-transaction/TicketAccountingTransactionDto"
 
 export * from "./models/types/dispatch-rules/DispatchRule"
 export * from "./models/types/dispatch-rules/TypeDispatchRule"
 export * from "./models/types/dispatch-rules/ticket/GroupDispatchRule"
 
 // Canisters
-export * from "./declarations/dlterp_company";
+export * from "./clients"

@@ -18,13 +18,17 @@ export class DispatchRuleService {
         const statementItemService = new StatementItemService();
         const rules = this.getDispatchRules();
         // Search each rule and test if the transaction should be handled
+        console.log(rules);
         for (const rule of rules) {
+            console.log(`Checking rule ${rule.id} against transaction ${trx.Header.DLTERPId} of type ${trx.Header.TypeCode}`);
             const handler = this.getHandler(rule);
             if (handler.assert(rule, trx)) {
+                console.log(`Rule ${rule.id} matches transaction ${trx.Header.DLTERPId}`);
                 // rule matches transaction
                 // need to get its total and add it to the contributing transaction of
                 // the statement items linked to the rule
                 const addedAmount = handler.getContributions(rule, trx);
+                console.log(`Adding ${addedAmount} to statement items ${rule.statementItemIDs}`);
                 for (const statementItemId of rule.statementItemIDs) {
                     if (!trx.Header.DLTERPId) {
                         throw new Error(`Transaction does not have an ID`);
@@ -45,7 +49,7 @@ export class DispatchRuleService {
 
     getDispatchRules(): DispatchRule[] {
         const rules: DispatchRule[] = [];
-        for(const ruleType in DispatchRuleType) {
+        for (const ruleType in DispatchRuleType) {
             const svc = DispatchRuleServiceResolver.instance.resolve({ ruleType });
             rules.push(...svc.list())
         }

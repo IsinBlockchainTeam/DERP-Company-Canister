@@ -1,14 +1,15 @@
 import { StableBTreeMap } from "azle";
-import { DailyStatementItem } from "../models/types/statement-items/DailyStatementItem";
+import { DailyStatementItem, DailyStatementItemPersisted } from "../models/types/statement-items/DailyStatementItem";
 import { StatementItem } from "../models/types/statement-items/StatementItem";
 import { StatementItemsRepository } from "./StatementItemsRepository";
 import { StableTreeMapIds } from "./Utils";
+import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
 
 export class DailyStatementItemRepository {
     private static _instance: DailyStatementItemRepository;
 
     // parentStatementItemID + $ + date -> DailyStatementItem
-    private _dailyStatementItemsByDate = StableBTreeMap<string, DailyStatementItem>(StableTreeMapIds.DailyStatementItemsDateIndex);
+    private _dailyStatementItemsByDate = StableBTreeMap<string, DailyStatementItemPersisted>(StableTreeMapIds.DailyStatementItemsDateIndex);
 
     // parentStatementItemID + $ + month -> ID[]
     private _dailyStatementItemsByMonth = StableBTreeMap<string, string[]>(StableTreeMapIds.DailyStatementItemsMonthIndex);
@@ -36,12 +37,18 @@ export class DailyStatementItemRepository {
 
         // Check if already exists, and update in case
         const existing = this._dailyStatementItemsByDate.get(id);
-        this._dailyStatementItemsByDate.insert(id, item);
+
+        console.log("Saving daily statement item", item, existing);
+
+        this._dailyStatementItemsByDate.insert(id, {
+            parentStatementItemId: item.parentStatementItemId,
+            date: item.date,
+            total: item.total,
+            transactionIds: item.transactionIds,
+        });
 
         // If it was not existing, we also need to create the indexes
         if (!existing) {
-            this._dailyStatementItemsByDate.insert(id, item);
-
             // Save by month
             const monthItems = this._dailyStatementItemsByMonth.get(monthKey) || [];
             monthItems.push(id);
@@ -68,12 +75,17 @@ export class DailyStatementItemRepository {
             items = itemsRaw.map((id) => this._dailyStatementItemsByDate.get(id)!);
         }
 
-        return items.map(i => new DailyStatementItem(i.parentStatementItemId, i.date, i.total));
+        return items.map(i => new DailyStatementItem(i.parentStatementItemId, i.date, i.total, i.transactionIds));
     }
 
-    getDailyStatementItem(parentStatementItem: StatementItem, date: Date): DailyStatementItem | null {
+    getDailyStatementItem(parentStatementItem: StatementItem, date: CustomDate): DailyStatementItem | null {
         const {id} = this.extractKey({ parentStatementItemId: parentStatementItem.id, date });
-        return this._dailyStatementItemsByDate.get(id) || null;
+        const item = this._dailyStatementItemsByDate.get(id);
+        if (!item) {
+            return null;
+        }
+
+        return new DailyStatementItem(item.parentStatementItemId, date, item.total, item.transactionIds);
     }
 
     private extractKey(statementItem: Pick<DailyStatementItem, 'parentStatementItemId' | 'date'> & {
@@ -83,13 +95,11 @@ export class DailyStatementItemRepository {
         monthKey: string,
         parentKey: number,
     } {
-        // delete the time from the date
-        const date = new Date(statementItem.date);
-        date.setHours(0, 0, 0, 0);
+        const date = statementItem.date;
 
         return {
-            id: `${statementItem.parentStatementItemId}$${date.toISOString()}`,
-            monthKey: `${statementItem.parentStatementItemId}$${statementItem.date.getMonth()}`,
+            id: `${statementItem.parentStatementItemId}$${date.year}-${date.month}-${date.day}`,
+            monthKey: `${statementItem.parentStatementItemId}$${date.month}`,
             parentKey: statementItem.parentStatementItemId,
         }
     }

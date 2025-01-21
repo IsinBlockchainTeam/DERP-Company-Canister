@@ -3,7 +3,8 @@ import {
     IDLAccountingTransactionAdditionalInformation,
     IDLAccountingTransactionHeader,
     IDLAccountingTransactionLineItemTax,
-    IDLAccountingTransactionTotals
+    IDLAccountingTransactionTotals,
+    IDLCustomDate
 } from "./IDLAccountingTransaction";
 
 
@@ -37,7 +38,7 @@ const IDLTicketPaymentDetails = IDL.Record({
     payerAddress:IDL.Text,
     payeeAddress:IDL.Text,
     paymentCurrencyAmount:IDL.Float32,
-    issueDate:IDL.Nat,
+    issueDate: IDLCustomDate,
     paymentType:IDL.Text,
     paymentCurrency:IDL.Text,
     exchangeRate:IDL.Float32,

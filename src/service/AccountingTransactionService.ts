@@ -1,9 +1,9 @@
 import {TicketAccountingTransactionRepository} from "../repositories/TicketAccountingTransactionRepository";
 import {
-    CreateTicketAccountingTransactionDto,
     TicketAccountingTransaction
 } from "../models/types/accounting-transaction/TicketAccountingTransaction";
 import { DispatchRuleService } from "./DispatchRulesService";
+import { CreateTicketAccountingTransactionDto } from "../models/types/accounting-transaction/TicketAccountingTransactionDto";
 
 
 export class AccountingTransactionService {
@@ -11,6 +11,7 @@ export class AccountingTransactionService {
 
 
     storeTicketAccountingTransaction(newTransaction: CreateTicketAccountingTransactionDto): void {
+        console.log(newTransaction);
         const trx = TicketAccountingTransaction.fromDto(newTransaction);
         this.ticketAccountingTransactionRepository.saveTicketAccountingTransaction(trx);
 

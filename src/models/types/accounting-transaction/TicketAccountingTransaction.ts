@@ -1,10 +1,13 @@
 // Represent a product group in the ticket
 import {
-    AccountingTransactionAdditionalInfo, AccountingTransactionHeader,
+    AccountingTransactionAdditionalInfo, 
+    AccountingTransactionHeader, 
     AccountingTransactionLineItemTax,
     AccountingTransactionTaxTypeCode, AccountingTransactionTotals,
-    AccountingTransactionWithTotals
+    AccountingTransactionWithTotals,
+    CustomDate
 } from "./AccountingTransaction";
+import { CreateTicketAccountingTransactionDto, TicketAccountingTransactionDto, TicketLineItemDto, TicketLineItemGroupDto, TicketPaymentDetailsDto, TicketTaxDto } from "./TicketAccountingTransactionDto";
 
 export class TicketLineItemGroup {
     // ID of the product group
@@ -16,6 +19,14 @@ export class TicketLineItemGroup {
     constructor(id: string, description: string) {
         this.Id = id;
         this.Description = description
+    }
+
+    toDto(): TicketLineItemGroupDto {
+        return new TicketLineItemGroupDto(this.Id, this.Description);
+    }
+
+    static fromDto(dto: TicketLineItemGroupDto): TicketLineItemGroup {
+        return new TicketLineItemGroup(dto.Id, dto.Description);
     }
 }
 
@@ -37,6 +48,14 @@ export class TicketTax {
         this.Amount = amount;
         this.TypeCode = typeCode;
         this.RateApplicablePercent = rateApplicablePercent;
+    }
+
+    toDto(): TicketTaxDto {
+        return new TicketTaxDto(this.Id, this.Amount, this.TypeCode, this.RateApplicablePercent);
+    }
+
+    static fromDto(dto: TicketTaxDto): TicketTax {
+        return new TicketTax(dto.Id, dto.Amount, dto.TypeCode, dto.RateApplicablePercent);
     }
 }
 
@@ -79,6 +98,14 @@ export class TicketLineItem {
         this.TotalExclTax = totalExclTax;
         this.Tax = tax;
     }
+
+    toDto(): TicketLineItemDto {
+        return new TicketLineItemDto(this.ItemGroupId, this.ItemCode, this.Description, this.Quantity, this.UnitCode, this.UnitPrice, this.TotalInclTax, this.TotalExclTax, this.Tax.toDto());
+    }
+
+    static fromDto(dto: TicketLineItemDto): TicketLineItem {
+        return new TicketLineItem(dto.ItemGroupId, dto.ItemCode, dto.Description, dto.Quantity, dto.UnitCode, dto.UnitPrice, dto.TotalInclTax, dto.TotalExclTax, AccountingTransactionLineItemTax.fromDto(dto.Tax));
+    }
 }
 
 export class TicketPaymentDetails {
@@ -86,7 +113,7 @@ export class TicketPaymentDetails {
     payerAddress: string;
     payeeAddress: string;
     paymentCurrencyAmount: number;
-    issueDate: Date;
+    issueDate: CustomDate;
     paymentType: string;
     paymentCurrency: string;
 
@@ -102,7 +129,7 @@ export class TicketPaymentDetails {
     // URL to the payment receipt PDF
     externalUrl: string;
 
-    constructor(id: string, payerAddress: string, payeeAddress: string, paymentCurrencyAmount: number, issueDate: Date, paymentType: string, paymentCurrency: string, exchangeRate: number, amount: number, externalId: string, externalUrl: string) {
+    constructor(id: string, payerAddress: string, payeeAddress: string, paymentCurrencyAmount: number, issueDate: CustomDate, paymentType: string, paymentCurrency: string, exchangeRate: number, amount: number, externalId: string, externalUrl: string) {
         this.id = id;
         this.payerAddress = payerAddress;
         this.payeeAddress = payeeAddress;
@@ -114,6 +141,14 @@ export class TicketPaymentDetails {
         this.amount = amount;
         this.externalId = externalId;
         this.externalUrl = externalUrl;
+    }
+
+    toDto(): TicketPaymentDetailsDto {
+        return new TicketPaymentDetailsDto(this.id, this.payerAddress, this.payeeAddress, this.paymentCurrencyAmount, this.issueDate, this.paymentType, this.paymentCurrency, this.exchangeRate, this.amount, this.externalId, this.externalUrl);
+    }
+
+    static fromDto(dto: TicketPaymentDetailsDto): TicketPaymentDetails {
+        return new TicketPaymentDetails(dto.id, dto.payerAddress, dto.payeeAddress, dto.paymentCurrencyAmount, dto.issueDate, dto.paymentType, dto.paymentCurrency, dto.exchangeRate, dto.amount, dto.externalId, dto.externalURL);
     }
 }
 
@@ -158,22 +193,37 @@ export class TicketAccountingTransaction extends AccountingTransactionWithTotals
         this.AdditionalInformation = additionalInformation;
     }
 
-    static fromDto(dto: CreateTicketAccountingTransactionDto): TicketAccountingTransaction {
-        return new TicketAccountingTransaction(
-            dto.OperatorId,
-            dto.OrderId,
-            dto.Tax,
-            dto.LineItemGroups,
-            dto.LineItem,
-            dto.PaymentDetails,
-            dto.AdditionalInformation,
-            dto.Header,
-            dto.Totals
+    toDto(): TicketAccountingTransactionDto {
+        return new TicketAccountingTransactionDto(
+            this.OperatorId ? [this.OperatorId] : [],
+            this.OrderId ? [this.OrderId] : [],
+            this.Tax ? [this.Tax.map(t => t.toDto())] : [],
+            this.LineItemGroups ? [this.LineItemGroups.map(g => g.toDto())] : [],
+            this.LineItem ? [this.LineItem.map(i => i.toDto())] : [],
+            this.PaymentDetails ? [this.PaymentDetails.map(p => p.toDto())] : [],
+            this.AdditionalInformation ? [this.AdditionalInformation.toDto()] : [],
+            this.Header.toDto(),
+            this.Totals.toDto()
         );
     }
+
+    static fromDto(dto: TicketAccountingTransactionDto): TicketAccountingTransaction {
+        return new TicketAccountingTransaction(
+            dto.OperatorId?.length > 0 ? dto.OperatorId[0] ?? null : null,
+            dto.OrderId?.length > 0 ? dto.OrderId[0] ?? null : null,
+            dto.Tax?.length > 0 ? dto.Tax[0]!.map(t => TicketTax.fromDto(t)) : null,
+            dto.LineItemGroups?.length > 0 ? dto.LineItemGroups[0]!.map(g => TicketLineItemGroup.fromDto(g)) : null,
+            dto.LineItem?.length > 0 ? dto.LineItem[0]!.map(i => TicketLineItem.fromDto(i)) : null,
+            dto.PaymentDetails?.length > 0 ? dto.PaymentDetails[0]!.map(p => TicketPaymentDetails.fromDto(p)) : null,
+            dto.AdditionalInformation?.length > 0 ? AccountingTransactionAdditionalInfo.fromDto(dto.AdditionalInformation[0]!) : null,
+            AccountingTransactionHeader.fromDto(dto.Header),
+            AccountingTransactionTotals.fromDto(dto.Totals)
+        );
+    }
+
 }
 
-export type CreateTicketAccountingTransactionDto = {
+export class CreateTicketAccountingTransaction {
     OperatorId: string | null;
     OrderId: string | null;
     Tax: TicketTax[] | null;
@@ -183,4 +233,54 @@ export type CreateTicketAccountingTransactionDto = {
     AdditionalInformation: AccountingTransactionAdditionalInfo | null;
     Header: AccountingTransactionHeader;
     Totals: AccountingTransactionTotals;
-}
+
+    constructor(
+        operatorId: string | null,
+        orderId: string | null,
+        tax: TicketTax[] | null,
+        lineItemGroups: TicketLineItemGroup[] | null,
+        lineItem: TicketLineItem[] | null,
+        paymentDetails: TicketPaymentDetails[] | null,
+        additionalInformation: AccountingTransactionAdditionalInfo | null,
+        header: AccountingTransactionHeader,
+        totals: AccountingTransactionTotals
+    ) {
+        this.OperatorId = operatorId;
+        this.OrderId = orderId;
+        this.Tax = tax;
+        this.LineItemGroups = lineItemGroups;
+        this.LineItem = lineItem;
+        this.PaymentDetails = paymentDetails;
+        this.AdditionalInformation = additionalInformation;
+        this.Header = header;
+        this.Totals = totals;
+    }
+
+    toDto(): CreateTicketAccountingTransactionDto {
+        return {
+            OperatorId: this.OperatorId ? [this.OperatorId] : [],
+            OrderId: this.OrderId ? [this.OrderId] : [],
+            Tax: this.Tax ? [this.Tax.map(t => t.toDto())] : [],
+            LineItemGroups: this.LineItemGroups ? [this.LineItemGroups.map(g => g.toDto())] : [],
+            LineItem: this.LineItem ? [this.LineItem.map(i => i.toDto())] : [],
+            PaymentDetails: this.PaymentDetails ? [this.PaymentDetails.map(p => p.toDto())] : [],
+            AdditionalInformation: this.AdditionalInformation ? [this.AdditionalInformation.toDto()] : [],
+            Header: this.Header.toDto(),
+            Totals: this.Totals.toDto()
+        };
+    }
+
+    static fromDto(dto: CreateTicketAccountingTransactionDto): CreateTicketAccountingTransaction {
+        return new CreateTicketAccountingTransaction(
+            dto.OperatorId?.length > 0 ? dto.OperatorId[0] ?? null : null,
+            dto.OrderId?.length > 0 ? dto.OrderId[0] ?? null : null,
+            dto.Tax?.length > 0 ? dto.Tax[0]!.map(t => TicketTax.fromDto(t)) : null,
+            dto.LineItemGroups?.length > 0 ? dto.LineItemGroups[0]!.map(g => TicketLineItemGroup.fromDto(g)) : null,
+            dto.LineItem?.length > 0 ? dto.LineItem[0]!.map(i => TicketLineItem.fromDto(i)) : null,
+            dto.PaymentDetails?.length > 0 ? dto.PaymentDetails[0]!.map(p => TicketPaymentDetails.fromDto(p)) : null,
+            dto.AdditionalInformation?.length > 0 ? AccountingTransactionAdditionalInfo.fromDto(dto.AdditionalInformation[0]!) : null,
+            AccountingTransactionHeader.fromDto(dto.Header),
+            AccountingTransactionTotals.fromDto(dto.Totals)
+        );
+    }
+};
