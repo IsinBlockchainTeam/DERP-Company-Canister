@@ -187,7 +187,6 @@ export class AccountingTransactionHeader {
     }
 
     static fromDto(dto: AccountingTransactionHeaderDto): AccountingTransactionHeader {
-        console.log("converting trx dto: ", dto);
         return new AccountingTransactionHeader(
             dto.DLTERPId?.length > 0 ? dto.DLTERPId[0] ?? null : null,
             dto.TotalAmount?.length > 0 ? dto.TotalAmount[0] ?? null : null,

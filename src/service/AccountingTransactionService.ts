@@ -11,7 +11,6 @@ export class AccountingTransactionService {
 
 
     storeTicketAccountingTransaction(newTransaction: CreateTicketAccountingTransactionDto): void {
-        console.log(newTransaction);
         const trx = TicketAccountingTransaction.fromDto(newTransaction);
         this.ticketAccountingTransactionRepository.saveTicketAccountingTransaction(trx);
 

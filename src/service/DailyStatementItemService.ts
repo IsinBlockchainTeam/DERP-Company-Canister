@@ -24,20 +24,15 @@ export class DailyStatementItemService {
             transactionId: record.transactionId,
         }
 
-        console.log("Adding transaction contributions", toSave);
         const savedRecord = this._dailyTransactionsRecordRepository.saveDailyTransactionRecord(toSave);
         const dailyStatementItem = this.getDailyStatementItem(parentStatementItem, date);
         if (!dailyStatementItem) {
-            console.log("Creating the statment item: ", parentStatementItem.id, date, savedRecord.total);
             this.saveDailyStatementItem(new DailyStatementItem(parentStatementItem.id, date, savedRecord.total, [savedRecord.transactionId]));
             return;
         }
 
-        console.log("Current statement item:", dailyStatementItem);
-        
         dailyStatementItem.transactionIds.push(savedRecord.transactionId);
         dailyStatementItem.total += savedRecord.total;
-        console.log("Updating the statment item: ", dailyStatementItem);
         this.saveDailyStatementItem(dailyStatementItem);
     }
 

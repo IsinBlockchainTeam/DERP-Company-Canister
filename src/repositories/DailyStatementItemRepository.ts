@@ -38,7 +38,6 @@ export class DailyStatementItemRepository {
         // Check if already exists, and update in case
         const existing = this._dailyStatementItemsByDate.get(id);
 
-        console.log("Saving daily statement item", item, existing);
 
         this._dailyStatementItemsByDate.insert(id, {
             parentStatementItemId: item.parentStatementItemId,

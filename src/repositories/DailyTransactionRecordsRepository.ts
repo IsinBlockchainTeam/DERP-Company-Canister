@@ -23,8 +23,6 @@ export class DailyTransactionRecordsRepository {
     }
 
     saveDailyTransactionRecord(record: Omit<DailyTransactionRecord, 'id'> | DailyTransactionRecord): DailyTransactionRecord {
-        console.log("Saving daily transaction record", record);
-
         // ID is given should perform update
         if ("id" in record) {
             // check that the record exists
@@ -67,7 +65,6 @@ export class DailyTransactionRecordsRepository {
         const key = this.extractKey(recordWithId);
         this._dailyTransactionRecordsByStatement.insert(key, [id]);
 
-        console.log("Saved daily transaction record", recordWithId);
         return recordWithId;
     }
 

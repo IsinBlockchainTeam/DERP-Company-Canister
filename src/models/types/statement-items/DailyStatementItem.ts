@@ -19,7 +19,6 @@ export class DailyStatementItem {
     }
 
     toPresentable(): DailyStatementItemPresentable {
-        console.log("Translating this:", this);
         return new DailyStatementItemPresentable(
             this.parentStatementItemId,
             this.date.year + '-' + this.date.month + '-' + this.date.day,

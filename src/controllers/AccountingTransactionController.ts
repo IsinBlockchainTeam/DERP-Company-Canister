@@ -14,8 +14,15 @@ class AccountingTransactionController {
     @update([IDLTicketAccountingTransaction])
     storeTicketAccountingTransaction(newTransaction: CreateTicketAccountingTransactionDto): void {
         const accountingTransactionService: AccountingTransactionService = new AccountingTransactionService();
-        console.log("sono nel controller ", newTransaction);
         accountingTransactionService.storeTicketAccountingTransaction(newTransaction);
+    }
+
+    @update([IDL.Vec(IDLTicketAccountingTransaction)])
+    storeTicketAccountingTransactions(newTransactions: CreateTicketAccountingTransactionDto[]): void {
+        for (const newTransaction of newTransactions)
+            console.log("In controller:", newTransaction)
+        const accountingTransactionService: AccountingTransactionService = new AccountingTransactionService();
+        newTransactions.map(newTransaction => accountingTransactionService.storeTicketAccountingTransaction(newTransaction));
     }
 }
 

@@ -16,8 +16,15 @@ export class AccountingTransactionClient {
 
     // TODO:
     //  Move conversion to ICP types in the lib
-    async storeAccountingTransactions(trx: CreateTicketAccountingTransactionDto) {
+    async storeAccountingTransaction(trx: CreateTicketAccountingTransactionDto) {
         return this.actor.storeTicketAccountingTransaction(trx);
+    }
+
+    async storeAccountingTransactions(trxs: CreateTicketAccountingTransactionDto[]) {
+        for(const trx of trxs) {
+            console.log("Before controller: ", trx);
+        }
+        return this.actor.storeTicketAccountingTransactions(trxs);
     }
 
     async listAccountingTransactions() {
