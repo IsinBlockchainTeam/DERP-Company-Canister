@@ -10,6 +10,14 @@ export class CustomDate {
         this.month = month;
         this.day = day;
     }
+
+    static fromDate(date: Date): CustomDate {
+        return {
+            year: date.getFullYear(),
+            month: date.getMonth(),
+            day: date.getDate(),
+        };
+    }
 }
 
 export enum AccountingTransactionType {
@@ -110,6 +118,9 @@ export class AccountingTransactionHeader {
     // Type of transaction e.g. TICKET or INVOICE
     TypeCode: AccountingTransactionType;
 
+    // ID of the store where the transaction was made
+    StoreId: number;
+
     // name of the cashier or IBAN involved in the operation
     // For now it is always the cashier name i.e. DLTERP for web payments
     // TODO: still need to find a way to report the real cashier name when paying at the cash desk
@@ -141,6 +152,7 @@ export class AccountingTransactionHeader {
         DLTERPId: string | null,
         TotalAmount: number | null,
         Source: AccountingTransactionSource | null,
+        StoreId: number,
         TypeCode: AccountingTransactionType,
         TypeKey: string | null,
         ExternalReferenceNumber: string | null,
@@ -155,6 +167,7 @@ export class AccountingTransactionHeader {
         this.DLTERPId = DLTERPId;
         this.TotalAmount = TotalAmount;
         this.Source = Source;
+        this.StoreId = StoreId;
         this.TypeCode = TypeCode;
         this.TypeKey = TypeKey;
         this.ExternalReferenceNumber = ExternalReferenceNumber;
@@ -173,6 +186,7 @@ export class AccountingTransactionHeader {
             this.DLTERPId ? [this.DLTERPId] : [],
             this.TotalAmount ? [this.TotalAmount] : [],
             this.Source ? [this.Source] : [],
+            this.StoreId,
             this.TypeCode,
             this.TypeKey ? [this.TypeKey] : [],
             this.ExternalReferenceNumber ? [this.ExternalReferenceNumber] : [],
@@ -191,6 +205,7 @@ export class AccountingTransactionHeader {
             dto.DLTERPId?.length > 0 ? dto.DLTERPId[0] ?? null : null,
             dto.TotalAmount?.length > 0 ? dto.TotalAmount[0] ?? null : null,
             dto.Source?.length > 0 ? dto.Source[0] ?? null : null,
+            dto.StoreId,
             dto.TypeCode,
             dto.TypeKey?.length > 0 ? dto.TypeKey[0] ?? null : null,
             dto.ExternalReferenceNumber?.length > 0 ? dto.ExternalReferenceNumber[0] ?? null : null,

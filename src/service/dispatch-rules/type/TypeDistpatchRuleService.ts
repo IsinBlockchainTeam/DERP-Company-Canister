@@ -1,9 +1,9 @@
-import { AccountingTransactionType } from "../../models/types/accounting-transaction/AccountingTransaction";
-import { DispatchRuleDto } from "../../models/types/dispatch-rules/DispatchRule";
-import { DispatchRuleType } from "../../models/types/dispatch-rules/DispatchRuleTypes";
-import { TypeDispatchRule } from "../../models/types/dispatch-rules/TypeDispatchRule";
-import { DispatchRuleRepository } from "../../repositories/DispatchRuleRepository";
-import { IDispatchRuleService } from "./IDispatchRuleService";
+import { AccountingTransactionType } from "../../../models/types/accounting-transaction/AccountingTransaction";
+import { DispatchRuleDto } from "../../../models/types/dispatch-rules/DispatchRule";
+import { DispatchRuleType } from "../../../models/types/dispatch-rules/DispatchRuleTypes";
+import { TypeDispatchRule } from "../../../models/types/dispatch-rules/TypeDispatchRule";
+import { DispatchRuleRepository } from "../../../repositories/DispatchRuleRepository";
+import { IDispatchRuleService } from "../IDispatchRuleService";
 
 export class TypeDispatchRuleService implements IDispatchRuleService<TypeDispatchRule> {
     private readonly repository: DispatchRuleRepository = DispatchRuleRepository.instance;

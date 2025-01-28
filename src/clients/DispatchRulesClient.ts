@@ -24,7 +24,7 @@ export class DispatchRulesClient {
     }
 
     async updateDispatchRule(ruleRequest: DispatchRuleDto): Promise<DispatchRuleDto> {
-        if(ruleRequest.id === undefined) {
+        if (ruleRequest.id === undefined) {
             throw new Error("Missing id on update rule request")
         }
         return this.actor.updateDispatchRule({

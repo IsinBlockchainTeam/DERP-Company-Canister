@@ -47,6 +47,8 @@ export class AccountingTransactionHeaderDto {
 
     Source: [AccountingTransactionSource] | [];
 
+    StoreId: number;
+
     TypeCode: AccountingTransactionType;
 
     TypeKey: [string] | [];
@@ -69,6 +71,7 @@ export class AccountingTransactionHeaderDto {
         DLTERPId: [string] | [],
         TotalAmount: [number] | [],
         Source: [AccountingTransactionSource] | [],
+        StoreId: number,
         TypeCode: AccountingTransactionType,
         TypeKey: [string] | [],
         ExternalReferenceNumber: [string] | [],
@@ -83,6 +86,7 @@ export class AccountingTransactionHeaderDto {
         this.DLTERPId = DLTERPId;
         this.TotalAmount = TotalAmount;
         this.Source = Source;
+        this.StoreId = StoreId;
         this.TypeCode = TypeCode;
         this.TypeKey = TypeKey;
         this.ExternalReferenceNumber = ExternalReferenceNumber;

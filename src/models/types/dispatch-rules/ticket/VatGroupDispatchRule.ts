@@ -2,24 +2,24 @@ import { DispatchRuleDto } from "../DispatchRule";
 import { DispatchRuleType } from "../DispatchRuleTypes";
 import { StoreDispatchRule } from "./StoreDispatchRule";
 
-export class GroupDispatchRule extends StoreDispatchRule {
-    public groupId: string;
+export class VatGroupDispatchRule extends StoreDispatchRule {
+    public vatGroupId: string;
 
     constructor(
         id: number | undefined,
         statementItemIDs: number[],
         groupId: string,
         storeId: number,
-        dispatchRuleType: DispatchRuleType = DispatchRuleType.GROUP,
+        dispatchRuleType: DispatchRuleType = DispatchRuleType.VAT_GROUP,
     ) {
         super(id, statementItemIDs, storeId, dispatchRuleType);
-        this.groupId = groupId
+        this.vatGroupId = groupId
     }
 
     override toDto(): DispatchRuleDto {
         return {
             ...super.toDto(),
-            groupId: [this.groupId],
+            vatGroupId: [this.vatGroupId],
         }
     }
 }

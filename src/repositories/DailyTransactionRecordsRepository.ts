@@ -63,7 +63,10 @@ export class DailyTransactionRecordsRepository {
         this._dailyTransactionRecordsById.insert(id, serializedRecord);
 
         const key = this.extractKey(recordWithId);
-        this._dailyTransactionRecordsByStatement.insert(key, [id]);
+        const currentRecordIds = this._dailyTransactionRecordsByStatement.get(key) || [];
+        currentRecordIds.push(id);
+
+        this._dailyTransactionRecordsByStatement.insert(key, currentRecordIds);
 
         return recordWithId;
     }

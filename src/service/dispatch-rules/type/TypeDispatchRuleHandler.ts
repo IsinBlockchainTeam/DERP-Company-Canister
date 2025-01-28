@@ -1,6 +1,6 @@
-import { AccountingTransaction } from "../../models/types/accounting-transaction/AccountingTransaction";
-import { TypeDispatchRule } from "../../models/types/dispatch-rules/TypeDispatchRule";
-import { DispatchRuleHandler } from "./DispatchRuleHandler";
+import { AccountingTransaction } from "../../../models/types/accounting-transaction/AccountingTransaction";
+import { TypeDispatchRule } from "../../../models/types/dispatch-rules/TypeDispatchRule";
+import { DispatchRuleHandler } from "../DispatchRuleHandler";
 
 export class TypeDispatchRuleHandler<
     R extends TypeDispatchRule,

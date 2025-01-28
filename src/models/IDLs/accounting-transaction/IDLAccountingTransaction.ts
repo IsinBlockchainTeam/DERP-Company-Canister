@@ -15,6 +15,7 @@ export const IDLAccountingTransactionLineItemTax = IDL.Record({
 export const  IDLAccountingTransactionHeader = IDL.Record({
     DLTERPId: IDL.Opt(IDL.Text),
     Source: IDL.Opt(IDL.Text),
+    StoreId: IDL.Int32,
     TypeCode: IDL.Text,
     TypeKey: IDL.Opt(IDL.Text),
     ExternalReferenceNumber: IDL.Opt(IDL.Text),

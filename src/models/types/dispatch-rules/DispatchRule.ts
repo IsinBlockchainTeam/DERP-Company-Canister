@@ -20,6 +20,8 @@ export abstract class DispatchRule {
             ...this,
             txType: [],
             groupId: [],
+            storeId: [],
+            vatGroupId: [],
         } as DispatchRuleDto;
 
         return dto;
@@ -31,5 +33,7 @@ export type DispatchRuleDto = {
     ruleType: string;
     statementItemIDs: number[];
     txType: [string] | [];
+    storeId: [number] | [];
     groupId: [string] | [];
+    vatGroupId: [string] | [];
 }

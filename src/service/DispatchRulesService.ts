@@ -4,8 +4,9 @@ import { DispatchRuleType } from "../models/types/dispatch-rules/DispatchRuleTyp
 import { DispatchRuleRepository } from "../repositories/DispatchRuleRepository";
 import { DispatchRuleHandler } from "./dispatch-rules/DispatchRuleHandler";
 import { DispatchRuleServiceResolver } from "./dispatch-rules/DispatchRuleServiceResolver";
-import { GroupDispatchRuleHandler } from "./dispatch-rules/GroupDispatchRuleHandler";
-import { TypeDispatchRuleHandler } from "./dispatch-rules/TypeDispatchRuleHandler";
+import { GroupDispatchRuleHandler } from "./dispatch-rules/group/GroupDispatchRuleHandler";
+import { TypeDispatchRuleHandler } from "./dispatch-rules/type/TypeDispatchRuleHandler";
+import { VatGroupDispatchRuleHandler } from "./dispatch-rules/vat-group/VatGroupDispatchRuleHandler";
 import { StatementItemService } from "./StatementItemService";
 
 export class DispatchRuleService {
@@ -87,8 +88,10 @@ export class DispatchRuleService {
                 return new TypeDispatchRuleHandler();
             case DispatchRuleType.GROUP:
                 return new GroupDispatchRuleHandler();
+            case DispatchRuleType.VAT_GROUP:
+                return new VatGroupDispatchRuleHandler();
             default:
-                throw new Error(`Unknown rule type: ${rule.ruleType}`);
+                throw new Error(`No handler configured for rule type: ${rule.ruleType}`);
         }
     }
 }

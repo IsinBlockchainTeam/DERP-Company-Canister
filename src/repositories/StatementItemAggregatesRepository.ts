@@ -22,14 +22,11 @@ export class StatementItemAggregatesRepository {
     public saveStatementItemAggregate(aggregate: StatementItemAggregate): StatementItemAggregate {
         const key = this.extractKeys(aggregate);
         this._statementItemAggregates.insert(key, aggregate);
-
-        console.log(`Saved aggregate ${key} with total ${aggregate.total}`);
         return aggregate;
     }
 
     public getStatementItemAggregate(parentStatementItemId: number, date: Partial<CustomDate>): StatementItemAggregate | null {
         const key = this.extractKeys({parentStatementItemId, ...date});
-        console.log(`Looking for aggregate ${key}`);
         const raw = this._statementItemAggregates.get(key);
         if(!raw) return null;
 
@@ -39,7 +36,6 @@ export class StatementItemAggregatesRepository {
     // will extract the keys to index a statement item aggregate in the repositories
     // WARN: change this method may lead to data loss in the deployed canister
     private extractKeys = (aggregate: Partial<CustomDate> & {parentStatementItemId: number}): string => {
-        console.log(`Extracting keys for ${JSON.stringify(aggregate)}`);
         return `${aggregate.year}+${aggregate.month}+${aggregate.day}+${aggregate.parentStatementItemId}`;
     } 
 }

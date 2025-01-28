@@ -1,7 +1,7 @@
 import { IDL, query, update } from "azle";
-import { IDLCreateDispatchRule, IDLDispatchRule } from "../models/IDLs/dispatch-rules/IDLCreateDispatchRule";
 import { DispatchRuleDto } from "../models/types/dispatch-rules/DispatchRule";
 import { DispatchRuleService } from "../service/DispatchRulesService";
+import { IDLDispatchRule, IDLCreateDispatchRule } from "../models/IDLs/dispatch-rules/IDLDispatchRule";
 
 class DispatchRulesController {
     @query([], IDL.Vec(IDLDispatchRule))

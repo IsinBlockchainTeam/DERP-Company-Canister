@@ -1,8 +1,9 @@
 import { DispatchRule, DispatchRuleDto } from "../../models/types/dispatch-rules/DispatchRule";
 import { DispatchRuleType } from "../../models/types/dispatch-rules/DispatchRuleTypes";
-import { GroupDispatchRuleService } from "./GroupDispatchRuleService";
+import { GroupDispatchRuleService } from "./group/GroupDispatchRuleService";
 import { IDispatchRuleService } from "./IDispatchRuleService";
-import { TypeDispatchRuleService } from "./TypeDistpatchRuleService";
+import { TypeDispatchRuleService } from "./type/TypeDistpatchRuleService";
+import { VatGroupDispatchRuleService } from "./vat-group/VatGroupDispatchRuleService";
 
 export class DispatchRuleServiceResolver {
     private static _instance: DispatchRuleServiceResolver;
@@ -23,8 +24,10 @@ export class DispatchRuleServiceResolver {
                 return new TypeDispatchRuleService();
             case DispatchRuleType.GROUP:
                 return new GroupDispatchRuleService();
+            case DispatchRuleType.VAT_GROUP:
+                return new VatGroupDispatchRuleService();
             default:
-                throw new Error("Invalid rule type: " + rule.ruleType);
+                throw new Error("No service configured for rule type " + rule.ruleType);
         }
     }
 }

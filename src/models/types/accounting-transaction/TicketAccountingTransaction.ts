@@ -213,7 +213,7 @@ export class TicketAccountingTransaction extends AccountingTransactionWithTotals
             dto.OrderId?.length > 0 ? dto.OrderId[0] ?? null : null,
             dto.Tax?.length > 0 ? dto.Tax[0]!.map(t => TicketTax.fromDto(t)) : null,
             dto.LineItemGroups?.length > 0 ? dto.LineItemGroups[0]!.map(g => TicketLineItemGroup.fromDto(g)) : null,
-            dto.LineItem?.length > 0 ? dto.LineItem[0]!.map(i => TicketLineItem.fromDto(i)) : null,
+            dto.LineItem.length > 0 ? dto.LineItem[0]!.map(i => TicketLineItem.fromDto(i)) : null,
             dto.PaymentDetails?.length > 0 ? dto.PaymentDetails[0]!.map(p => TicketPaymentDetails.fromDto(p)) : null,
             dto.AdditionalInformation?.length > 0 ? AccountingTransactionAdditionalInfo.fromDto(dto.AdditionalInformation[0]!) : null,
             AccountingTransactionHeader.fromDto(dto.Header),
