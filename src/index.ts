@@ -2,8 +2,6 @@
 export * from "./models/types/Company";
 export * from "./models/types/statement-items/StatementItem"
 export * from "./models/types/statement-items/StatementItemCategory"
-export * from "./models/types/statement-items/MonthlyStatementItem"
-export * from "./models/types/statement-items/DailyStatementItem"
 export * from "./models/types/statement-items/DailyTransactionRecord"
 
 export * from "./models/types/accounting-transaction/AccountingTransaction"

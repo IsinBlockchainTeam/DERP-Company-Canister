@@ -11,6 +11,10 @@ export class DispatchRulesClient {
         this.actor = createActor(canisterId, { agent })
     }
 
+    async createDispatchRule(rule: DispatchRuleDto): Promise<DispatchRuleDto> {
+        return this.actor.createDispatchRule(rule) as Promise<DispatchRuleDto>
+    }
+
     async getDispatchRules(): Promise<DispatchRuleDto[]> {
         return this.actor.getDispatchRules() as Promise<DispatchRuleDto[]>
     }

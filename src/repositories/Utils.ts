@@ -13,4 +13,5 @@ export const StableTreeMapIds = {
     DispatchRules: 8,
     DailyTransactionRecord: 9,
     DailyTransactionRecordStatementIndex: 10,
+    StatementItemAggregates: 11,
 }

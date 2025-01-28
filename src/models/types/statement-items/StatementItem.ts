@@ -1,48 +1,103 @@
+
 export class StatementItem {
     id: number;
     name: string;
     category: number;
     currency: string;
-    year: number;
 
     constructor(
         id: number,
         name: string,
         category: number,
         currency: string,
-        year: number,
     ) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.currency = currency;
-        this.year = year;
     }
 
-    toPresentable(total: number): StatementItemPresentable {
-        return new StatementItemPresentable(
+    toDto(): StatementItemDto {
+        return new StatementItemDto(
             this.id,
             this.name,
             this.category,
             this.currency,
-            this.year,
-            total,
         );
     }
 }
 
-export class StatementItemPresentable extends StatementItem {
-    total: number
-
+export class StatementItemDto extends StatementItem {
     constructor(
         id: number,
         name: string,
         category: number,
         currency: string,
-        year: number,
-        total: number,
     ) {
-        super(id, name, category, currency, year);
+        super(id, name, category, currency);
+    }
+}
+
+export class StatementItemAggregate {
+    parentStatementItemId: number;
+    total: number;
+    year: number;
+    month?: number;
+    day?: number;
+
+    constructor(
+        parentStatementItemId: number,
+        total: number,
+        year: number,
+        month?: number,
+        day?: number,
+    ) {
+        this.parentStatementItemId = parentStatementItemId;
         this.total = total;
+        this.year = year;
+        this.month = month;
+        this.day = day;
+    }
+
+    toDto(): StatementItemAggregateDto {
+        return new StatementItemAggregateDto(
+            this.parentStatementItemId,
+            this.total,
+            this.year,
+            this.month != undefined ? [this.month] : [],
+            this.day != undefined ? [this.day] : [],
+        );
+    }
+
+    static fromDto(dto: StatementItemAggregateDto): StatementItemAggregate {
+        return new StatementItemAggregate(
+            dto.parentStatementItemId,
+            dto.total,
+            dto.year,
+            dto.month.length > 0 ? dto.month[0] : undefined,
+            dto.day.length > 0 ? dto.day[0] : undefined,
+        );
+    }
+}
+
+export class StatementItemAggregateDto {
+    parentStatementItemId: number;
+    total: number;
+    year: number;
+    month: [number] | [];
+    day: [number] | [];
+
+    constructor(
+        parentStatementItemId: number,
+        total: number,
+        year: number,
+        month: [number] | [],
+        day: [number] | [],
+    ) {
+        this.parentStatementItemId = parentStatementItemId;
+        this.total = total;
+        this.year = year;
+        this.month = month;
+        this.day = day;
     }
 }

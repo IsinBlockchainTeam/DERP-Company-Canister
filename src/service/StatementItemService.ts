@@ -1,13 +1,16 @@
 import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
-import { StatementItem } from "../models/types/statement-items/StatementItem";
+import { StatementItem, StatementItemAggregate } from "../models/types/statement-items/StatementItem";
 import { StatementItemCategory } from "../models/types/statement-items/StatementItemCategory";
+import { DailyTransactionRecordsRepository } from "../repositories/DailyTransactionRecordsRepository";
+import { StatementItemAggregatesRepository } from "../repositories/StatementItemAggregatesRepository";
 import { StatementItemsCategoriesRepository } from "../repositories/StatementItemsCategoriesRepository";
 import { StatementItemsRepository } from "../repositories/StatementItemsRepository";
-import { MonthlyStatementItemService } from "./MonthlyStatementItemService";
 
 export class StatementItemService {
     private _statementItemsRepository = StatementItemsRepository.instance;
+    private _aggregatesRepository = StatementItemAggregatesRepository.instance;
     private _statementItemsCategoriesRepository = StatementItemsCategoriesRepository.instance;
+    private _dailyTransactionsRecordRepository: DailyTransactionRecordsRepository = DailyTransactionRecordsRepository.instance;
 
     storeStatementItemCategory(category: string): StatementItemCategory {
         return this._statementItemsCategoriesRepository.saveStatementItemsCategory(category);
@@ -27,6 +30,15 @@ export class StatementItemService {
         this._statementItemsRepository.saveStatementItem(item);
     }
 
+    getAllStatementItems(category: number): StatementItem[] {
+        const statements = this._statementItemsRepository.getStatementItems(category);
+        return statements;
+    }
+
+    getStatementItemById(id: number): StatementItem | null {
+        return this._statementItemsRepository.getStatementItemById(id);
+    }
+
     addTransactionContributions(parentStatementItemId: number, date: CustomDate, record: {
         amount: number,
         transactionId: string,
@@ -36,22 +48,69 @@ export class StatementItemService {
             throw new Error(`Statement item with id ${parentStatementItemId} not found`);
         }
 
-        const monthlyService = new MonthlyStatementItemService();
-        monthlyService.addTransactionContributions(parentStatementItem, date, record);
+
+        const yearlyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, { year: date.year }) || new StatementItemAggregate(parentStatementItemId, 0, date.year);
+        const monthlyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, { year: date.year, month: date.month }) || new StatementItemAggregate(parentStatementItemId, 0, date.year, date.month);
+        const dailyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, date) || new StatementItemAggregate(parentStatementItemId, 0, date.year, date.month, date.day);
+
+        yearlyAggregate.total += record.amount;
+        monthlyAggregate.total += record.amount;
+        dailyAggregate.total += record.amount;
+
+        this._dailyTransactionsRecordRepository.saveDailyTransactionRecord({
+            parentStatementItemId,
+            date,
+            total: record.amount,
+            transactionId: record.transactionId,
+        });
+
+        this._aggregatesRepository.saveStatementItemAggregate(yearlyAggregate);
+        this._aggregatesRepository.saveStatementItemAggregate(monthlyAggregate);
+        this._aggregatesRepository.saveStatementItemAggregate(dailyAggregate);
     }
 
-    getStatementItemTotal(statementItem: StatementItem): number {
-        const monthlyStatementItemService = new MonthlyStatementItemService();
-        const monthlyItems = monthlyStatementItemService.getMonthlyStatementItems(statementItem.id);
-        return monthlyItems.reduce((acc, item) => acc + item.total, 0);
+    getStatementItemAggregate(parentStatementItemId: number, date: Partial<CustomDate> & Pick<CustomDate, 'year'>): StatementItemAggregate | null {
+        return this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, date);
     }
 
-    getAllStatementItems(year: number, category: number): StatementItem[] {
-        const statements = this._statementItemsRepository.getStatementItems(year, category);
-        return statements;
+    getStatementItemAggregates(parentStatementItemId: number, date: Partial<CustomDate> & Pick<CustomDate, 'year'>): StatementItemAggregate[] {
+        if(date.month !== undefined && date.day !== undefined) {
+            const item = this.getStatementItemAggregate(parentStatementItemId, date);
+            if(item) {
+                return [item];
+            } else {
+                return [];
+            }
+        } else if(date.month !== undefined) {
+            // loop through all days of the month stated in date.month
+            const numDays = new Date(date.year, date.month, 0).getDate();
+            const aggregates: StatementItemAggregate[] = [];
+            for(let i = 1; i <= numDays; i++) {
+                const day = this.getStatementItemAggregate(parentStatementItemId, {year: date.year, month: date.month, day: i});
+                if(day) {
+                    aggregates.push(day);
+                }
+            }
+
+            return aggregates;
+        } else {
+            // loop through all months of the year stated in date.year
+            const aggregates: StatementItemAggregate[] = [];
+            for(let i = 0; i <= 11; i++) {
+                const month = this.getStatementItemAggregate(parentStatementItemId, {year: date.year, month: i});
+                if(month) {
+                    aggregates.push(month);
+                }
+            }
+
+            return aggregates;
+        }
     }
 
-    getStatementItemById(id: number): StatementItem | null {
-        return this._statementItemsRepository.getStatementItemById(id);
+    getDailyTransactionRecords(parentStatementItemId: number, date: CustomDate): {
+        total: number,
+        transactionId: string,
+    }[] {
+        return this._dailyTransactionsRecordRepository.getDailyTransactionRecords(parentStatementItemId, date);
     }
 }

@@ -2,9 +2,7 @@ import { ActorSubclass, HttpAgent } from "@dfinity/agent";
 import { _SERVICE } from "../declarations/dlterp_company/dlterp_company.did";
 import { createActor } from "../declarations/dlterp_company";
 import { StatementItemCategory } from "../models/types/statement-items/StatementItemCategory";
-import { StatementItem, StatementItemPresentable } from "../models/types/statement-items/StatementItem";
-import { MonthlyStatementItemPresentable } from "../models/types/statement-items/MonthlyStatementItem";
-import { DailyStatementItemPresentable } from "../models/types/statement-items/DailyStatementItem";
+import { StatementItem, StatementItemAggregate, StatementItemDto } from "../models/types/statement-items/StatementItem";
 import { TicketAccountingTransactionDto } from "../models/types/accounting-transaction/TicketAccountingTransactionDto";
 import { TicketAccountingTransaction } from "../models/types/accounting-transaction/TicketAccountingTransaction";
 import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
@@ -22,24 +20,34 @@ export class StatementItemsClient {
         return this.actor.getStatementItemCategories();
     }
 
-    async getStatementItem(id: number): Promise<StatementItemPresentable> {
+    async getStatementItem(id: number): Promise<StatementItemDto> {
         const item = await this.actor.getStatementItem(id);
-        return new StatementItemPresentable(item.id, item.name, item.category, item.currency, item.year, item.total);
+        return new StatementItemDto(item.id, item.name, item.category, item.currency);
     }
 
-    async getStatementItems(year: number, categoryId: number): Promise<StatementItemPresentable[]> {
-        const items = await this.actor.getStatementItems(year, categoryId);
-        return items.map(i => new StatementItemPresentable(i.id, i.name, i.category, i.currency, i.year, i.total));
+    async getStatementItems(categoryId: number): Promise<StatementItemDto[]> {
+        const items = await this.actor.getStatementItems(categoryId);
+        return items.map(i => new StatementItemDto(i.id, i.name, i.category, i.currency));
     }
 
-    async getMonthlyStatementItems(statementItemId: number): Promise<MonthlyStatementItemPresentable[]> {
-        const items = await this.actor.getMonthlyStatementItems(statementItemId);
-        return items.map(i => new MonthlyStatementItemPresentable(i.parentStatementItemId, i.monthIndex, i.total));
+    async getAggregateStatement(parentStatementId: number, date: Partial<CustomDate> & Pick<CustomDate, 'year'>): Promise<StatementItemAggregate> {
+        const resp = await this.actor.getStatementItemAggregate(
+            parentStatementId, 
+            date.year,
+            date.month !== undefined ? [date.month] : [], 
+            date.day !== undefined ? [date.day] : []);
+
+        return StatementItemAggregate.fromDto(resp);
     }
 
-    async getDailyStatementItems(statementItemId: number, month?: number): Promise<DailyStatementItemPresentable[]> {
-        const items = await this.actor.getDailyStatementItems(statementItemId, month !== undefined ? [month] : []);
-        return items.map(i => new DailyStatementItemPresentable(i.parentStatementItemId, i.date, i.total, i.transactionIds));
+    async getAggregateStatements(parentStatementId: number, date: Partial<CustomDate> & Pick<CustomDate, 'year'>): Promise<StatementItemAggregate[]> {
+        const resp = await this.actor.getStatementItemAggregates(
+            parentStatementId, 
+            date.year,
+            date.month !== undefined ? [date.month] : [], 
+            date.day !== undefined ? [date.day] : []);
+
+        return resp.map(StatementItemAggregate.fromDto);
     }
 
     async getStatementItemTransactions(statementItemId: number, date: CustomDate): Promise<TicketAccountingTransaction[]> {

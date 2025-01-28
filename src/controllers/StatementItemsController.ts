@@ -1,21 +1,14 @@
 import { IDL, query, update } from "azle";
-import { IDLDailyStatementItemPresentable } from "../models/IDLs/statement-items/DailyStatementItem";
-import { IDLStatementItem, IDLStatementItemPresentable } from "../models/IDLs/statement-items/StatementItem";
-import { IDLStatementItemCategory } from "../models/IDLs/statement-items/StatementItemCategory";
-import { DailyStatementItemPresentable } from "../models/types/statement-items/DailyStatementItem";
-import { MonthlyStatementItemPresentable } from "../models/types/statement-items/MonthlyStatementItem";
-import { StatementItem, StatementItemPresentable } from "../models/types/statement-items/StatementItem";
-import { StatementItemCategory } from "../models/types/statement-items/StatementItemCategory";
-import { DailyStatementItemService } from "../service/DailyStatementItemService";
-import { MonthlyStatementItemService } from "../service/MonthlyStatementItemService";
-import { StatementItemService } from "../service/StatementItemService";
-import { AccountingTransaction, CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
-import { AccountingTransactionService } from "../service/AccountingTransactionService";
-import { IDLTicketAccountingTransaction } from "../models/IDLs/accounting-transaction/IDLTicketAccountingTransaction";
 import { IDLCustomDate } from "../models/IDLs/accounting-transaction/IDLAccountingTransaction";
-import { IDLMonthlyStatementItemPresentable } from "../models/IDLs/statement-items/MonthlyStatementItem";
-import { TicketAccountingTransaction } from "../models/types/accounting-transaction/TicketAccountingTransaction";
+import { IDLTicketAccountingTransaction } from "../models/IDLs/accounting-transaction/IDLTicketAccountingTransaction";
+import { IDLStatementItem, IDLStatementItemAggregate, IDLStatementItemDto } from "../models/IDLs/statement-items/StatementItem";
+import { IDLStatementItemCategory } from "../models/IDLs/statement-items/StatementItemCategory";
+import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
 import { TicketAccountingTransactionDto } from "../models/types/accounting-transaction/TicketAccountingTransactionDto";
+import { StatementItem, StatementItemAggregateDto, StatementItemDto } from "../models/types/statement-items/StatementItem";
+import { StatementItemCategory } from "../models/types/statement-items/StatementItemCategory";
+import { AccountingTransactionService } from "../service/AccountingTransactionService";
+import { StatementItemService } from "../service/StatementItemService";
 
 class StatementItemsController {
     @query([], IDL.Vec(IDLStatementItemCategory))
@@ -24,65 +17,70 @@ class StatementItemsController {
         return statementItemService.getStatementItemCategories();
     }
 
-    @query([IDL.Int32], IDLStatementItemPresentable)
-    async getStatementItem(id: number): Promise<StatementItemPresentable> {
+    @query([IDL.Int32], IDLStatementItemDto)
+    async getStatementItem(id: number): Promise<StatementItemDto> {
         const statementItemService = new StatementItemService();
         const statementItem = statementItemService.getStatementItemById(id);
         if (!statementItem) {
             throw new Error(`Statement item with id ${id} not found`);
         }
 
-        const total = statementItemService.getStatementItemTotal(statementItem);
-        return statementItem.toPresentable(total);
+        return statementItem.toDto();
     }
 
-    @query([IDL.Int32, IDL.Int32], IDL.Vec(IDLStatementItemPresentable))
-    async getStatementItems(year: number, categoryId: number): Promise<StatementItemPresentable[]> {
+    @query([IDL.Int32], IDL.Vec(IDLStatementItemDto))
+    async getStatementItems(categoryId: number): Promise<StatementItemDto[]> {
         const statementItemService = new StatementItemService();
-        const statementItems = statementItemService.getAllStatementItems(year, categoryId);
+        const statementItems = statementItemService.getAllStatementItems(categoryId);
         return statementItems.map((item) => {
-            const total = statementItemService.getStatementItemTotal(item);
-            return item.toPresentable(total);
+            return item.toDto();
         });
     }
 
-    @query([IDL.Int32], IDL.Vec(IDLMonthlyStatementItemPresentable))
-    async getMonthlyStatementItems(statementItemId: number): Promise<MonthlyStatementItemPresentable[]> {
-        const monthlyStatementItemService = new MonthlyStatementItemService();
-        return monthlyStatementItemService.getMonthlyStatementItems(statementItemId);
-    }
+    @query([IDL.Int32, IDL.Int32, IDL.Opt(IDL.Int32), IDL.Opt(IDL.Int32)], IDLStatementItemAggregate)
+    async getStatementItemAggregate(statementItemId: number, year: number, month: [number], day: [number]): Promise<StatementItemAggregateDto> {
+        const statementItemService = new StatementItemService();
 
-    @query([IDL.Int32, IDL.Opt(IDL.Int16)], IDL.Vec(IDLDailyStatementItemPresentable))
-    async getDailyStatementItems(statementItemId: number, month?: number): Promise<DailyStatementItemPresentable[]> {
-        const statementItemsService = new StatementItemService();
-        const statementItem = statementItemsService.getStatementItemById(statementItemId);
-        if (!statementItem) {
-            throw new Error(`Statement item with id ${statementItemId} not found`);
+        const aggregate = statementItemService.getStatementItemAggregate(statementItemId, {
+            year,
+            month: month.length > 0 ? month[0] : undefined, 
+            day: day.length > 0 ? day[0] : undefined
+        });
+
+        if (!aggregate) {
+            throw new Error(`Aggregate for statement item with id ${statementItemId} not found`);
         }
 
-        const dailyStatementItemService = new DailyStatementItemService();
-        return dailyStatementItemService.getDailyStatementItems(statementItem, month).map(i => i.toPresentable())
+        return aggregate.toDto();
+    }
+
+    @query([IDL.Int32, IDL.Int32, IDL.Opt(IDL.Int32), IDL.Opt(IDL.Int32)], IDL.Vec(IDLStatementItemAggregate))
+    async getStatementItemAggregates(statementItemId: number, year: number, month: [number], day: [number]): Promise<StatementItemAggregateDto[]> {
+        const statementItemService = new StatementItemService();
+
+        const aggregates = statementItemService.getStatementItemAggregates(statementItemId, {
+            year,
+            month: month.length > 0 ? month[0] : undefined,
+            day: day.length > 0 ? day[0] : undefined
+        });
+
+        if (!aggregates) {
+            throw new Error(`Aggregate for statement item with id ${statementItemId} not found`);
+        }
+
+        return aggregates.map(a => a.toDto());
     }
 
     @query([IDL.Int32, IDLCustomDate], IDL.Vec(IDLTicketAccountingTransaction))
     async getDailyStatementItemTransactions(statementItemId: number, date: CustomDate): Promise<TicketAccountingTransactionDto[]> {
-        const statementItemsService = new StatementItemService();
-        const statementItem = statementItemsService.getStatementItemById(statementItemId);
-        if (!statementItem) {
-            throw new Error(`Statement item with id ${statementItemId} not found`);
-        }
-
-        const dailyStatementItemService = new DailyStatementItemService();
-        const statement = dailyStatementItemService.getDailyStatementItem(statementItem, date);
-        if (!statement) {
-            return [];
-        }
-
+        const statementItemService = new StatementItemService();
         const accountingTransactionService = new AccountingTransactionService();
-        return statement.transactionIds.map((id) => {
-            const transaction = accountingTransactionService.getTicketAccountingTransactionById(id);
+        const dailyRecords = statementItemService.getDailyTransactionRecords(statementItemId, date);
+
+        return dailyRecords.map((record) => {
+            const transaction = accountingTransactionService.getTicketAccountingTransactionById(record.transactionId);
             if (!transaction) {
-                throw new Error(`Transaction with id ${id} not found`);
+                throw new Error(`Transaction with id ${record} not found`);
             }
             return transaction.toDto();
         })
