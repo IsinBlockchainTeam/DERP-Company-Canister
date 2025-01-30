@@ -2,14 +2,14 @@
 export class StatementItem {
     id: number;
     name: string;
-    category: number;
     currency: string;
+    category?: number;
 
     constructor(
         id: number,
         name: string,
-        category: number,
         currency: string,
+        category?: number,
     ) {
         this.id = id;
         this.name = name;
@@ -21,20 +21,37 @@ export class StatementItem {
         return new StatementItemDto(
             this.id,
             this.name,
-            this.category,
             this.currency,
+            this.category ? [this.category] : [],
+        );
+    }
+
+    static fromDto(dto: StatementItemDto): StatementItem {
+        return new StatementItem(
+            dto.id,
+            dto.name,
+            dto.currency,
+            dto.category.length > 0 ? dto.category[0] : undefined,
         );
     }
 }
 
-export class StatementItemDto extends StatementItem {
+export class StatementItemDto {
+    id: number;
+    name: string;
+    currency: string;
+    category: [number] | [];
+
     constructor(
         id: number,
         name: string,
-        category: number,
         currency: string,
+        category: [number] | []
     ) {
-        super(id, name, category, currency);
+        this.id = id;
+        this.name = name;
+        this.currency = currency;
+        this.category = category;
     }
 }
 

@@ -40,19 +40,19 @@ export class StatementItemsRepository {
         this._statementItemIDs.insert(key, categoryIDs);
     }
     
-    getStatementItems(category: number): StatementItem[] {
+    getStatementItems(category?: number): StatementItem[] {
         let key = `${category}`;
         const ids = this._statementItemIDs.get(key) || [];
         return ids
             .map((id) => this._statementItems.get(id))
             .filter((i) => !!i)
-            .map(i => new StatementItem(i.id, i.name, i.category, i.currency));
+            .map(i => new StatementItem(i.id, i.name, i.currency, i.category));
     }
 
     getStatementItemById(id: number): StatementItem | null {
         const item = this._statementItems.get(id);
         if(!item) return null;
 
-        return new StatementItem(item.id, item.name, item.category, item.currency);
+        return new StatementItem(item.id, item.name, item.currency, item.category);
     }
 }

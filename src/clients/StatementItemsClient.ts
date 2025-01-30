@@ -20,14 +20,14 @@ export class StatementItemsClient {
         return this.actor.getStatementItemCategories();
     }
 
-    async getStatementItem(id: number): Promise<StatementItemDto> {
+    async getStatementItem(id: number): Promise<StatementItem> {
         const item = await this.actor.getStatementItem(id);
-        return new StatementItemDto(item.id, item.name, item.category, item.currency);
+        return StatementItem.fromDto(item);
     }
 
-    async getStatementItems(categoryId: number): Promise<StatementItemDto[]> {
-        const items = await this.actor.getStatementItems(categoryId);
-        return items.map(i => new StatementItemDto(i.id, i.name, i.category, i.currency));
+    async getStatementItems(categoryId?: number): Promise<StatementItem[]> {
+        const items = await this.actor.getStatementItems(categoryId !== undefined ? [categoryId]: []);
+        return items.map(i => StatementItem.fromDto(i));
     }
 
     async getAggregateStatement(parentStatementId: number, date: Partial<CustomDate> & Pick<CustomDate, 'year'>): Promise<StatementItemAggregate> {
@@ -61,6 +61,6 @@ export class StatementItemsClient {
     }
 
     async storeStatementItem(item: StatementItem): Promise<void> {
-        await this.actor.storeStatementItem(item);
+        await this.actor.storeStatementItem(item.toDto());
     }
 }

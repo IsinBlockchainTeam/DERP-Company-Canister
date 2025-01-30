@@ -13,7 +13,8 @@
     },
     "dependencies": {
         "@dfinity/agent": "^2.2.0",
-        "azle": "^0.24.1"
+        "azle": "^0.24.1",
+        "uuidv4": "^6.2.13"
     },
     "devDependencies": {
         "@types/text-encoding": "^0.0.40",

@@ -5,12 +5,9 @@ export const StableTreeMapIds = {
     StatementItems: 2,
     StatementItemsYearCategoryIndex: 3,
 
-    DailyStatementItems: 4,
-    DailyStatementItemsParentIndex: 5,
-    DailyStatementItemsMonthIndex: 6,
-    DailyStatementItemsDateIndex: 7,
-
+    GroupDispatchRuleIndex: 4,
     DispatchRules: 8,
+
     DailyTransactionRecord: 9,
     DailyTransactionRecordStatementIndex: 10,
     StatementItemAggregates: 11,

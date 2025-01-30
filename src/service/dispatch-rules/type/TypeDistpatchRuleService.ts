@@ -2,7 +2,7 @@ import { AccountingTransactionType } from "../../../models/types/accounting-tran
 import { DispatchRuleDto } from "../../../models/types/dispatch-rules/DispatchRule";
 import { DispatchRuleType } from "../../../models/types/dispatch-rules/DispatchRuleTypes";
 import { TypeDispatchRule } from "../../../models/types/dispatch-rules/TypeDispatchRule";
-import { DispatchRuleRepository } from "../../../repositories/DispatchRuleRepository";
+import { DispatchRuleRepository } from "../../../repositories/dispatch-rules/DispatchRuleRepository";
 import { IDispatchRuleService } from "../IDispatchRuleService";
 
 export class TypeDispatchRuleService implements IDispatchRuleService<TypeDispatchRule> {

@@ -23,14 +23,14 @@ export class StatementItemService {
     storeStatementItem(item: StatementItem): void {
         const categories = this._statementItemsCategoriesRepository.getAllStatementItemsCategories();
 
-        if (categories.find(c => c.id === item.category) === undefined) {
+        if (item.category !== undefined && categories.find(c => c.id === item.category) === undefined) {
             throw new Error(`Category ${item.category} is not valid. Available: ${categories.map(c => c.id).join(', ')}`);
         }
 
         this._statementItemsRepository.saveStatementItem(item);
     }
 
-    getAllStatementItems(category: number): StatementItem[] {
+    getAllStatementItems(category?: number): StatementItem[] {
         const statements = this._statementItemsRepository.getStatementItems(category);
         return statements;
     }

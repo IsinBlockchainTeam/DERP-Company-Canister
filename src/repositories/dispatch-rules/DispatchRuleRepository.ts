@@ -1,6 +1,6 @@
 import { StableBTreeMap } from "azle";
-import { DispatchRule } from "../models/types/dispatch-rules/DispatchRule";
-import { StableTreeMapIds } from "./Utils";
+import { DispatchRule } from "../../models/types/dispatch-rules/DispatchRule";
+import { StableTreeMapIds } from "../Utils";
 
 export class DispatchRuleRepository {
     private static _instance: DispatchRuleRepository;

@@ -1,18 +1,10 @@
 import { IDL } from "azle";
-import { IDLCustomDate } from "../accounting-transaction/IDLAccountingTransaction";
-
-export const IDLStatementItemDto = IDL.Record({
-    id: IDL.Int32,
-    name: IDL.Text,
-    currency: IDL.Text,
-    category: IDL.Int32,
-});
 
 export const IDLStatementItem = IDL.Record({
     id: IDL.Int32,
     name: IDL.Text,
     currency: IDL.Text,
-    category: IDL.Int32,
+    category: IDL.Opt(IDL.Int32),
 });
 
 export const IDLStatementItemAggregate = IDL.Record({

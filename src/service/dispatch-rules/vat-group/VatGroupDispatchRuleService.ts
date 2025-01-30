@@ -1,7 +1,7 @@
 import { DispatchRuleDto } from "../../../models/types/dispatch-rules/DispatchRule";
 import { DispatchRuleType } from "../../../models/types/dispatch-rules/DispatchRuleTypes";
 import { VatGroupDispatchRule } from "../../../models/types/dispatch-rules/ticket/VatGroupDispatchRule";
-import { DispatchRuleRepository } from "../../../repositories/DispatchRuleRepository";
+import { DispatchRuleRepository } from "../../../repositories/dispatch-rules/DispatchRuleRepository";
 import { IDispatchRuleService } from "../IDispatchRuleService";
 
 export class VatGroupDispatchRuleService implements IDispatchRuleService<VatGroupDispatchRule> {

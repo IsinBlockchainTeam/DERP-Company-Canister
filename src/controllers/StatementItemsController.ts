@@ -1,7 +1,7 @@
 import { IDL, query, update } from "azle";
 import { IDLCustomDate } from "../models/IDLs/accounting-transaction/IDLAccountingTransaction";
 import { IDLTicketAccountingTransaction } from "../models/IDLs/accounting-transaction/IDLTicketAccountingTransaction";
-import { IDLStatementItem, IDLStatementItemAggregate, IDLStatementItemDto } from "../models/IDLs/statement-items/StatementItem";
+import { IDLStatementItem, IDLStatementItemAggregate } from "../models/IDLs/statement-items/StatementItem";
 import { IDLStatementItemCategory } from "../models/IDLs/statement-items/StatementItemCategory";
 import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
 import { TicketAccountingTransactionDto } from "../models/types/accounting-transaction/TicketAccountingTransactionDto";
@@ -17,7 +17,7 @@ class StatementItemsController {
         return statementItemService.getStatementItemCategories();
     }
 
-    @query([IDL.Int32], IDLStatementItemDto)
+    @query([IDL.Int32], IDLStatementItem)
     async getStatementItem(id: number): Promise<StatementItemDto> {
         const statementItemService = new StatementItemService();
         const statementItem = statementItemService.getStatementItemById(id);
@@ -28,10 +28,13 @@ class StatementItemsController {
         return statementItem.toDto();
     }
 
-    @query([IDL.Int32], IDL.Vec(IDLStatementItemDto))
-    async getStatementItems(categoryId: number): Promise<StatementItemDto[]> {
+    @query([IDL.Opt(IDL.Int32)], IDL.Vec(IDLStatementItem))
+    async getStatementItems(categoryId: [number] | []): Promise<StatementItemDto[]> {
         const statementItemService = new StatementItemService();
-        const statementItems = statementItemService.getAllStatementItems(categoryId);
+        const statementItems = statementItemService.getAllStatementItems(
+            categoryId.length > 0 ? categoryId[0] : undefined
+        );
+
         return statementItems.map((item) => {
             return item.toDto();
         });
@@ -93,9 +96,9 @@ class StatementItemsController {
     }
 
     @update([IDLStatementItem])
-    storeStatementItem(statementItem: StatementItem): void {
+    storeStatementItem(statementItem: StatementItemDto): void {
         const statmentItemService = new StatementItemService();
-        return statmentItemService.storeStatementItem(statementItem);
+        return statmentItemService.storeStatementItem(StatementItem.fromDto(statementItem));
     }
 }
 
