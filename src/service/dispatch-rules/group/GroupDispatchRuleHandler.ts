@@ -27,6 +27,6 @@ export class GroupDispatchRuleHandler extends StoreDispatchRuleHandler<
     }
 
     getContributions(rule: GroupDispatchRule, trx: TicketAccountingTransaction) {
-        return trx.LineItem?.filter(lineItem => lineItem.ItemGroupId === rule.groupId).reduce((acc, lineItem) => acc + lineItem.TotalInclTax, 0) || 0;
+        return trx.LineItem?.filter(lineItem => lineItem.ItemGroupId === rule.groupId).reduce((acc, lineItem) => acc + lineItem.TotalExclTax, 0) || 0;
     }
 }

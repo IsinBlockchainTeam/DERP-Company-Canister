@@ -3,10 +3,12 @@ import { DispatchRuleDto } from "../../../models/types/dispatch-rules/DispatchRu
 import { DispatchRuleType } from "../../../models/types/dispatch-rules/DispatchRuleTypes";
 import { TypeDispatchRule } from "../../../models/types/dispatch-rules/TypeDispatchRule";
 import { DispatchRuleRepository } from "../../../repositories/dispatch-rules/DispatchRuleRepository";
+import { TypeDispatchRuleIndexRepository } from "../../../repositories/dispatch-rules/TypeDispatchRuleIndexRepository";
 import { IDispatchRuleService } from "../IDispatchRuleService";
 
 export class TypeDispatchRuleService implements IDispatchRuleService<TypeDispatchRule> {
     private readonly repository: DispatchRuleRepository = DispatchRuleRepository.instance;
+    private readonly typeBasedRepository: TypeDispatchRuleIndexRepository = TypeDispatchRuleIndexRepository.instance;
 
     create(ruleDto: DispatchRuleDto): TypeDispatchRule {
         // check rule request
@@ -28,6 +30,11 @@ export class TypeDispatchRuleService implements IDispatchRuleService<TypeDispatc
         )
 
         const savedRule = this.repository.saveDispatchRule<TypeDispatchRule>(rule);
+        if (!savedRule.id) {
+            throw new Error("Failed to save dispatch rule");
+        }
+
+        this.typeBasedRepository.addRuleIdToType(type, savedRule.id);
         return new TypeDispatchRule(savedRule.id, savedRule.statementItemIDs, savedRule.txType);
     }
 
@@ -36,11 +43,17 @@ export class TypeDispatchRuleService implements IDispatchRuleService<TypeDispatc
             throw new Error("Dispatch rule to be updated must have an id");
         }
 
+        const currentRule = this.repository.getDispatchRule(ruleDto.id!) as TypeDispatchRule;
         const rule = new TypeDispatchRule(
             ruleDto.id,
             ruleDto.statementItemIDs,
             ruleDto.txType[0] as AccountingTransactionType
         )
+
+        if (currentRule.txType !== rule.txType) {
+            this.typeBasedRepository.removeRuleIdFromType(currentRule.txType, currentRule.id!);
+            this.typeBasedRepository.addRuleIdToType(rule.txType, currentRule.id!);
+        }
 
         const updatedRule = this.repository.saveDispatchRule<TypeDispatchRule>(rule);
         return new TypeDispatchRule(updatedRule.id, updatedRule.statementItemIDs, updatedRule.txType);
@@ -50,6 +63,12 @@ export class TypeDispatchRuleService implements IDispatchRuleService<TypeDispatc
         return this.repository.getDispatchRules()
             .filter(rule => rule.ruleType === DispatchRuleType.TYPE)
             .map(rule => new TypeDispatchRule(rule.id, rule.statementItemIDs, (rule as TypeDispatchRule).txType));
+    }
+
+    listByType(type: string) {
+        return this.typeBasedRepository.getDispatchRuleIdsForType(type)
+            .map(id => this.get(id)!)
+            .filter(rule => !!rule) as TypeDispatchRule[];
     }
 
     get(id: number): TypeDispatchRule | null {

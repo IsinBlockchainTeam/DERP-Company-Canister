@@ -1,17 +1,17 @@
 import { StableBTreeMap } from "azle";
 import { StableTreeMapIds } from "../Utils";
 
-export class GroupDispatchRuleIndexRepository {
-    private static _instance: GroupDispatchRuleIndexRepository;
+export class VatGroupDispatchRuleIndexRepository {
+    private static _instance: VatGroupDispatchRuleIndexRepository;
 
     // group ID -> dispatch rule ID
-    private _dispatchRuleIDs = StableBTreeMap<string, number[]>(StableTreeMapIds.GroupDispatchRuleIndex);
+    private _dispatchRuleIDs = StableBTreeMap<string, number[]>(StableTreeMapIds.VatGroupDispatchRuleIndex);
 
     static get instance() {
-        if (!GroupDispatchRuleIndexRepository._instance) {
-            GroupDispatchRuleIndexRepository._instance = new GroupDispatchRuleIndexRepository();
+        if (!VatGroupDispatchRuleIndexRepository._instance) {
+            VatGroupDispatchRuleIndexRepository._instance = new VatGroupDispatchRuleIndexRepository();
         }
-        return GroupDispatchRuleIndexRepository._instance;
+        return VatGroupDispatchRuleIndexRepository._instance;
     }
 
     private constructor() { }

@@ -6,6 +6,8 @@ export const StableTreeMapIds = {
     StatementItemsYearCategoryIndex: 3,
 
     GroupDispatchRuleIndex: 4,
+    VatGroupDispatchRuleIndex: 5,
+    TypeDispatchRuleIndex: 6,
     DispatchRules: 8,
 
     DailyTransactionRecord: 9,
