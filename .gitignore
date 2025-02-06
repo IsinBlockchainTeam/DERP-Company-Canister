@@ -4,3 +4,4 @@
 node_modules
 src/declarations
 HACK_BECAUSE_OF_ALLOW_JS/
+dist
