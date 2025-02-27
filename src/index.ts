@@ -10,8 +10,12 @@ export * from "./models/types/accounting-transaction/AccountingTransactionDto"
 export * from "./models/types/accounting-transaction/TicketAccountingTransactionDto"
 
 export * from "./models/types/dispatch-rules/DispatchRule"
+export * from "./models/types/dispatch-rules/DispatchRuleTypes"
+
 export * from "./models/types/dispatch-rules/TypeDispatchRule"
+export * from "./models/types/dispatch-rules/ticket/StoreDispatchRule"
 export * from "./models/types/dispatch-rules/ticket/GroupDispatchRule"
+export * from "./models/types/dispatch-rules/ticket/VatGroupDispatchRule"
 
 // Canisters
 export * from "./clients"

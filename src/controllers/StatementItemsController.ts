@@ -94,11 +94,31 @@ class StatementItemsController {
         const statementItemService = new StatementItemService();
         return statementItemService.storeStatementItemCategory(name);
     }
+    
+    @update([IDL.Vec(IDL.Text)], IDL.Vec(IDLStatementItemCategory))
+    async storeStatementItemCategories(categories: string[]): Promise<StatementItemCategory[]> {
+        const statementItemService = new StatementItemService();
+        const result: StatementItemCategory[] = [];
+        for (const category of categories) {
+            const storedCategory = statementItemService.storeStatementItemCategory(category);
+            result.push(storedCategory);
+        }
+
+        return result;
+    }
 
     @update([IDLStatementItem])
     storeStatementItem(statementItem: StatementItemDto): void {
         const statmentItemService = new StatementItemService();
         return statmentItemService.storeStatementItem(StatementItem.fromDto(statementItem));
+    }
+
+    @update([IDL.Vec(IDLStatementItem)])
+    async storeStatementItems(items: StatementItemDto[]): Promise<void> {
+        const statementItemService = new StatementItemService();
+        for (const item of items) {
+            statementItemService.storeStatementItem(StatementItem.fromDto(item));
+        }
     }
 }
 

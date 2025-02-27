@@ -5,6 +5,8 @@ import { DispatchRuleHandler } from "./DispatchRuleHandler";
 import { GroupDispatchRuleHandler } from "./group/GroupDispatchRuleHandler";
 import { GroupDispatchRuleService } from "./group/GroupDispatchRuleService";
 import { IDispatchRuleService } from "./IDispatchRuleService";
+import { StoreDispatchRuleHandler } from "./store/StoreDispatchRuleHandler";
+import { StoreDispatchRuleService } from "./store/StoreDispatchRuleService";
 import { TypeDispatchRuleHandler } from "./type/TypeDispatchRuleHandler";
 import { TypeDispatchRuleService } from "./type/TypeDistpatchRuleService";
 import { VatGroupDispatchRuleHandler } from "./vat-group/VatGroupDispatchRuleHandler";
@@ -19,6 +21,8 @@ export abstract class DispatchRuleServiceResolver {
                 return new GroupDispatchRuleService();
             case DispatchRuleType.VAT_GROUP:
                 return new VatGroupDispatchRuleService();
+            case DispatchRuleType.STORE:
+                return new StoreDispatchRuleService();
         }
     }
 
@@ -30,6 +34,8 @@ export abstract class DispatchRuleServiceResolver {
                 return new GroupDispatchRuleHandler();
             case DispatchRuleType.VAT_GROUP:
                 return new VatGroupDispatchRuleHandler();
+            case DispatchRuleType.STORE:
+                return new StoreDispatchRuleHandler();
         }
     }
 }

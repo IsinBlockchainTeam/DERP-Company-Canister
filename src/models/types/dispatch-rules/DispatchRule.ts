@@ -30,7 +30,7 @@ export abstract class DispatchRule {
 
 export type DispatchRuleDto = {
     id: number | undefined;
-    ruleType: string;
+    ruleType: DispatchRuleType;
     statementItemIDs: number[];
     txType: [string] | [];
     storeId: [number] | [];

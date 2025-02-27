@@ -14,6 +14,25 @@ export class DispatchRulesClient {
     async createDispatchRule(rule: DispatchRuleDto): Promise<DispatchRuleDto> {
         return this.actor.createDispatchRule(rule) as Promise<DispatchRuleDto>
     }
+    
+    async createDispatchRules(rules: DispatchRuleDto[]): Promise<DispatchRuleDto[]> {
+        const chunks = rules.reduce((acc, rule, index) => {
+            const chunkIndex = Math.floor(index / 100);
+            if (!acc[chunkIndex]) {
+                acc[chunkIndex] = [];
+            }
+            acc[chunkIndex].push(rule);
+            return acc;
+        }, [] as DispatchRuleDto[][]);
+
+        const result: DispatchRuleDto[] = [];
+        for (const chunk of chunks) {
+            const createdRules = await this.actor.createDispatchRules(chunk);
+            result.push(...createdRules as DispatchRuleDto[]);
+        }
+
+        return result;
+    }
 
     async getDispatchRules(): Promise<DispatchRuleDto[]> {
         return this.actor.getDispatchRules() as Promise<DispatchRuleDto[]>

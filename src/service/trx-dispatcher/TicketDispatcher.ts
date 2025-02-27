@@ -10,8 +10,8 @@ import { AccountingTransactionType } from "../../models/types/accounting-transac
 import { GroupDispatchRule } from "../../models/types/dispatch-rules/ticket/GroupDispatchRule";
 import { VatGroupDispatchRule } from "../../models/types/dispatch-rules/ticket/VatGroupDispatchRule";
 import { VatGroupDispatchRuleService } from "../dispatch-rules/vat-group/VatGroupDispatchRuleService";
-import { TypeDispatchRule } from "../../models/types/dispatch-rules/TypeDispatchRule";
-import { TypeDispatchRuleService } from "../dispatch-rules/type/TypeDistpatchRuleService";
+import { StoreDispatchRuleService } from "../dispatch-rules/store/StoreDispatchRuleService";
+import { StoreDispatchRule } from "../../models/types/dispatch-rules/ticket/StoreDispatchRule";
 
 export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransaction> {
     dispatch(trx: TicketAccountingTransaction): void {
@@ -52,11 +52,11 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
     }
 
     // This will become 'getPaymentMethodRules' when we have payment methods
-    private getTotalRules(trx: TicketAccountingTransaction): TypeDispatchRule[] {
-        const svc = new TypeDispatchRuleService();
+    private getTotalRules(trx: TicketAccountingTransaction): StoreDispatchRule[] {
+        const svc = new StoreDispatchRuleService();
         const statementItemService = new StatementItemService();
 
-        const rules: TypeDispatchRule[] = svc.listByType(AccountingTransactionType.TICKET);
+        const rules: StoreDispatchRule[] = svc.listByStore(trx.Header.StoreId);
         if (rules.length === 0) {
             const id = this.hashStringToInt32(uuid());
             statementItemService.storeStatementItem(new StatementItem(
@@ -68,15 +68,15 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
             const rule = svc.create({
                 id: undefined,
                 statementItemIDs: [id],
-                ruleType: DispatchRuleType.TYPE,
-                storeId: [],
+                ruleType: DispatchRuleType.STORE,
+                storeId: [trx.Header.StoreId],
                 txType: [AccountingTransactionType.TICKET],
                 groupId: [],
                 vatGroupId: [],
             });
 
             rules.push(rule);
-            console.log(`Created rule ${rule.id} for total since no rules were found`);
+            console.log(`Created rule ${rule.id} for store ${trx.Header.StoreId} since no rules were found`);
         }
 
         return rules;
@@ -98,7 +98,7 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
                     const id = this.hashStringToInt32(uuid());
                     statementItemService.storeStatementItem(new StatementItem(
                         id,
-                        vatGroup.TypeCode + " " + vatGroup.RateApplicablePercent + "%",
+                        vatGroup.TypeCode + " " + vatGroup.RateApplicablePercent.toFixed(2) + "%",
                         trx.Header.Currency || "Unknown group",
                     ))
 
@@ -131,10 +131,6 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
             for (const group of trx.LineItemGroups) {
                 const thisRules = svc.listByGroup(group.Id);
                 if (thisRules.length === 0) {
-                    // TODO: 
-                    // create the statement item
-                    // create the default rule for this group pointing to correct statement item
-                    // set no category on statement item
                     const id = this.hashStringToInt32(uuid());
                     statementItemService.storeStatementItem(new StatementItem(
                         id,

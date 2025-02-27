@@ -33,6 +33,18 @@ class DispatchRulesController {
         const rule = svc.createDispatchRule(ruleRequest);
         return rule.toDto();
     }
+    
+    @update([IDL.Vec(IDLCreateDispatchRule)], IDL.Vec(IDLDispatchRule))
+    async createDispatchRules(ruleRequests: DispatchRuleDto[]): Promise<DispatchRuleDto[]> {
+        const svc = new DispatchRuleService();
+        const result: DispatchRuleDto[] = [];
+        for (const ruleRequest of ruleRequests) {
+            const rule = svc.createDispatchRule(ruleRequest);
+            result.push(rule.toDto());
+        }
+
+        return result;
+    }
 
     @update([IDLDispatchRule], IDLDispatchRule)
     async updateDispatchRule(ruleRequest: DispatchRuleDto): Promise<DispatchRuleDto> {

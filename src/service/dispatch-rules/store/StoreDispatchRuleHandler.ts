@@ -2,7 +2,7 @@ import { AccountingTransaction } from "../../../models/types/accounting-transact
 import { StoreDispatchRule } from "../../../models/types/dispatch-rules/ticket/StoreDispatchRule";
 import { TypeDispatchRuleHandler } from "../type/TypeDispatchRuleHandler";
 
-export abstract class StoreDispatchRuleHandler<R extends StoreDispatchRule, T extends AccountingTransaction> extends TypeDispatchRuleHandler<
+export class StoreDispatchRuleHandler<R extends StoreDispatchRule, T extends AccountingTransaction> extends TypeDispatchRuleHandler<
     R,
     T
 > {

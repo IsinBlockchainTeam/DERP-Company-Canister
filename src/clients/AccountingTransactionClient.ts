@@ -21,9 +21,6 @@ export class AccountingTransactionClient {
     }
 
     async storeAccountingTransactions(trxs: CreateTicketAccountingTransactionDto[]) {
-        for(const trx of trxs) {
-            console.log("Before controller: ", trx);
-        }
         return this.actor.storeTicketAccountingTransactions(trxs);
     }
 

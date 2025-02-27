@@ -3,14 +3,14 @@ import { DispatchRuleDto } from "../DispatchRule";
 import { DispatchRuleType } from "../DispatchRuleTypes";
 import { TypeDispatchRule } from "../TypeDispatchRule";
 
-export abstract class StoreDispatchRule extends TypeDispatchRule {
+export class StoreDispatchRule extends TypeDispatchRule {
     public storeId: number;
 
     constructor(
         id: number | undefined,
         statementItemIDs: number[],
         storeId: number,
-        dispatchRuleType: DispatchRuleType,
+        dispatchRuleType = DispatchRuleType.STORE,
     ) {
         super(id, statementItemIDs, AccountingTransactionType.TICKET, dispatchRuleType);
         this.storeId = storeId

@@ -6,9 +6,14 @@
         "module": "ES2020",
         "moduleResolution": "node",
         "allowJs": true,
+        "checkJs": false,
         "outDir": "HACK_BECAUSE_OF_ALLOW_JS"
     },
+    "include": [
+        "src/**/*"
+    ],
     "exclude": [
-        "dist/",
+        "./src/index.ts",
+        "./src/clients/**/*"
     ]
 }
