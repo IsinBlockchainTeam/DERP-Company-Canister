@@ -39,7 +39,7 @@ export class StatementItemService {
         return this._statementItemsRepository.getStatementItemById(id);
     }
 
-    addTransactionContributions(parentStatementItemId: number, date: CustomDate, record: {
+    addTransactionContributions(parentStatementItemId: number, date: Date, record: {
         amount: number,
         transactionId: string,
     }): void {
@@ -49,9 +49,13 @@ export class StatementItemService {
         }
 
 
-        const yearlyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, { year: date.year }) || new StatementItemAggregate(parentStatementItemId, 0, date.year);
-        const monthlyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, { year: date.year, month: date.month }) || new StatementItemAggregate(parentStatementItemId, 0, date.year, date.month);
-        const dailyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, date) || new StatementItemAggregate(parentStatementItemId, 0, date.year, date.month, date.day);
+        const yearlyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, { year: date.getFullYear() }) || new StatementItemAggregate(parentStatementItemId, 0, date.getFullYear());
+        const monthlyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, { year: date.getFullYear(), month: date.getMonth() }) || new StatementItemAggregate(parentStatementItemId, 0, date.getFullYear(), date.getMonth());
+        const dailyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, {
+            year: date.getFullYear(),
+            month: date.getMonth(),
+            day: date.getDate()
+        }) || new StatementItemAggregate(parentStatementItemId, 0, date.getFullYear(), date.getMonth(), date.getDate());
 
         yearlyAggregate.total += record.amount;
         monthlyAggregate.total += record.amount;
@@ -107,7 +111,7 @@ export class StatementItemService {
         }
     }
 
-    getDailyTransactionRecords(parentStatementItemId: number, date: CustomDate): {
+    getDailyTransactionRecords(parentStatementItemId: number, date: Date): {
         total: number,
         transactionId: string,
     }[] {

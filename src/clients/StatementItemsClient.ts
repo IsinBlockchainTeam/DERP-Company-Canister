@@ -88,8 +88,8 @@ export class StatementItemsClient {
      * @param date the date to filter by
      * @returns the list of transactions
      */
-    async getStatementItemTransactions(statementItemId: number, date: CustomDate): Promise<TicketAccountingTransaction[]> {
-        const resp = await this.actor.getDailyStatementItemTransactions(statementItemId, date);
+    async getStatementItemTransactions(statementItemId: number, date: Date): Promise<TicketAccountingTransaction[]> {
+        const resp = await this.actor.getDailyStatementItemTransactions(statementItemId, date.toISOString());
         return resp.map(t => TicketAccountingTransaction.fromDto(t as TicketAccountingTransactionDto));
     }
 

@@ -1,4 +1,4 @@
-import { type AccountingTransactionTaxTypeCode, type CustomDate } from "./AccountingTransaction";
+import { type AccountingTransactionTaxTypeCode } from "./AccountingTransaction";
 import { AccountingTransactionAdditionalInfoDto, AccountingTransactionHeaderDto, AccountingTransactionLineItemTaxDto, AccountingTransactionTotalsDto, AccountingTransactionWithTotalsDto } from "./AccountingTransactionDto";
 
 export class TicketLineItemGroupDto {
@@ -61,29 +61,27 @@ export class TicketLineItemDto {
 
 export class TicketPaymentDetailsDto {
     id: string;
-    payerAddress: string;
-    payeeAddress: string;
+    payerAddress: [string] | [];
+    payeeAddress: [string] | [];
     paymentCurrencyAmount: number;
-    issueDate: CustomDate;
+    issueDate: string;
     paymentType: string;
     paymentCurrency: string;
     exchangeRate: number;
     amount: number;
     externalId: string;
-    externalURL: string;
 
     constructor(
         id: string,
-        payerAddress: string,
-        payeeAddress: string,
+        payerAddress: [string] | [],
+        payeeAddress: [string] | [],
         paymentCurrencyAmount: number,
-        issueDate: CustomDate,
+        issueDate: string,
         paymentType: string,
         paymentCurrency: string,
         exchangeRate: number,
         amount: number,
-        externalId: string,
-        externalUrl: string
+        externalId: string
     ) {
         this.id = id;
         this.payerAddress = payerAddress;
@@ -95,7 +93,6 @@ export class TicketPaymentDetailsDto {
         this.exchangeRate = exchangeRate;
         this.amount = amount;
         this.externalId = externalId;
-        this.externalURL = externalUrl;
     }
 }
 
@@ -129,15 +126,3 @@ export class TicketAccountingTransactionDto extends AccountingTransactionWithTot
         this.AdditionalInformation = additionalInformation;
     }
 }
-
-export type CreateTicketAccountingTransactionDto = {
-    OperatorId: [string] | [];
-    OrderId: [string] | [];
-    Tax: [TicketTaxDto[]] | [];
-    LineItemGroups: [TicketLineItemGroupDto[]] | [];
-    LineItem: [TicketLineItemDto[]] | [];
-    PaymentDetails: [TicketPaymentDetailsDto[]] | [];
-    AdditionalInformation: [AccountingTransactionAdditionalInfoDto] | [];
-    Header: AccountingTransactionHeaderDto;
-    Totals: AccountingTransactionTotalsDto;
-};

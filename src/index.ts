@@ -6,8 +6,8 @@ export * from "./models/types/statement-items/DailyTransactionRecord"
 
 export * from "./models/types/accounting-transaction/AccountingTransaction"
 export * from "./models/types/accounting-transaction/TicketAccountingTransaction"
-export * from "./models/types/accounting-transaction/AccountingTransactionDto"
-export * from "./models/types/accounting-transaction/TicketAccountingTransactionDto"
+export * from "./models/types/accounting-transaction/BankAccountingTransaction"
+export * from "./models/types/accounting-transaction/InvoiceAccountingTransaction"
 
 export * from "./models/types/dispatch-rules/DispatchRule"
 export * from "./models/types/dispatch-rules/DispatchRuleTypes"

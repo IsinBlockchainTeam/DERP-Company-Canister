@@ -33,7 +33,7 @@ export class DailyTransactionRecordsRepository {
             // update the record
             this._dailyTransactionRecordsById.insert(record.id, {
                 id: record.id,
-                date: record.date,
+                date: record.date.toISOString(),
                 parentStatementItemId: record.parentStatementItemId,
                 total: record.total,
                 transactionId: record.transactionId,
@@ -54,7 +54,7 @@ export class DailyTransactionRecordsRepository {
         const recordWithId: DailyTransactionRecord = { ...record, id };
         const serializedRecord: DailyTransactionRecordPersisted = {
             id,
-            date: recordWithId.date,
+            date: recordWithId.date.toISOString(),
             parentStatementItemId: recordWithId.parentStatementItemId,
             total: recordWithId.total,
             transactionId: recordWithId.transactionId,
@@ -71,13 +71,13 @@ export class DailyTransactionRecordsRepository {
         return recordWithId;
     }
 
-    getDailyTransactionRecords(statementId: number, date: CustomDate): DailyTransactionRecord[] {
+    getDailyTransactionRecords(statementId: number, date: Date): DailyTransactionRecord[] {
         const key = this.extractKey({ parentStatementItemId: statementId, date });
         const ids = this._dailyTransactionRecordsByStatement.get(key) || [];
         return ids
             .map((id) => this._dailyTransactionRecordsById.get(id))
             .filter((i) => !!i)
-            .map(i => new DailyTransactionRecord(i.id, i.parentStatementItemId, i.date, i.total, i.transactionId));
+            .map(i => new DailyTransactionRecord(i.id, i.parentStatementItemId, new Date(i.date), i.total, i.transactionId));
     }
 
     getDailyTransactionRecordById(id: number): DailyTransactionRecord | null {
@@ -85,7 +85,8 @@ export class DailyTransactionRecordsRepository {
         if (!record) return null;
 
         return {
-            ...record
+            ...record,
+            date: new Date(record.date),
         }
     }
 
@@ -93,6 +94,6 @@ export class DailyTransactionRecordsRepository {
         [key: string]: any
     }): string {
         const date = record.date;
-        return `${record.parentStatementItemId}$${date.year}-${date.month}-${date.day}`;
+        return `${record.parentStatementItemId}$${date.getFullYear()}-${date.getMonth()}-${date.getDay()}`;
     }
 }
