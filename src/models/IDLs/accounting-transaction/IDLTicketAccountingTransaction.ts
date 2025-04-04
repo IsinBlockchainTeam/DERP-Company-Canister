@@ -1,10 +1,9 @@
-import {IDL} from "azle";
+import { IDL } from "azle";
 import {
     IDLAccountingTransactionAdditionalInformation,
     IDLAccountingTransactionHeader,
     IDLAccountingTransactionLineItemTax,
     IDLAccountingTransactionTotals,
-    IDLCustomDate
 } from "./IDLAccountingTransaction";
 
 
@@ -34,17 +33,16 @@ const IDLTicketLineItem = IDL.Record({
 });
 
 const IDLTicketPaymentDetails = IDL.Record({
-    id:IDL.Text,
-    payerAddress:IDL.Text,
-    payeeAddress:IDL.Text,
-    paymentCurrencyAmount:IDL.Float32,
-    issueDate: IDLCustomDate,
-    paymentType:IDL.Text,
-    paymentCurrency:IDL.Text,
-    exchangeRate:IDL.Float32,
-    amount:IDL.Float32,
-    externalId:IDL.Text,
-    externalURL:IDL.Text,
+    id: IDL.Text,
+    payerAddress: IDL.Opt(IDL.Text),
+    payeeAddress: IDL.Opt(IDL.Text),
+    paymentCurrencyAmount: IDL.Float32,
+    issueDate: IDL.Text,
+    paymentType: IDL.Text,
+    paymentCurrency: IDL.Text,
+    exchangeRate: IDL.Float32,
+    amount: IDL.Float32,
+    externalId: IDL.Text,
 });
 
 

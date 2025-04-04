@@ -1,16 +1,14 @@
-import { CustomDate } from "../accounting-transaction/AccountingTransaction";
-
 export class DailyTransactionRecord {
     id: number;
     parentStatementItemId: number;
-    date: CustomDate;
+    date: Date;
     total: number;
     transactionId: string;
 
     constructor(
         id: number,
         parentStatementItemId: number,
-        date: CustomDate,
+        date: Date,
         total: number,
         transactionId: string,
     ) {
@@ -25,11 +23,7 @@ export class DailyTransactionRecord {
 export type DailyTransactionRecordPersisted = {
     id: number;
     parentStatementItemId: number;
-    date: {
-        year: number;
-        month: number;
-        day: number;
-    };
+    date: string;
     total: number;
     transactionId: string;
 }

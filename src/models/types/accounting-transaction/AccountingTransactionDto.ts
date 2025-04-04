@@ -1,4 +1,4 @@
-import { type AccountingTransactionSource, type AccountingTransactionStatus, type AccountingTransactionTaxTypeCode, type AccountingTransactionType, type CustomDate } from "./AccountingTransaction";
+import { type AccountingTransactionSource, type AccountingTransactionStatus, type AccountingTransactionTaxTypeCode, type AccountingTransactionType } from "./AccountingTransaction";
 
 export class AccountingTransactionAdditionalInfoDto {
     Notes: [string] | [];
@@ -55,15 +55,15 @@ export class AccountingTransactionHeaderDto {
 
     ExternalReferenceNumber: [string] | [];
 
-    IssueDate: [CustomDate] | [];
+    IssueDate: [string] | [];
 
-    ValueDate: [CustomDate] | [];
+    ValueDate: [string] | [];
 
     Status: [AccountingTransactionStatus] | [];
 
     AccountingId: [string] | [];
 
-    AccountingDate: [CustomDate] | [];
+    AccountingDate: [string] | [];
 
     Description: [string] | [];
 
@@ -75,12 +75,12 @@ export class AccountingTransactionHeaderDto {
         TypeCode: AccountingTransactionType,
         TypeKey: [string] | [],
         ExternalReferenceNumber: [string] | [],
-        IssueDate: [CustomDate] | [],
-        ValueDate: [CustomDate] | [],
+        IssueDate: [string] | [],
+        ValueDate: [string] | [],
         Currency: [string] | [],
         Status: [AccountingTransactionStatus] | [],
         AccountingId: [string] | [],
-        AccountingDate: [CustomDate] | [],
+        AccountingDate: [string] | [],
         Description: [string] | []
     ) {
         this.DLTERPId = DLTERPId;

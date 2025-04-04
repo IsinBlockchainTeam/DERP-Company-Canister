@@ -11,6 +11,26 @@ Please remember that Azle is in beta and thus it may have unknown security vulne
 -   Azle does not yet have multiple independent security reviews/audits
 -   Azle does not yet have many live, successful, continuously operating applications deployed to ICP
 
+## Layer architecture
+```mermaid
+flowchart TD
+    EC[External Software] -- Base model --> C[Client service]
+    C --DTO--> D[Controller] -- Base model --> S[Service]
+    S --DTO--> R[Repository]
+```
+
+1. The Client is what is used from the outside world to interact with the library. It receives normal models.
+2. The client will adapt models to DTOs using internal adapters and send them to the controller.
+3. The controller will:
+    a. Define the IDL type via annotation
+    b. Receive the DTO in place of the IDL type
+    c. Adapt the IDL type to the service model
+
+4. The service will:
+    a. Receive the service model
+    b. Save/Load the model to/from the repository
+        Repository is in charge of serializing/deserializing the model to/from the database in DTOs
+
 ## Installation
 
 > Windows is only supported through a Linux virtual environment of some kind, such as [WSL](https://learn.microsoft.com/en-us/windows/wsl/install)

@@ -131,10 +131,10 @@ export class AccountingTransactionHeader {
     ExternalReferenceNumber: string | null;
 
     // Issue date of the transaction
-    IssueDate: CustomDate | null;
+    IssueDate: Date | null;
 
     // Value Date of accounting transaction
-    ValueDate: CustomDate | null;
+    ValueDate: Date | null;
 
     // Status of the transaction
     Status: AccountingTransactionStatus | null;
@@ -143,7 +143,7 @@ export class AccountingTransactionHeader {
     AccountingId: string | null;
 
     // Date the transaction was inserted into the external accounting system
-    AccountingDate: CustomDate | null;
+    AccountingDate: Date | null;
 
     // Description of the transaction
     Description: string | null;
@@ -156,12 +156,12 @@ export class AccountingTransactionHeader {
         TypeCode: AccountingTransactionType,
         TypeKey: string | null,
         ExternalReferenceNumber: string | null,
-        IssueDate: CustomDate | null,
-        ValueDate: CustomDate | null,
+        IssueDate: Date | null,
+        ValueDate: Date | null,
         Currency: string | null,
         Status: AccountingTransactionStatus | null,
         AccountingId: string | null,
-        AccountingDate: CustomDate | null,
+        AccountingDate: Date | null,
         Description: string | null
     ) {
         this.DLTERPId = DLTERPId;
@@ -190,12 +190,12 @@ export class AccountingTransactionHeader {
             this.TypeCode,
             this.TypeKey ? [this.TypeKey] : [],
             this.ExternalReferenceNumber ? [this.ExternalReferenceNumber] : [],
-            this.IssueDate ? [this.IssueDate] : [],
-            this.ValueDate ? [this.ValueDate] : [],
+            this.IssueDate ? [this.IssueDate.toISOString()] : [],
+            this.ValueDate ? [this.ValueDate.toISOString()] : [],
             this.Currency ? [this.Currency] : [],
             this.Status ? [this.Status] : [],
             this.AccountingId ? [this.AccountingId] : [],
-            this.AccountingDate ? [this.AccountingDate] : [],
+            this.AccountingDate ? [this.AccountingDate.toISOString()] : [],
             this.Description ? [this.Description] : [],
         );
     }
@@ -209,12 +209,12 @@ export class AccountingTransactionHeader {
             dto.TypeCode,
             dto.TypeKey?.length > 0 ? dto.TypeKey[0] ?? null : null,
             dto.ExternalReferenceNumber?.length > 0 ? dto.ExternalReferenceNumber[0] ?? null : null,
-            dto.IssueDate?.length > 0 ? dto.IssueDate[0] ?? null : null,
-            dto.ValueDate?.length > 0 ? dto.ValueDate[0] ?? null : null,
+            dto.IssueDate?.length > 0 ? new Date(dto.IssueDate[0]!) ?? null : null,
+            dto.ValueDate?.length > 0 ? new Date(dto.ValueDate[0]!) ?? null : null,
             dto.Currency?.length > 0 ? dto.Currency[0] ?? null : null,
             dto.Status?.length > 0 ? dto.Status[0] ?? null : null,
             dto.AccountingId?.length > 0 ? dto.AccountingId[0] ?? null : null,
-            dto.AccountingDate?.length > 0 ? dto.AccountingDate[0] ?? null : null,
+            dto.AccountingDate?.length > 0 ? new Date(dto.AccountingDate[0]!) ?? null : null,
             dto.Description?.length > 0 ? dto.Description[0] ?? null : null,
         );
     }

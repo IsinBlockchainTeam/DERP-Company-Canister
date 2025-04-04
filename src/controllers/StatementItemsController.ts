@@ -74,11 +74,13 @@ class StatementItemsController {
         return aggregates.map(a => a.toDto());
     }
 
-    @query([IDL.Int32, IDLCustomDate], IDL.Vec(IDLTicketAccountingTransaction))
-    async getDailyStatementItemTransactions(statementItemId: number, date: CustomDate): Promise<TicketAccountingTransactionDto[]> {
+    @query([IDL.Int32, IDL.Text], IDL.Vec(IDLTicketAccountingTransaction))
+    async getDailyStatementItemTransactions(statementItemId: number, date: string): Promise<TicketAccountingTransactionDto[]> {
         const statementItemService = new StatementItemService();
         const accountingTransactionService = new AccountingTransactionService();
-        const dailyRecords = statementItemService.getDailyTransactionRecords(statementItemId, date);
+
+        const dateParsed = new Date(date);
+        const dailyRecords = statementItemService.getDailyTransactionRecords(statementItemId, dateParsed);
 
         return dailyRecords.map((record) => {
             const transaction = accountingTransactionService.getTicketAccountingTransactionById(record.transactionId);
