@@ -19,8 +19,7 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
 
         const rules = [
             ...this.getTotalRules(trx),
-            ...this.getGroupRules(trx),
-            ...this.getVatGroupRules(trx),
+            ...this.getTypeRules(trx),
         ];
 
         for (const rule of rules) {
@@ -124,40 +123,12 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
         return rules;
     }
 
-    private getGroupRules(trx: TicketAccountingTransaction): GroupDispatchRule[] {
-        const svc = new GroupDispatchRuleService();
-        const statementItemService = new StatementItemService();
-
-        let rules: GroupDispatchRule[] = [];
-        if (trx.LineItemGroups) {
-            for (const group of trx.LineItemGroups) {
-                const thisRules = svc.listByGroup(group.Id);
-                if (thisRules.length === 0) {
-                    const id = this.hashStringToInt32(uuid());
-                    statementItemService.storeStatementItem(new StatementItem(
-                        id,
-                        group.Description,
-                        trx.Header.Currency || "Unknown group",
-                    ))
-
-                    const rule = svc.create({
-                        groupId: [group.Id],
-                        statementItemIDs: [id],
-                        ruleType: DispatchRuleType.GROUP,
-                        storeId: [trx.Header.StoreId],
-                        txType: [AccountingTransactionType.TICKET],
-                        vatGroupId: [],
-                    });
-
-                    thisRules.push(rule);
-                    console.log(`Created rule ${rule.id} for group ${group.Id} since no rules were found`);
-                }
-                
-                rules.push(...thisRules);
-            }
-        }
-
-        return rules;
+    private getTypeRules(trx: TicketAccountingTransaction): GroupDispatchRule[] {
+      // Cerca type + nome (ACCREDITI - nome, ADDEBITI - nome)
+      // Se non lo trovi cerchi sempre type + causale
+      // se non trovi nada:
+      //  - crea un nuovo item e regola con type + causale non categorizzato come costi
+      return false;
     }
 
     private hashStringToInt32(str: string): number {
