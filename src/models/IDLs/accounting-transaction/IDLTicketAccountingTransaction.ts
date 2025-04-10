@@ -21,14 +21,14 @@ const IDLTicketLineItemGroup = IDL.Record({
 
 
 const IDLTicketLineItem = IDL.Record({
-    ItemGroupId: IDL.Text,
+    ItemGroupId: IDL.Opt(IDL.Text),
     ItemCode: IDL.Text,
     Description: IDL.Text,
     Quantity: IDL.Float32,
     UnitCode: IDL.Text,
     UnitPrice: IDL.Float32,
     TotalInclTax: IDL.Float32,
-    TotalExclTax: IDL.Float32,
+    TotalExclTax: IDL.Opt(IDL.Float32),
     Tax: IDLAccountingTransactionLineItemTax,
 });
 

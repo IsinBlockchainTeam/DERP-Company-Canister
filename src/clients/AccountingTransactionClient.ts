@@ -11,7 +11,7 @@ import { InvoiceAccountingTransactionDTO } from "../models/types/accounting-tran
 export class AccountingTransactionClient {
     private readonly actor: ActorSubclass<_SERVICE>
 
-    constructor(serverAddress: string, canisterId: string) {
+    constructor(serverAddress: string, canisterId: string, private readonly batchSize: number = 50) {
         const agent = HttpAgent.createSync({ host: serverAddress })
         // TODO: remove in prod, security
         agent.fetchRootKey()
@@ -49,29 +49,41 @@ export class AccountingTransactionClient {
     }
 
     async listTicketTransactions(dateFrom?: Date, dateTo?: Date) {
-        const transactions = await this.actor.getAllTicketAccountingTransactions(
+        const ids = await this.actor.getAllTicketAccountingTransactions(
             dateFrom ? [dateFrom.toISOString()] : [],
-            dateTo ? [dateTo.toISOString()] : []
+            dateTo ? [dateTo.toISOString()] : [],
         );
+
+        const transactions = await this.fetchTransactionsFromIds<TicketAccountingTransactionDto>(ids,
+            (ids) => this.actor.getTicketAccountingTransactionByIds(ids) as Promise<TicketAccountingTransactionDto[]>);
+
         return transactions.map(trx => TicketAccountingTransaction.fromDto(trx as TicketAccountingTransactionDto));
     }
 
     async listInvoiceTransactions(dateFrom?: Date, dateTo?: Date) {
-        const transactions = await this.actor.getAllInvoiceAccountingTransactions(
+        const ids = await this.actor.getAllInvoiceAccountingTransactions(
             dateFrom ? [dateFrom.toISOString()] : [],
-            dateTo ? [dateTo.toISOString()] : []
+            dateTo ? [dateTo.toISOString()] : [],
         );
-        return transactions.map(trx => InvoiceAccountingTransaction.fromDto(trx as any));
+
+        const transactions = await this.fetchTransactionsFromIds<InvoiceAccountingTransactionDTO>(ids,
+            (ids) => this.actor.getInvoiceAccountingTransactionByIds(ids) as Promise<InvoiceAccountingTransactionDTO[]>);
+        
+        return transactions.map(trx => InvoiceAccountingTransaction.fromDto(trx as InvoiceAccountingTransactionDTO));
     }
 
     async listBankTransactions(dateFrom?: Date, dateTo?: Date) {
-        const transactions = await this.actor.getAllBankAccountingTransactions(
+        const ids = await this.actor.getAllBankAccountingTransactions(
             dateFrom ? [dateFrom.toISOString()] : [],
-            dateTo ? [dateTo.toISOString()] : []
+            dateTo ? [dateTo.toISOString()] : [],
         );
-        return transactions.map(trx => BankAccountingTransaction.fromDto(trx as any));
+
+        const transactions = await this.fetchTransactionsFromIds<BankAccountingTransactionDTO>(ids,
+            (ids) => this.actor.getBankAccountingTransactionByIds(ids) as Promise<BankAccountingTransactionDTO[]>);
+        
+        return transactions.map(trx => BankAccountingTransaction.fromDto(trx as BankAccountingTransactionDTO));
     }
-    
+
     async getTicketTransactionById(id: string) {
         const trx = await this.actor.getTicketAccountingTransactionById(id);
         return TicketAccountingTransaction.fromDto(trx as TicketAccountingTransactionDto);
@@ -85,5 +97,17 @@ export class AccountingTransactionClient {
     async getBankTransactionById(id: string) {
         const trx = await this.actor.getBankAccountingTransactionById(id);
         return BankAccountingTransaction.fromDto(trx as BankAccountingTransactionDTO);
+    }
+
+    private async fetchTransactionsFromIds<T>(ids: string[], fetchFunction: (ids: string[]) => Promise<T[]>): Promise<T[]> {
+        const transactions: T[] = [];
+
+        for (let i = 0; i < ids.length; i += this.batchSize) {
+            const batchIds = ids.slice(i, i + this.batchSize);
+            const batchTransactions = await fetchFunction(batchIds);
+            transactions.push(...batchTransactions);
+        }
+
+        return transactions;
     }
 }

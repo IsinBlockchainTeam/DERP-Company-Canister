@@ -1,7 +1,12 @@
 export const StableTreeMapIds = {
     TicketAccountingTransaction: 100,
-    InvoiceAccountingTransaction: 101,
-    BankAccountingTransaction: 102,
+    TicketAccountingTransactionDateIndex: 101,
+
+    InvoiceAccountingTransaction: 102,
+    InvoiceAccountingTransactionDateIndex: 103,
+
+    BankAccountingTransaction: 104,
+    BankAccountingTransactionDateIndex: 105,
 
     StatementItemsCategory: 1,
     StatementItems: 2,

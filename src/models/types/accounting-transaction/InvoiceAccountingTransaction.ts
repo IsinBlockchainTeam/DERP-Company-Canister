@@ -1,3 +1,4 @@
+import { Presentable } from "../Presentable";
 import { AccountingTransactionAdditionalInfo, AccountingTransactionHeader, AccountingTransactionLineItemTax, AccountingTransactionTaxTypeCode, AccountingTransactionTotals, AccountingTransactionWithTotals } from "./AccountingTransaction";
 import {
     type InvoiceAddressDTO,
@@ -11,7 +12,7 @@ import {
     PaymentPayeeDTO,
 } from "./InvoiceAccountingTransactionDto";
 
-export class InvoiceAddress {
+export class InvoiceAddress implements Presentable<InvoiceAddressDTO> {
     StreetOne: string;
     StreetTwo?: string | null;
     PostalCode: string;
@@ -38,7 +39,7 @@ export class InvoiceAddress {
     }
 }
 
-export class InvoiceContact {
+export class InvoiceContact implements Presentable<InvoiceContactDTO> {
     Name: string;
     Email: string;
     Phone: string;
@@ -62,7 +63,7 @@ export class InvoiceContact {
     }
 }
 
-export class InvoiceCompany {
+export class InvoiceCompany implements Presentable<InvoiceCompanyDTO> {
     ID: string;
 
     Name: string;
@@ -92,7 +93,7 @@ export class InvoiceCompany {
     }
 }
 
-export class InvoiceTax {
+export class InvoiceTax implements Presentable<InvoiceTaxDTO> {
     Amount: number;
 
     TypeCode: AccountingTransactionTaxTypeCode;
@@ -118,7 +119,7 @@ export class InvoiceTax {
     }
 }
 
-export class InvoiceLineItem {
+export class InvoiceLineItem implements Presentable<InvoiceLineItemDTO> {
     ItemCode: string;
     Description: string;
     Quantity: number;
@@ -140,7 +141,7 @@ export class InvoiceLineItem {
     }
 
     static fromDTO(dto: InvoiceLineItemDTO): InvoiceLineItem {
-        return new InvoiceLineItem(dto.ItemCode, dto.Description, dto.Quantity, dto.UnitCode, dto.UnitPrice, dto.TotalInclTax, dto.TotalExclTax, dto.Tax);
+        return new InvoiceLineItem(dto.ItemCode, dto.Description, dto.Quantity, dto.UnitCode, dto.UnitPrice, dto.TotalInclTax, dto.TotalExclTax, AccountingTransactionLineItemTax.fromDto(dto.Tax));
     }
 
     toDto(): InvoiceLineItemDTO {
@@ -152,12 +153,12 @@ export class InvoiceLineItem {
             UnitPrice: this.UnitPrice,
             TotalInclTax: this.TotalInclTax,
             TotalExclTax: this.TotalExclTax,
-            Tax: this.Tax,
+            Tax: this.Tax.toDto(),
         };
     }
 }
 
-export class PaymentPayee {
+export class PaymentPayee implements Presentable<PaymentPayeeDTO> {
     Name: string;
     StreetOne: string;
     PostalCode: string;
@@ -187,7 +188,7 @@ export class PaymentPayee {
     }
 }
 
-export class InvoicePaymentDetails {
+export class InvoicePaymentDetails implements Presentable<InvoicePaymentDetailsDTO> {
     IBAN: string;
     Reference: string;
     BicSwift: string;
@@ -220,7 +221,7 @@ export class InvoicePaymentDetails {
     }
 }
 
-export class InvoiceAttachments {
+export class InvoiceAttachments implements Presentable<InvoiceAttachmentsDTO> {
     FileName: string;
     FileType: string;
     DocumentId: number;

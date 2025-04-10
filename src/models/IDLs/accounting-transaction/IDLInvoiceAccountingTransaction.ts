@@ -1,5 +1,5 @@
 import { IDL } from "azle";
-import { IDLAccountingTransactionAdditionalInformation, IDLAccountingTransactionHeader, IDLAccountingTransactionTotals } from "./IDLAccountingTransaction";
+import { IDLAccountingTransactionAdditionalInformation, IDLAccountingTransactionHeader, IDLAccountingTransactionLineItemTax, IDLAccountingTransactionTotals } from "./IDLAccountingTransaction";
 
 export const IDLInvoiceAddressDTO = IDL.Record({
     StreetOne: IDL.Text,
@@ -36,7 +36,7 @@ export const IDLInvoiceLineItemDTO = IDL.Record({
     UnitPrice: IDL.Float32,
     TotalInclTax: IDL.Float32,
     TotalExclTax: IDL.Float32,
-    Tax: IDLInvoiceTaxDTO,
+    Tax: IDLAccountingTransactionLineItemTax,
 })
 
 export const IDLPaymentPayeeDTO = IDL.Record({

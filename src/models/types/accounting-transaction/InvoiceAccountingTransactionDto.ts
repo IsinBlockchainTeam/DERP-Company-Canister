@@ -1,5 +1,5 @@
 import { AccountingTransactionLineItemTax, AccountingTransactionTaxTypeCode } from "./AccountingTransaction";
-import { AccountingTransactionAdditionalInfoDto, AccountingTransactionHeaderDto, AccountingTransactionTotalsDto, AccountingTransactionWithTotalsDto } from "./AccountingTransactionDto";
+import { AccountingTransactionAdditionalInfoDto, AccountingTransactionHeaderDto, AccountingTransactionLineItemTaxDto, AccountingTransactionTotalsDto, AccountingTransactionWithTotalsDto } from "./AccountingTransactionDto";
 
 export class InvoiceAddressDTO {
     constructor(
@@ -44,7 +44,7 @@ export class InvoiceLineItemDTO {
         public UnitPrice: number,
         public TotalInclTax: number,
         public TotalExclTax: number,
-        public Tax: AccountingTransactionLineItemTax
+        public Tax: AccountingTransactionLineItemTaxDto
     ) { }
 }
 
