@@ -44,12 +44,12 @@ export class BankTransactionAccountDTO {
 
 export class BankTransactionCounterpartDTO {
     Name: string;
-    Account: BankTransactionAccountDTO;
+    Account: [BankTransactionAccountDTO] | [];
     Address: BankTransactionAddressDTO
 
     constructor(
         Name: string,
-        Account: BankTransactionAccountDTO,
+        Account: [BankTransactionAccountDTO] | [],
         Address: BankTransactionAddressDTO,
     ) {
         this.Name = Name;
@@ -60,12 +60,12 @@ export class BankTransactionCounterpartDTO {
 
 export class BankTransactionCounterpartAgentDTO {
     Name: string;
-    BICFI: string;
+    BICFI: [string] | [];
     Address: BankTransactionAddressDTO;
 
     constructor(
         Name: string,
-        BICFI: string,
+        BICFI: [string] | [],
         Address: BankTransactionAddressDTO,
     ) {
         this.Name = Name;
@@ -95,10 +95,10 @@ export class BankTransactionStructuredRemittanceInformationDTO {
 }
 
 export class BankTransactionRemittanceInformationDTO {
-    TextualInformation: string;
+    TextualInformation: [string] | [];
     StructuredInformation: [BankTransactionStructuredRemittanceInformationDTO] | [];
 
-    constructor(TextualInformation: string, StructuredInformation: [BankTransactionStructuredRemittanceInformationDTO] | []) {
+    constructor(TextualInformation: [string] | [], StructuredInformation: [BankTransactionStructuredRemittanceInformationDTO] | []) {
         this.TextualInformation = TextualInformation;
         this.StructuredInformation = StructuredInformation;
     }

@@ -18,13 +18,13 @@ export const IDLBankAccountingTransactionAccount = IDL.Record({
 
 export const IDLBankAccountingTransactionCounterpart = IDL.Record({
     Name: IDL.Text,
-    Account: IDLBankAccountingTransactionAccount,
+    Account: IDL.Opt(IDLBankAccountingTransactionAccount),
     Address: IDLBankAccountingTransactionAddress,
 });
 
 export const IDLBankAccountingTransactionCounterpartAgent = IDL.Record({
     Name: IDL.Text,
-    BICFI: IDL.Text,
+    BICFI: IDL.Opt(IDL.Text),
     Address: IDLBankAccountingTransactionAddress,
 });
 
@@ -39,7 +39,7 @@ export const IDLBankAccountingTransactionStructuredRemittanceInformation = IDL.R
 });
 
 export const IDLBankAccountingTransactionRemittanceInformation = IDL.Record({
-    TextualInformation: IDL.Text,
+    TextualInformation: IDL.Opt(IDL.Text),
     StructuredInformation: IDL.Opt(IDLBankAccountingTransactionStructuredRemittanceInformation),
 });
 

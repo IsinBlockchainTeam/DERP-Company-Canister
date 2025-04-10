@@ -26,25 +26,25 @@ export class TicketTaxDto {
 }
 
 export class TicketLineItemDto {
-    ItemGroupId: string;
+    ItemGroupId: [string] | [];
     ItemCode: string;
     Description: string;
     Quantity: number;
     UnitCode: string;
     UnitPrice: number;
     TotalInclTax: number;
-    TotalExclTax: number;
+    TotalExclTax: [number] | [];
     Tax: AccountingTransactionLineItemTaxDto;
 
     constructor(
-        itemGroupId: string,
+        itemGroupId: [string] | [],
         itemCode: string,
         description: string,
         quantity: number,
         unitCode: string,
         unitPrice: number,
         totalInclTax: number,
-        totalExclTax: number,
+        totalExclTax: [number] | [],
         tax: AccountingTransactionLineItemTaxDto
     ) {
         this.ItemGroupId = itemGroupId;

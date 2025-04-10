@@ -1,3 +1,4 @@
+import { Presentable } from "../Presentable";
 import { AccountingTransactionAdditionalInfoDto, AccountingTransactionDto, AccountingTransactionHeaderDto, AccountingTransactionLineItemTaxDto, AccountingTransactionTotalsDto, AccountingTransactionWithTotalsDto } from "./AccountingTransactionDto";
 
 export class CustomDate {
@@ -40,7 +41,7 @@ export enum AccountingTransactionStatus {
     NOT_ACCOUNTED = 'NOT_ACCOUNTED',
 }
 
-export class AccountingTransactionAdditionalInfo {
+export class AccountingTransactionAdditionalInfo implements Presentable<AccountingTransactionAdditionalInfoDto> {
     Notes?: string | null;
 
     constructor(notes: string | null) {
@@ -56,7 +57,7 @@ export class AccountingTransactionAdditionalInfo {
     }
 }
 
-export class AccountingTransactionTotals {
+export class AccountingTransactionTotals implements Presentable<AccountingTransactionTotalsDto> {
 
     TotalTaxAmount: number;
 
@@ -79,30 +80,29 @@ export class AccountingTransactionTotals {
     }
 }
 
-export class AccountingTransactionLineItemTax {
-
-    Amount: number;
+export class AccountingTransactionLineItemTax implements Presentable<AccountingTransactionLineItemTaxDto> {
+    Amount?: number;
 
     TypeCode: AccountingTransactionTaxTypeCode;
 
     RateApplicablePercent: number;
 
-    constructor(amount: number, typeCode: AccountingTransactionTaxTypeCode, rateApplicablePercent: number) {
+    constructor(amount: number | undefined, typeCode: AccountingTransactionTaxTypeCode, rateApplicablePercent: number) {
         this.Amount = amount;
         this.TypeCode = typeCode;
         this.RateApplicablePercent = rateApplicablePercent;
     }
 
     toDto(): AccountingTransactionLineItemTaxDto {
-        return new AccountingTransactionLineItemTaxDto(this.Amount, this.TypeCode, this.RateApplicablePercent);
+        return new AccountingTransactionLineItemTaxDto(this.Amount ? [this.Amount] : [], this.TypeCode, this.RateApplicablePercent);
     }
 
     static fromDto(dto: AccountingTransactionLineItemTaxDto): AccountingTransactionLineItemTax {
-        return new AccountingTransactionLineItemTax(dto.Amount, dto.TypeCode, dto.RateApplicablePercent);
+        return new AccountingTransactionLineItemTax(dto.Amount[0], dto.TypeCode, dto.RateApplicablePercent);
     }
 }
 
-export class AccountingTransactionHeader {
+export class AccountingTransactionHeader implements Presentable<AccountingTransactionHeaderDto> {
     // DLTERP given ID for the transaction
     DLTERPId: string | null;
 
@@ -220,7 +220,7 @@ export class AccountingTransactionHeader {
     }
 }
 
-export class AccountingTransaction {
+export class AccountingTransaction implements Presentable<AccountingTransactionDto> {
     // Header of the transaction
     Header: AccountingTransactionHeader;
 

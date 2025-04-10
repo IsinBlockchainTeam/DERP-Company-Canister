@@ -1,4 +1,5 @@
 // Represent a product group in the ticket
+import { Presentable } from "../Presentable";
 import {
     AccountingTransactionAdditionalInfo,
     AccountingTransactionHeader,
@@ -8,7 +9,7 @@ import {
 } from "./AccountingTransaction";
 import { TicketAccountingTransactionDto, TicketLineItemDto, TicketLineItemGroupDto, TicketPaymentDetailsDto, TicketTaxDto } from "./TicketAccountingTransactionDto";
 
-export class TicketLineItemGroup {
+export class TicketLineItemGroup implements Presentable<TicketLineItemGroupDto> {
     // ID of the product group
     Id: string;
 
@@ -29,11 +30,11 @@ export class TicketLineItemGroup {
     }
 }
 
-export class TicketTax {
+export class TicketTax implements Presentable<TicketTaxDto> {
     // ID of the tax
     Id: string;
 
-    // Total tax amount over the line item
+    // Total tax amount over the tax
     Amount: number;
 
     // Type of the tax e.g. VAT
@@ -58,9 +59,9 @@ export class TicketTax {
     }
 }
 
-export class TicketLineItem {
+export class TicketLineItem implements Presentable<TicketLineItemDto> {
     // ID of the product group
-    ItemGroupId: string;
+    ItemGroupId?: string;
 
     // ID of the product in the Seller system
     ItemCode: string;
@@ -81,12 +82,12 @@ export class TicketLineItem {
     TotalInclTax: number;
 
     // Total price of the product excluding tax
-    TotalExclTax: number;
+    TotalExclTax?: number;
 
     // Tax applied to the product
     Tax: AccountingTransactionLineItemTax;
 
-    constructor(itemGroupId: string, itemCode: string, description: string, quantity: number, unitCode: string, unitPrice: number, totalInclTax: number, totalExclTax: number, tax: AccountingTransactionLineItemTax) {
+    constructor(itemGroupId: string | undefined, itemCode: string, description: string, quantity: number, unitCode: string, unitPrice: number, totalInclTax: number, totalExclTax: number | undefined, tax: AccountingTransactionLineItemTax) {
         this.ItemGroupId = itemGroupId;
         this.ItemCode = itemCode;
         this.Description = description;
@@ -99,15 +100,15 @@ export class TicketLineItem {
     }
 
     toDto(): TicketLineItemDto {
-        return new TicketLineItemDto(this.ItemGroupId, this.ItemCode, this.Description, this.Quantity, this.UnitCode, this.UnitPrice, this.TotalInclTax, this.TotalExclTax, this.Tax.toDto());
+        return new TicketLineItemDto(this.ItemGroupId ? [this.ItemGroupId] : [], this.ItemCode, this.Description, this.Quantity, this.UnitCode, this.UnitPrice, this.TotalInclTax, this.TotalExclTax ? [this.TotalExclTax] : [], this.Tax.toDto());
     }
 
     static fromDto(dto: TicketLineItemDto): TicketLineItem {
-        return new TicketLineItem(dto.ItemGroupId, dto.ItemCode, dto.Description, dto.Quantity, dto.UnitCode, dto.UnitPrice, dto.TotalInclTax, dto.TotalExclTax, AccountingTransactionLineItemTax.fromDto(dto.Tax));
+        return new TicketLineItem(dto.ItemGroupId[0], dto.ItemCode, dto.Description, dto.Quantity, dto.UnitCode, dto.UnitPrice, dto.TotalInclTax, dto.TotalExclTax[0], AccountingTransactionLineItemTax.fromDto(dto.Tax));
     }
 }
 
-export class TicketPaymentDetails {
+export class TicketPaymentDetails implements Presentable<TicketPaymentDetailsDto> {
     id: string;
     payerAddress: string | null;
     payeeAddress: string | null;
@@ -161,7 +162,7 @@ export class TicketPaymentDetails {
     }
 }
 
-export class TicketAccountingTransaction extends AccountingTransactionWithTotals {
+export class TicketAccountingTransaction extends AccountingTransactionWithTotals implements Presentable<TicketAccountingTransactionDto> {
     // ID of the operator that created the transaction
     OperatorId: string | null;
 

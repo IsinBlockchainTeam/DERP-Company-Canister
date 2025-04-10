@@ -2,7 +2,7 @@
     "name": "@derp/company-canister",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "version": "0.0.1-alpha1",
+    "version": "0.0.1-alpha2",
     "scripts": {
         "pretest": "tsx test/pretest.ts",
         "test": "jest",
@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "@dfinity/agent": "^2.2.0",
+        "@dfinity/candid": "^2.4.0",
         "azle": "^0.24.1",
         "uuidv4": "^6.2.13"
     },

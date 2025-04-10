@@ -24,14 +24,13 @@ export class AccountingTransactionTotalsDto {
 }
 
 export class AccountingTransactionLineItemTaxDto {
-
-    Amount: number;
+    Amount: [number] | [];
 
     TypeCode: AccountingTransactionTaxTypeCode;
 
     RateApplicablePercent: number;
 
-    constructor(amount: number, typeCode: AccountingTransactionTaxTypeCode, rateApplicablePercent: number) {
+    constructor(amount: [number] | [], typeCode: AccountingTransactionTaxTypeCode, rateApplicablePercent: number) {
         this.Amount = amount;
         this.TypeCode = typeCode;
         this.RateApplicablePercent = rateApplicablePercent;

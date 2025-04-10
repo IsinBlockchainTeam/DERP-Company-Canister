@@ -1,3 +1,4 @@
+import { Presentable } from "../Presentable";
 import { AccountingTransaction, AccountingTransactionHeader } from "./AccountingTransaction";
 import { BankAccountingTransactionDTO, BankTransactionAccountDTO, BankTransactionAddressDTO, BankTransactionCounterpartAgentDTO, BankTransactionCounterpartDTO, BankTransactionDebtorDTO, BankTransactionReferencesDTO, BankTransactionRemittanceInformationDTO, BankTransactionStructuredRemittanceInformationDTO } from "./BankAccountingTransactionDto";
 export enum BankTransactionType {
@@ -5,7 +6,7 @@ export enum BankTransactionType {
     DEBIT = 'DEBIT',
 }
 
-export class BankTransactionAddress {
+export class BankTransactionAddress implements Presentable<BankTransactionAddressDTO> {
     StreetName?: string;
     BuildingNumber?: string;
     PostCode?: string;
@@ -64,12 +65,12 @@ export class BankTransactionAddress {
             PostCode: this.PostCode ? [this.PostCode] : [],
             TownName: this.TownName ? [this.TownName] : [],
             Country: this.Country ? [this.Country] : [],
-            AddressLines: this.AddressLines ? [this.AddressLines] : [],
+            AddressLines: this.AddressLines !== undefined ? [this.AddressLines] : [],
         };
     }
 }
 
-export class BankTransactionAccount {
+export class BankTransactionAccount implements Presentable<BankTransactionAccountDTO> {
     IBAN: string;
     Owner?: string;
     FinancialInstitutionId?: string;
@@ -97,14 +98,14 @@ export class BankTransactionAccount {
     }
 }
 
-export class BankTransactionCounterpart {
+export class BankTransactionCounterpart implements Presentable<BankTransactionCounterpartDTO> {
     Name: string;
-    Account: BankTransactionAccount;
+    Account?: BankTransactionAccount;
     Address: BankTransactionAddress;
 
     constructor(
         Name: string,
-        Account: BankTransactionAccount,
+        Account: BankTransactionAccount | undefined,
         Address: BankTransactionAddress
     ) {
         this.Name = Name;
@@ -115,7 +116,7 @@ export class BankTransactionCounterpart {
     static fromDto(dto: BankTransactionCounterpartDTO): BankTransactionCounterpart {
         return new BankTransactionCounterpart(
             dto.Name,
-            BankTransactionAccount.fromDto(dto.Account),
+            dto.Account.length ? BankTransactionAccount.fromDto(dto.Account[0]) : undefined,
             BankTransactionAddress.fromDto(dto.Address)
         );
     }
@@ -123,20 +124,20 @@ export class BankTransactionCounterpart {
     toDto(): BankTransactionCounterpartDTO {
         return {
             Name: this.Name,
-            Account: this.Account.toDto(),
+            Account: this.Account ? [this.Account.toDto()] : [],
             Address: this.Address.toDto()
         };
     }
 }
 
-export class BankTransactionCounterpartAgent {
+export class BankTransactionCounterpartAgent implements Presentable<BankTransactionCounterpartAgentDTO> {
     Name: string;
-    BICFI: string;
+    BICFI?: string;
     Address: BankTransactionAddress;
 
     constructor(
         Name: string,
-        BICFI: string,
+        BICFI: string | undefined,
         Address: BankTransactionAddress,
     ) {
         this.Name = Name;
@@ -147,7 +148,7 @@ export class BankTransactionCounterpartAgent {
     static fromDto(dto: BankTransactionCounterpartAgentDTO): BankTransactionCounterpartAgent {
         return new BankTransactionCounterpartAgent(
             dto.Name,
-            dto.BICFI,
+            dto.BICFI.length > 0 ? dto.BICFI[0] : undefined,
             BankTransactionAddress.fromDto(dto.Address)
         );
     }
@@ -155,13 +156,13 @@ export class BankTransactionCounterpartAgent {
     toDto(): BankTransactionCounterpartAgentDTO {
         return {
             Name: this.Name,
-            BICFI: this.BICFI,
+            BICFI: this.BICFI ? [this.BICFI] : [],
             Address: this.Address.toDto()
         };
     }
 }
 
-export class BankTransactionReferences {
+export class BankTransactionReferences implements Presentable<BankTransactionReferencesDTO> {
     AccountSvcrRef: string;
     EndToEndId?: string;
 
@@ -182,7 +183,7 @@ export class BankTransactionReferences {
     }
 }
 
-export class BankTransactionStructuredRemittanceInformation {
+export class BankTransactionStructuredRemittanceInformation implements Presentable<BankTransactionStructuredRemittanceInformationDTO> {
     ProperietaryCode?: string;
     Reference?: string;
 
@@ -204,23 +205,24 @@ export class BankTransactionStructuredRemittanceInformation {
 }
 
 
-export class BankTransactionRemittanceInformation {
-    TextualInformation: string;
+export class BankTransactionRemittanceInformation implements Presentable<BankTransactionRemittanceInformationDTO> {
+    TextualInformation?: string;
     StructuredInformation?: BankTransactionStructuredRemittanceInformation;
 
-    constructor(TextualInformation: string, StructuredInformation?: BankTransactionStructuredRemittanceInformation) {
+    constructor(TextualInformation?: string, StructuredInformation?: BankTransactionStructuredRemittanceInformation) {
         this.TextualInformation = TextualInformation;
         this.StructuredInformation = StructuredInformation;
     }
 
     static fromDto(dto: BankTransactionRemittanceInformationDTO): BankTransactionRemittanceInformation {
-        return new BankTransactionRemittanceInformation(dto.TextualInformation,
+        return new BankTransactionRemittanceInformation(
+            dto.TextualInformation.length > 0 ? dto.TextualInformation[0] : undefined,
             dto.StructuredInformation.length ? BankTransactionStructuredRemittanceInformation.fromDto(dto.StructuredInformation[0]) : undefined);
     }
 
     toDto(): BankTransactionRemittanceInformationDTO {
         return {
-            TextualInformation: this.TextualInformation,
+            TextualInformation: this.TextualInformation ? [this.TextualInformation] : [],
             StructuredInformation: this.StructuredInformation ? [
                 this.StructuredInformation.toDto()
             ] : [],
@@ -228,7 +230,7 @@ export class BankTransactionRemittanceInformation {
     }
 }
 
-export class BankTransactionDebtor {
+export class BankTransactionDebtor implements Presentable<BankTransactionDebtorDTO> {
     Name: string;
     Address: BankTransactionAddress;
 

@@ -29,15 +29,15 @@ export class AccountingTransactionService {
         this.bankAccountingTransactionRepository.save(newTransaction);
     }
 
-    getAllTicketAccountingTransactions(dateFrom?: Date, dateTo?: Date): TicketAccountingTransaction[] {
+    getAllTicketAccountingTransactions(dateFrom?: Date, dateTo?: Date): string[] {
         return this.ticketAccountingTransactionRepository.list(dateFrom, dateTo);
     }
 
-    getAllInvoiceAccountingTransactions(dateFrom?: Date, dateTo?: Date): InvoiceAccountingTransaction[] {
+    getAllInvoiceAccountingTransactions(dateFrom?: Date, dateTo?: Date): string[] {
         return this.invoiceAccountingTransactionRepository.list(dateFrom, dateTo);
     }
 
-    getAllBankAccountingTransactions(dateFrom?: Date, dateTo?: Date): BankAccountingTransaction[] {
+    getAllBankAccountingTransactions(dateFrom?: Date, dateTo?: Date): string[] {
         return this.bankAccountingTransactionRepository.list(dateFrom, dateTo);
     }
 

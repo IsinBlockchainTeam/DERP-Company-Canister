@@ -9,26 +9,31 @@ import { InvoiceAccountingTransaction } from "../models/types/accounting-transac
 import { InvoiceAccountingTransactionDTO as InvoiceAccountingTransactionDto } from "../models/types/accounting-transaction/InvoiceAccountingTransactionDto";
 import { BankAccountingTransaction } from "../models/types/accounting-transaction/BankAccountingTransaction";
 import { BankAccountingTransactionDTO as BankAccountingTransactionDto } from "../models/types/accounting-transaction/BankAccountingTransactionDto";
+import { isDefined } from "../models/types/common";
 
 
 class AccountingTransactionController {
-    @query([IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)], IDL.Vec(IDLTicketAccountingTransaction))
-    async getAllTicketAccountingTransactions(dateFrom: [string] | [], dateTo: [string] | []): Promise<TicketAccountingTransactionDto[]> {
+    @query([IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)], IDL.Vec(IDL.Text))
+    async getAllTicketAccountingTransactions(dateFrom: [string] | [], dateTo: [string] | []): Promise<string[]> {
+        console.log("getAllTicketAccountingTransactions", dateFrom, dateTo);
         const accountingTransactionService: AccountingTransactionService = new AccountingTransactionService();
 
+        console.log("Instantiated service ", dateFrom, dateTo);
         const actualDateFrom = accountingTransactionService.getActualDate(dateFrom);
         const actualDateTo = accountingTransactionService.getActualDate(dateTo);
+        
+        console.log("Actual dates ", actualDateFrom, actualDateTo);
 
         const resp = accountingTransactionService.getAllTicketAccountingTransactions(
             actualDateFrom,
             actualDateTo
-        ).map(trx => trx.toDto());
-
-        return resp
+        );
+        
+        return resp;
     }
 
-    @query([IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)], IDL.Vec(IDLInvoiceAccountingTransaction))
-    async getAllInvoiceAccountingTransactions(dateFrom: [string] | [], dateTo: [string] | []): Promise<InvoiceAccountingTransactionDto[]> {
+    @query([IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)], IDL.Vec(IDL.Text))
+    async getAllInvoiceAccountingTransactions(dateFrom: [string] | [], dateTo: [string] | []): Promise<string[]> {
         const accountingTransactionService: AccountingTransactionService = new AccountingTransactionService();
 
         const actualDateFrom = accountingTransactionService.getActualDate(dateFrom);
@@ -36,13 +41,13 @@ class AccountingTransactionController {
         const resp = accountingTransactionService.getAllInvoiceAccountingTransactions(
             actualDateFrom,
             actualDateTo
-        ).map(trx => trx.toDto());
+        );
 
         return resp;
     }
 
-    @query([IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)], IDL.Vec(IDLBankAccountingTransaction))
-    async getAllBankAccountingTransactions(dateFrom: [string] | [], dateTo: [string] | []): Promise<BankAccountingTransactionDto[]> {
+    @query([IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)], IDL.Vec(IDL.Text))
+    async getAllBankAccountingTransactions(dateFrom: [string] | [], dateTo: [string] | []): Promise<string[]> {
         const accountingTransactionService: AccountingTransactionService = new AccountingTransactionService();
 
         const actualDateFrom = accountingTransactionService.getActualDate(dateFrom);
@@ -51,9 +56,33 @@ class AccountingTransactionController {
         const resp = accountingTransactionService.getAllBankAccountingTransactions(
             actualDateFrom,
             actualDateTo
-        ).map(trx => trx.toDto());
-
+        );
+        
         return resp;
+    }
+    
+    @query([IDL.Vec(IDL.Text)], IDL.Vec(IDLTicketAccountingTransaction))
+    async getTicketAccountingTransactionByIds(ids: string[]): Promise<TicketAccountingTransactionDto[]> {
+        const accountingTransactionService: AccountingTransactionService = new AccountingTransactionService();
+        const transactions = ids.map(id => accountingTransactionService.getTicketAccountingTransactionById(id));
+
+        return transactions.filter(isDefined).map(trx => trx.toDto());
+    }
+    
+    @query([IDL.Vec(IDL.Text)], IDL.Vec(IDLInvoiceAccountingTransaction))
+    async getInvoiceAccountingTransactionByIds(ids: string[]): Promise<InvoiceAccountingTransactionDto[]> {
+        const accountingTransactionService: AccountingTransactionService = new AccountingTransactionService();
+        const transactions = ids.map(id => accountingTransactionService.getInvoiceAccountingTransactionById(id));
+
+        return transactions.filter(isDefined).map(trx => trx.toDto());
+    }
+
+    @query([IDL.Vec(IDL.Text)], IDL.Vec(IDLBankAccountingTransaction))
+    async getBankAccountingTransactionByIds(ids: string[]): Promise<BankAccountingTransactionDto[]> {
+        const accountingTransactionService: AccountingTransactionService = new AccountingTransactionService();
+        const transactions = ids.map(id => accountingTransactionService.getBankAccountingTransactionById(id));
+
+        return transactions.filter(isDefined).map(trx => trx.toDto());
     }
     
     @query([IDL.Text], IDLTicketAccountingTransaction)
