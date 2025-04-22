@@ -23,19 +23,19 @@ export const IDLInvoiceCompanyDTO = IDL.Record({
 })
 
 export const IDLInvoiceTaxDTO = IDL.Record({
-    Amount: IDL.Float32,
+    Amount: IDL.Float64,
     TypeCode: IDL.Text,
-    RateApplicablePercent: IDL.Float32,
+    RateApplicablePercent: IDL.Float64,
 })
 
 export const IDLInvoiceLineItemDTO = IDL.Record({
     ItemCode: IDL.Text,
     Description: IDL.Text,
-    Quantity: IDL.Float32,
+    Quantity: IDL.Float64,
     UnitCode: IDL.Text,
-    UnitPrice: IDL.Float32,
-    TotalInclTax: IDL.Float32,
-    TotalExclTax: IDL.Float32,
+    UnitPrice: IDL.Float64,
+    TotalInclTax: IDL.Float64,
+    TotalExclTax: IDL.Float64,
     Tax: IDLAccountingTransactionLineItemTax,
 })
 

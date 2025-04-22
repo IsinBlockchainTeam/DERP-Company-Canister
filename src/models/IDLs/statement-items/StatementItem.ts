@@ -9,7 +9,7 @@ export const IDLStatementItem = IDL.Record({
 
 export const IDLStatementItemAggregate = IDL.Record({
     parentStatementItemId: IDL.Int32,
-    total: IDL.Float32,
+    total: IDL.Float64,
     year: IDL.Nat32,
     month: IDL.Opt(IDL.Nat32),
     day: IDL.Opt(IDL.Nat32),
