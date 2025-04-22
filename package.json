@@ -2,7 +2,7 @@
     "name": "@derp/company-canister",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "version": "0.0.1-alpha3",
+    "version": "0.0.1-alpha4",
     "scripts": {
         "pretest": "tsx test/pretest.ts",
         "test": "jest",

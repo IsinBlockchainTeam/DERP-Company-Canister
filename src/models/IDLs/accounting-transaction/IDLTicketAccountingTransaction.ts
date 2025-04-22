@@ -43,6 +43,11 @@ const IDLTicketPaymentDetails = IDL.Record({
     exchangeRate: IDL.Float64,
     amount: IDL.Float64,
     externalId: IDL.Text,
+    creditCardDescription: IDL.Opt(IDL.Text),
+    creditCardNum: IDL.Opt(IDL.Text),
+    creditCardAuthorizationDate: IDL.Opt(IDL.Text),
+    creditCardAuthorizationNum: IDL.Opt(IDL.Text),
+    creditCardTerminalCode: IDL.Opt(IDL.Text),
 });
 
 
