@@ -42,7 +42,7 @@ export abstract class BaseAccountingTransactionRepository<T extends AccountingTr
         indices.push(
           ...(this.dateIndex.get(CustomDate.fromDate(currentDate)) || [])
         );
-        currentDate.setDate(currentDate.getDate() + 1);
+        currentDate.setUTCDate(currentDate.getUTCDate() + 1);
       }
     } else {
       this.dateIndex.keys().forEach(date => {

@@ -17,11 +17,25 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
     dispatch(trx: TicketAccountingTransaction): void {
         const statementItemService = new StatementItemService();
 
+        const totalRules = this.getTotalRules(trx);
+        const groupRules = this.getGroupRules(trx);
+        const vatGroupRules = this.getVatGroupRules(trx);
+
         const rules = [
-            ...this.getTotalRules(trx),
-            ...this.getGroupRules(trx),
-            ...this.getVatGroupRules(trx),
+            ...totalRules,
+            ...groupRules,
+            ...vatGroupRules,
         ];
+
+        let totalPositive = 0;
+        let totalNegative = 0;
+        
+        // Store all contributions before applying them
+        const contributionsByRule: Map<string, { 
+            rule: any, 
+            contribution: number, 
+            statementItems: number[] 
+        }> = new Map();
 
         for (const rule of rules) {
             console.log(`Checking rule ${rule.id} against transaction ${trx.Header.DLTERPId} of type ${trx.Header.TypeCode}`);
@@ -30,24 +44,59 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
                 console.log(`Rule ${rule.id} matches transaction ${trx.Header.DLTERPId}`);
 
                 const contribution = handler.getContributions(rule, trx);
-                for (const statementItemId of rule.statementItemIDs) {
-                    if (!trx.Header.DLTERPId) {
-                        throw new Error(`Transaction does not have an ID`);
-                    }
-
-                    if (!trx.Header.IssueDate) {
-                        throw new Error(`Transaction ${trx.Header.DLTERPId} does not have an issue date`);
-                    }
-
-                    statementItemService.addTransactionContributions(statementItemId, trx.Header.IssueDate, {
-                        amount: contribution,
-                        transactionId: trx.Header.DLTERPId
+                
+                // Store the contribution for later use
+                if (rule.id !== undefined) {
+                    contributionsByRule.set(String(rule.id), {
+                        rule,
+                        contribution,
+                        statementItems: rule.statementItemIDs
                     });
-                    console.log(`Added transaction of ${JSON.stringify(trx.Header.IssueDate)} to statement`, statementItemId)
+                }
+                
+                // Track totals based on rule type
+                if (rule.ruleType === DispatchRuleType.STORE) {
+                    totalPositive += contribution;
+                } else {
+                    totalNegative += contribution;
                 }
             }
 
             console.log(`Rule ${rule.id} does not match transaction ${trx.Header.DLTERPId}`);
+        }
+
+        // Check if there's an imbalance between totalPositive and totalNegative
+        const difference = totalPositive - totalNegative;
+        if (difference !== 0 && vatGroupRules.length > 0) {
+            // Get the last VAT group rule that matched
+            const lastVatGroupRule = vatGroupRules[vatGroupRules.length - 1];
+            if (lastVatGroupRule.id !== undefined) {
+                const lastVatGroupRuleIdStr = String(lastVatGroupRule.id);
+                if (contributionsByRule.has(lastVatGroupRuleIdStr)) {
+                    // Adjust the contribution of the last VAT group rule
+                    const data = contributionsByRule.get(lastVatGroupRuleIdStr)!;
+                    data.contribution += difference;
+                }
+            }
+        }
+
+        // Now apply all contributions
+        for (const { rule, contribution, statementItems } of contributionsByRule.values()) {
+            if (!trx.Header.DLTERPId) {
+                throw new Error(`Transaction does not have an ID`);
+            }
+
+            if (!trx.Header.IssueDate) {
+                throw new Error(`Transaction ${trx.Header.DLTERPId} does not have an issue date`);
+            }
+
+            for (const statementItemId of statementItems) {
+                statementItemService.addTransactionContributions(statementItemId, trx.Header.IssueDate, {
+                    amount: contribution,
+                    transactionId: trx.Header.DLTERPId
+                });
+                console.log(`Added transaction of ${JSON.stringify(trx.Header.IssueDate)} to statement`, statementItemId);
+            }
         }
     }
 

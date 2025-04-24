@@ -3,12 +3,14 @@ import { IDLCustomDate } from "../models/IDLs/accounting-transaction/IDLAccounti
 import { IDLTicketAccountingTransaction } from "../models/IDLs/accounting-transaction/IDLTicketAccountingTransaction";
 import { IDLStatementItem, IDLStatementItemAggregate } from "../models/IDLs/statement-items/StatementItem";
 import { IDLStatementItemCategory } from "../models/IDLs/statement-items/StatementItemCategory";
+import { IDLDailyTransactionRecord } from "../models/IDLs/statement-items/IDLDailyTransactionRecord";
 import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
 import { TicketAccountingTransactionDto } from "../models/types/accounting-transaction/TicketAccountingTransactionDto";
 import { StatementItem, StatementItemAggregateDto, StatementItemDto } from "../models/types/statement-items/StatementItem";
 import { StatementItemCategory } from "../models/types/statement-items/StatementItemCategory";
 import { AccountingTransactionService } from "../service/AccountingTransactionService";
 import { StatementItemService } from "../service/StatementItemService";
+import { DailyTransactionRecord, DailyTransactionRecordDto } from "../models/types/statement-items/DailyTransactionRecord";
 
 class StatementItemsController {
     @query([], IDL.Vec(IDLStatementItemCategory))
@@ -74,21 +76,38 @@ class StatementItemsController {
         return aggregates.map(a => a.toDto());
     }
 
-    @query([IDL.Int32, IDL.Text], IDL.Vec(IDLTicketAccountingTransaction))
-    async getDailyStatementItemTransactions(statementItemId: number, date: string): Promise<TicketAccountingTransactionDto[]> {
+    @query([IDL.Int32, IDL.Text], IDL.Vec(IDL.Int32))
+    async getDailyTransactionRecordIds(statementItemId: number, date: string): Promise<number[]> {
+        console.log("Date", date);
+        const statementItemService = new StatementItemService();
+        const dateParsed = new Date(date);
+        console.log("Date parsed", dateParsed);
+        return statementItemService.getDailyTransactionRecordIds(statementItemId, dateParsed);
+    }
+    
+    @query([IDL.Vec(IDL.Int32)], IDL.Vec(IDLDailyTransactionRecord))
+    async getDailyTransactionRecordsByIds(recordIds: number[]): Promise<DailyTransactionRecordDto[]> {
+        const statementItemService = new StatementItemService();
+        const records = statementItemService.getDailyTransactionRecordsByIds(recordIds);
+        return records.map(record => record.toDto());
+    }
+        
+
+    @query([IDL.Vec(IDL.Int32)], IDL.Vec(IDLTicketAccountingTransaction))
+    async getTransactionsByRecordIds(recordIds: number[]): Promise<TicketAccountingTransactionDto[]> {
         const statementItemService = new StatementItemService();
         const accountingTransactionService = new AccountingTransactionService();
 
-        const dateParsed = new Date(date);
-        const dailyRecords = statementItemService.getDailyTransactionRecords(statementItemId, dateParsed);
-
-        return dailyRecords.map((record) => {
+        const records = statementItemService.getDailyTransactionRecordsByIds(recordIds);
+        console.log("Records", records);
+        
+        return records.map((record) => {
             const transaction = accountingTransactionService.getTicketAccountingTransactionById(record.transactionId);
             if (!transaction) {
-                throw new Error(`Transaction with id ${record} not found`);
+                throw new Error(`Transaction with id ${record.transactionId} not found`);
             }
             return transaction.toDto();
-        })
+        });
     }
 
     @update([IDL.Text], IDLStatementItemCategory)
