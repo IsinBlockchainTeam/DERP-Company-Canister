@@ -1,6 +1,7 @@
 import { DispatchRuleDto } from "../DispatchRule";
 import { DispatchRuleType } from "../DispatchRuleTypes";
 import { StoreDispatchRule } from "./StoreDispatchRule";
+import { AccountingOperation } from "../AccountingOperation";
 
 export class GroupDispatchRule extends StoreDispatchRule {
     public groupId: string;
@@ -10,9 +11,10 @@ export class GroupDispatchRule extends StoreDispatchRule {
         statementItemIDs: number[],
         groupId: string,
         storeId: number,
+        accountingOperation: AccountingOperation,
         dispatchRuleType: DispatchRuleType = DispatchRuleType.GROUP,
     ) {
-        super(id, statementItemIDs, storeId, dispatchRuleType);
+        super(id, statementItemIDs, storeId, accountingOperation, dispatchRuleType);
         this.groupId = groupId
     }
 

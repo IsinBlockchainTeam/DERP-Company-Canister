@@ -18,6 +18,7 @@ export class VatGroupDispatchRuleService implements IDispatchRuleService<VatGrou
             ruleDto.statementItemIDs,
             ruleDto.vatGroupId[0]!,
             ruleDto.storeId[0]!,
+            ruleDto.accountingOperation
         )
 
         const savedRule = this.repository.saveDispatchRule<VatGroupDispatchRule>(rule);
@@ -26,7 +27,7 @@ export class VatGroupDispatchRuleService implements IDispatchRuleService<VatGrou
         }
 
         this.vatGroupBasedRepository.addRuleIdToGroup(ruleDto.vatGroupId[0]!, savedRule.id);
-        return new VatGroupDispatchRule(savedRule.id, savedRule.statementItemIDs, savedRule.vatGroupId, savedRule.storeId);
+        return new VatGroupDispatchRule(savedRule.id, savedRule.statementItemIDs, savedRule.vatGroupId, savedRule.storeId, savedRule.accountingOperation);
     }
 
     update(ruleDto: DispatchRuleDto): VatGroupDispatchRule {
@@ -42,6 +43,7 @@ export class VatGroupDispatchRuleService implements IDispatchRuleService<VatGrou
             ruleDto.statementItemIDs,
             ruleDto.vatGroupId[0]!,
             ruleDto.storeId[0]!,
+            ruleDto.accountingOperation
         )
 
         if (currentRule.vatGroupId !== rule.vatGroupId) {
@@ -50,13 +52,13 @@ export class VatGroupDispatchRuleService implements IDispatchRuleService<VatGrou
         }
 
         const updatedRule = this.repository.saveDispatchRule<VatGroupDispatchRule>(rule);
-        return new VatGroupDispatchRule(updatedRule.id, updatedRule.statementItemIDs, updatedRule.vatGroupId, updatedRule.storeId);
+        return new VatGroupDispatchRule(updatedRule.id, updatedRule.statementItemIDs, updatedRule.vatGroupId, updatedRule.storeId, updatedRule.accountingOperation);
     }
 
     list(): VatGroupDispatchRule[] {
         return this.repository.getDispatchRules()
             .filter(rule => rule.ruleType === DispatchRuleType.VAT_GROUP)
-            .map(rule => new VatGroupDispatchRule(rule.id, rule.statementItemIDs, (rule as VatGroupDispatchRule).vatGroupId, (rule as VatGroupDispatchRule).storeId));
+            .map(rule => new VatGroupDispatchRule(rule.id, rule.statementItemIDs, (rule as VatGroupDispatchRule).vatGroupId, (rule as VatGroupDispatchRule).storeId, rule.accountingOperation));
     }
 
     listByGroup(groupId: string) {
@@ -68,7 +70,7 @@ export class VatGroupDispatchRuleService implements IDispatchRuleService<VatGrou
     get(id: number): VatGroupDispatchRule | null {
         const rule = this.repository.getDispatchRule(id);
         if (rule && rule.ruleType === DispatchRuleType.VAT_GROUP) {
-            return new VatGroupDispatchRule(rule.id, rule.statementItemIDs, (rule as VatGroupDispatchRule).vatGroupId, (rule as VatGroupDispatchRule).storeId);
+            return new VatGroupDispatchRule(rule.id, rule.statementItemIDs, (rule as VatGroupDispatchRule).vatGroupId, (rule as VatGroupDispatchRule).storeId, rule.accountingOperation);
         }
 
         return null;

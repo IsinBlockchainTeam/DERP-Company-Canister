@@ -18,6 +18,7 @@ export class GroupDispatchRuleService implements IDispatchRuleService<GroupDispa
             ruleDto.statementItemIDs,
             ruleDto.groupId[0]!,
             ruleDto.storeId[0]!,
+            ruleDto.accountingOperation
         )
 
         const savedRule = this.repository.saveDispatchRule<GroupDispatchRule>(rule);
@@ -26,7 +27,7 @@ export class GroupDispatchRuleService implements IDispatchRuleService<GroupDispa
         }
 
         this.groupBasedRepository.addRuleIdToGroup(ruleDto.groupId[0]!, savedRule.id);
-        return new GroupDispatchRule(savedRule.id, savedRule.statementItemIDs, savedRule.groupId, savedRule.storeId);
+        return new GroupDispatchRule(savedRule.id, savedRule.statementItemIDs, savedRule.groupId, savedRule.storeId, savedRule.accountingOperation);
     }
 
     update(ruleDto: DispatchRuleDto): GroupDispatchRule {
@@ -42,21 +43,22 @@ export class GroupDispatchRuleService implements IDispatchRuleService<GroupDispa
             ruleDto.statementItemIDs,
             ruleDto.groupId[0]!,
             ruleDto.storeId[0]!,
+            ruleDto.accountingOperation
         )
 
-        if(currentRule.groupId !== rule.groupId) {
+        if (currentRule.groupId !== rule.groupId) {
             this.groupBasedRepository.removeRuleIdFromGroup(currentRule.groupId, currentRule.id!);
             this.groupBasedRepository.addRuleIdToGroup(rule.groupId, currentRule.id!);
         }
 
         const updatedRule = this.repository.saveDispatchRule<GroupDispatchRule>(rule);
-        return new GroupDispatchRule(updatedRule.id, updatedRule.statementItemIDs, updatedRule.groupId, updatedRule.storeId);
+        return new GroupDispatchRule(updatedRule.id, updatedRule.statementItemIDs, updatedRule.groupId, updatedRule.storeId, updatedRule.accountingOperation);
     }
 
     list(): GroupDispatchRule[] {
         return this.repository.getDispatchRules()
             .filter(rule => rule.ruleType === DispatchRuleType.GROUP)
-            .map(rule => new GroupDispatchRule(rule.id, rule.statementItemIDs, (rule as GroupDispatchRule).groupId, (rule as GroupDispatchRule).storeId));
+            .map(rule => new GroupDispatchRule(rule.id, rule.statementItemIDs, (rule as GroupDispatchRule).groupId, (rule as GroupDispatchRule).storeId, rule.accountingOperation));
     }
 
     listByGroup(groupId: string) {
@@ -68,7 +70,7 @@ export class GroupDispatchRuleService implements IDispatchRuleService<GroupDispa
     get(id: number): GroupDispatchRule | null {
         const rule = this.repository.getDispatchRule(id);
         if (rule && rule.ruleType === DispatchRuleType.GROUP) {
-            return new GroupDispatchRule(rule.id, rule.statementItemIDs, (rule as GroupDispatchRule).groupId, (rule as GroupDispatchRule).storeId);
+            return new GroupDispatchRule(rule.id, rule.statementItemIDs, (rule as GroupDispatchRule).groupId, (rule as GroupDispatchRule).storeId, rule.accountingOperation);
         }
 
         return null;

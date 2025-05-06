@@ -40,7 +40,7 @@ export class StatementItemService {
         return this._statementItemsRepository.getStatementItemById(id);
     }
 
-    addTransactionContributions(parentStatementItemId: number, date: Date, record: {
+    addStatementItemTransaction(parentStatementItemId: number, date: Date, record: {
         amount: number,
         transactionId: string,
     }): void {

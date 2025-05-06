@@ -22,6 +22,7 @@ export class StoreDispatchRuleService implements IDispatchRuleService<StoreDispa
       undefined,
       statementItemIds,
       storeId,
+      ruleDto.accountingOperation,
       DispatchRuleType.STORE
     )
 
@@ -31,7 +32,7 @@ export class StoreDispatchRuleService implements IDispatchRuleService<StoreDispa
     }
 
     this.storeBasedRepository.addRuleIdToStore(storeId, savedRule.id);
-    return new StoreDispatchRule(savedRule.id, savedRule.statementItemIDs, savedRule.storeId);
+    return new StoreDispatchRule(savedRule.id, savedRule.statementItemIDs, savedRule.storeId, savedRule.accountingOperation);
   }
 
   update(ruleDto: DispatchRuleDto): StoreDispatchRule {
@@ -43,6 +44,7 @@ export class StoreDispatchRuleService implements IDispatchRuleService<StoreDispa
       ruleDto.id,
       ruleDto.statementItemIDs,
       ruleDto.storeId[0]!,
+      ruleDto.accountingOperation,
       DispatchRuleType.STORE
     )
     
@@ -53,13 +55,13 @@ export class StoreDispatchRuleService implements IDispatchRuleService<StoreDispa
     }
 
     const updatedRule = this.repository.saveDispatchRule<StoreDispatchRule>(rule);
-    return new StoreDispatchRule(updatedRule.id, updatedRule.statementItemIDs, updatedRule.storeId);
+    return new StoreDispatchRule(updatedRule.id, updatedRule.statementItemIDs, updatedRule.storeId, updatedRule.accountingOperation);
   }
 
   list(): StoreDispatchRule[] {
     return this.repository.getDispatchRules()
       .filter(rule => rule.ruleType === DispatchRuleType.STORE)
-      .map(rule => new StoreDispatchRule(rule.id, rule.statementItemIDs, (rule as StoreDispatchRule).storeId));
+      .map(rule => new StoreDispatchRule(rule.id, rule.statementItemIDs, (rule as StoreDispatchRule).storeId, rule.accountingOperation));
   }
   
   listByStore(storeId: number): StoreDispatchRule[] {
@@ -71,7 +73,7 @@ export class StoreDispatchRuleService implements IDispatchRuleService<StoreDispa
   get(id: number): StoreDispatchRule | null {
     const rule = this.repository.getDispatchRule(id);
     if (rule && rule.ruleType === DispatchRuleType.STORE) {
-      return new StoreDispatchRule(rule.id, rule.statementItemIDs, (rule as StoreDispatchRule).storeId);
+      return new StoreDispatchRule(rule.id, rule.statementItemIDs, (rule as StoreDispatchRule).storeId, rule.accountingOperation);
     }
 
     return null;

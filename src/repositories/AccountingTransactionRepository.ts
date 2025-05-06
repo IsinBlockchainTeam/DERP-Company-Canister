@@ -34,15 +34,16 @@ export abstract class BaseAccountingTransactionRepository<T extends AccountingTr
     if (dateFrom) {
       if (!dateTo) dateTo = new Date();
     
-      console.log("Listing transactions from", dateFrom, "to", dateTo);
+      const dayFrom = CustomDate.fromDate(dateFrom);
+      const dayTo = CustomDate.fromDate(dateTo);
+      let currentDate = dayFrom;
 
-      const currentDate = new Date(dateFrom);
-      while (currentDate <= dateTo) {
-        console.log("Current date:", currentDate);
+      while (new Date(currentDate.year, currentDate.month, currentDate.day) <= new Date(dayTo.year, dayTo.month, dayTo.day)) {
         indices.push(
-          ...(this.dateIndex.get(CustomDate.fromDate(currentDate)) || [])
+          ...(this.dateIndex.get(currentDate) || [])
         );
-        currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+        const nextDate = new Date(currentDate.year, currentDate.month, currentDate.day + 1);
+        currentDate = CustomDate.fromDate(nextDate);
       }
     } else {
       this.dateIndex.keys().forEach(date => {

@@ -1,6 +1,7 @@
 import { DispatchRuleDto } from "../DispatchRule";
 import { DispatchRuleType } from "../DispatchRuleTypes";
 import { StoreDispatchRule } from "./StoreDispatchRule";
+import { AccountingOperation } from "../AccountingOperation";
 
 export class VatGroupDispatchRule extends StoreDispatchRule {
     public vatGroupId: string;
@@ -8,12 +9,13 @@ export class VatGroupDispatchRule extends StoreDispatchRule {
     constructor(
         id: number | undefined,
         statementItemIDs: number[],
-        groupId: string,
+        vatGroupId: string,
         storeId: number,
+        accountingOperation: AccountingOperation,
         dispatchRuleType: DispatchRuleType = DispatchRuleType.VAT_GROUP,
     ) {
-        super(id, statementItemIDs, storeId, dispatchRuleType);
-        this.vatGroupId = groupId
+        super(id, statementItemIDs, storeId, accountingOperation, dispatchRuleType);
+        this.vatGroupId = vatGroupId
     }
 
     override toDto(): DispatchRuleDto {

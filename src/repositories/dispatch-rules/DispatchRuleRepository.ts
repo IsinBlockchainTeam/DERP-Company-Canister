@@ -2,6 +2,11 @@ import { StableBTreeMap } from "azle";
 import { DispatchRule } from "../../models/types/dispatch-rules/DispatchRule";
 import { StableTreeMapIds } from "../Utils";
 
+/**
+ * DispatchRuleRepository is a singleton that stores all dispatch rules.
+ * DispatchRules are stored here independently of their type.
+ * <indexType>DispatchRuleIndexRepository (e.g. GroupDispatchRuleIndexRepository) classes are used to store indexed maps between a given parameter and a rule ID to optimize queries.
+ */
 export class DispatchRuleRepository {
     private static _instance: DispatchRuleRepository;
 

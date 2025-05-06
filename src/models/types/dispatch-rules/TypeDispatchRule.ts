@@ -1,6 +1,7 @@
 import { AccountingTransactionType } from "../accounting-transaction/AccountingTransaction";
 import { DispatchRule, DispatchRuleDto } from "./DispatchRule";
 import { DispatchRuleType } from "./DispatchRuleTypes";
+import { AccountingOperation } from "./AccountingOperation";
 
 export class TypeDispatchRule extends DispatchRule {
     txType: AccountingTransactionType;
@@ -9,9 +10,10 @@ export class TypeDispatchRule extends DispatchRule {
         id: number | undefined,
         statementItemIDs: number[],
         txType: AccountingTransactionType,
+        accountingOperation: AccountingOperation,
         ruleType: DispatchRuleType = DispatchRuleType.TYPE,
     ) {
-        super(id, ruleType, statementItemIDs);
+        super(id, ruleType, statementItemIDs, accountingOperation);
         this.txType = txType;
     }
 

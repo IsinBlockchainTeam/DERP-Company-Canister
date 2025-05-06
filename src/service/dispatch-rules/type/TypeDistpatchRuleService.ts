@@ -22,11 +22,11 @@ export class TypeDispatchRuleService implements IDispatchRuleService<TypeDispatc
             throw new Error(`Invalid transaction type: ${type}`);
         }
 
-
         const rule = new TypeDispatchRule(
             undefined,
             ruleDto.statementItemIDs,
-            type as AccountingTransactionType
+            type as AccountingTransactionType,
+            ruleDto.accountingOperation
         )
 
         const savedRule = this.repository.saveDispatchRule<TypeDispatchRule>(rule);
@@ -35,7 +35,7 @@ export class TypeDispatchRuleService implements IDispatchRuleService<TypeDispatc
         }
 
         this.typeBasedRepository.addRuleIdToType(type, savedRule.id);
-        return new TypeDispatchRule(savedRule.id, savedRule.statementItemIDs, savedRule.txType);
+        return new TypeDispatchRule(savedRule.id, savedRule.statementItemIDs, savedRule.txType, savedRule.accountingOperation);
     }
 
     update(ruleDto: DispatchRuleDto): TypeDispatchRule {
@@ -47,7 +47,8 @@ export class TypeDispatchRuleService implements IDispatchRuleService<TypeDispatc
         const rule = new TypeDispatchRule(
             ruleDto.id,
             ruleDto.statementItemIDs,
-            ruleDto.txType[0] as AccountingTransactionType
+            ruleDto.txType[0] as AccountingTransactionType,
+            ruleDto.accountingOperation
         )
 
         if (currentRule.txType !== rule.txType) {
@@ -56,13 +57,13 @@ export class TypeDispatchRuleService implements IDispatchRuleService<TypeDispatc
         }
 
         const updatedRule = this.repository.saveDispatchRule<TypeDispatchRule>(rule);
-        return new TypeDispatchRule(updatedRule.id, updatedRule.statementItemIDs, updatedRule.txType);
+        return new TypeDispatchRule(updatedRule.id, updatedRule.statementItemIDs, updatedRule.txType, updatedRule.accountingOperation);
     }
 
     list(): TypeDispatchRule[] {
         return this.repository.getDispatchRules()
             .filter(rule => rule.ruleType === DispatchRuleType.TYPE)
-            .map(rule => new TypeDispatchRule(rule.id, rule.statementItemIDs, (rule as TypeDispatchRule).txType));
+            .map(rule => new TypeDispatchRule(rule.id, rule.statementItemIDs, (rule as TypeDispatchRule).txType, rule.accountingOperation));
     }
 
     listByType(type: string) {
@@ -74,7 +75,7 @@ export class TypeDispatchRuleService implements IDispatchRuleService<TypeDispatc
     get(id: number): TypeDispatchRule | null {
         const rule = this.repository.getDispatchRule(id);
         if (rule && rule.ruleType === DispatchRuleType.TYPE) {
-            return new TypeDispatchRule(rule.id, rule.statementItemIDs, (rule as TypeDispatchRule).txType);
+            return new TypeDispatchRule(rule.id, rule.statementItemIDs, (rule as TypeDispatchRule).txType, rule.accountingOperation);
         }
 
         return null;

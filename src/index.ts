@@ -10,6 +10,7 @@ export * from "./models/types/accounting-transaction/BankAccountingTransaction"
 export * from "./models/types/accounting-transaction/InvoiceAccountingTransaction"
 
 export * from "./models/types/dispatch-rules/DispatchRule"
+export * from "./models/types/dispatch-rules/AccountingOperation"
 export * from "./models/types/dispatch-rules/DispatchRuleTypes"
 
 export * from "./models/types/dispatch-rules/TypeDispatchRule"

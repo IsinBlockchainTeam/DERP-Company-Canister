@@ -4,9 +4,11 @@ import { DispatchRuleType } from "../models/types/dispatch-rules/DispatchRuleTyp
 import { DispatchRuleRepository } from "../repositories/dispatch-rules/DispatchRuleRepository";
 import { DispatchRuleServiceResolver } from "./dispatch-rules/DispatchRuleServiceResolver";
 import { TrxDispatcher } from "./trx-dispatcher/TrxDispatcher";
+import { AccountingOperationDispatchRuleIndexRepository } from "../repositories/dispatch-rules/AccountingOperationDispatchRuleIndexRepository";
 
 export class DispatchRuleService {
     private readonly dispatchRuleRepository: DispatchRuleRepository = DispatchRuleRepository.instance;
+    private readonly accountingOperationIndexRepository: AccountingOperationDispatchRuleIndexRepository = AccountingOperationDispatchRuleIndexRepository.instance;
 
     constructor() {
     }
@@ -36,17 +38,30 @@ export class DispatchRuleService {
     }
 
     deleteDispatchRule(id: number): void {
+        const rule = this.dispatchRuleRepository.getDispatchRule(id);
+        if (rule) {
+            this.accountingOperationIndexRepository.removeRuleIdFromOperation(rule.accountingOperation, id);
+        }
         this.dispatchRuleRepository.deleteDispatchRule(id);
     }
 
     createDispatchRule(ruleRequest: DispatchRuleDto): DispatchRule {
         const svc = DispatchRuleServiceResolver.service({ ruleType: ruleRequest.ruleType as DispatchRuleType });
         const rule = svc.create(ruleRequest);
+        this.accountingOperationIndexRepository.addRuleIdToOperation(rule.accountingOperation, rule.id!);
         return rule;
     }
 
     updateDispatchRule(ruleRequest: DispatchRuleDto): DispatchRule {
         const svc = DispatchRuleServiceResolver.service({ ruleType: ruleRequest.ruleType as DispatchRuleType });
-        return svc.update(ruleRequest);
+        const currentRule = this.dispatchRuleRepository.getDispatchRule(ruleRequest.id!);
+        const updatedRule = svc.update(ruleRequest);
+        
+        if (currentRule && currentRule.accountingOperation !== updatedRule.accountingOperation) {
+            this.accountingOperationIndexRepository.removeRuleIdFromOperation(currentRule.accountingOperation, currentRule.id!);
+            this.accountingOperationIndexRepository.addRuleIdToOperation(updatedRule.accountingOperation, updatedRule.id!);
+        }
+        
+        return updatedRule;
     }
 }
