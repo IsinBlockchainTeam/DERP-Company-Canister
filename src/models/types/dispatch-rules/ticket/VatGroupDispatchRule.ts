@@ -12,9 +12,11 @@ export class VatGroupDispatchRule extends StoreDispatchRule {
         vatGroupId: string,
         storeId: number,
         accountingOperation: AccountingOperation,
+        validFrom?: Date,
+        validTo?: Date,
         dispatchRuleType: DispatchRuleType = DispatchRuleType.VAT_GROUP,
     ) {
-        super(id, statementItemIDs, storeId, accountingOperation, dispatchRuleType);
+        super(id, statementItemIDs, storeId, accountingOperation, validFrom, validTo, dispatchRuleType);
         this.vatGroupId = vatGroupId
     }
 
@@ -23,5 +25,17 @@ export class VatGroupDispatchRule extends StoreDispatchRule {
             ...super.toDto(),
             vatGroupId: [this.vatGroupId],
         }
+    }
+    
+    static fromDto(dto: DispatchRuleDto): VatGroupDispatchRule {
+        return new VatGroupDispatchRule(
+            dto.id,
+            dto.statementItemIDs,
+            dto.vatGroupId[0]!,
+            dto.storeId[0]!,
+            dto.accountingOperation,
+            dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
+            dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,
+        );
     }
 }

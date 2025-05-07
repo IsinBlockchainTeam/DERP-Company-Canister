@@ -40,11 +40,28 @@ export class DispatchRuleRepository {
     }
 
     getDispatchRule(id: number): DispatchRule | null {
-        return this._dispatchRules.get(id);
+        const rule = this._dispatchRules.get(id);
+        if (!rule) {
+            return null;
+        }
+
+        if (rule.validFrom && rule.validTo) {
+            rule.validFrom = new Date(rule.validFrom);
+            rule.validTo = new Date(rule.validTo);
+        }
+        
+        return rule;
     }
 
     getDispatchRules(): DispatchRule[] {
-        return Array.from(this._dispatchRules.values());
+        return Array.from(this._dispatchRules.values()).map(r => {
+            if (r.validFrom && r.validTo) {
+                r.validFrom = new Date(r.validFrom);
+                r.validTo = new Date(r.validTo);
+            }
+
+            return r;
+        });
     }
 
     deleteDispatchRule(id: number): void {

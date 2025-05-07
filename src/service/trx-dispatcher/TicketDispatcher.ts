@@ -34,7 +34,7 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
         for (const rule of rules) {
             console.log(`Checking rule ${rule.id} against transaction ${trx.Header.DLTERPId} of type ${trx.Header.TypeCode}`);
             const handler = DispatchRuleServiceResolver.handler(rule);
-            if (handler.assert(rule, trx)) {
+            if (handler.assertTrxActivation(rule, trx)) {
                 console.log(`Rule ${rule.id} matches transaction ${trx.Header.DLTERPId}`);
 
                 const contribution = handler.getComputedContributions(rule, trx);

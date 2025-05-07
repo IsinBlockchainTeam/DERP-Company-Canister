@@ -4,6 +4,8 @@ export const IDLCreateDispatchRule = IDL.Record({
     ruleType: IDL.Text,
     statementItemIDs: IDL.Vec(IDL.Int32),
     accountingOperation: IDL.Text,
+    validFrom: IDL.Opt(IDL.Text),
+    validTo: IDL.Opt(IDL.Text),
 
     // TypeDispatchRule
     txType: IDL.Opt(IDL.Text),
@@ -24,6 +26,8 @@ export const IDLDispatchRule = IDL.Record({
     ruleType: IDL.Text,
     statementItemIDs: IDL.Vec(IDL.Int32),
     accountingOperation: IDL.Text,
+    validFrom: IDL.Opt(IDL.Text),
+    validTo: IDL.Opt(IDL.Text),
 
     // TypeDispatchRule
     txType: IDL.Opt(IDL.Text),

@@ -1,7 +1,8 @@
 import { ActorSubclass, HttpAgent } from "@dfinity/agent";
 import { _SERVICE } from "../declarations/dlterp_company/dlterp_company.did";
 import { createActor } from "../declarations/dlterp_company";
-import { DispatchRuleDto } from "../models/types/dispatch-rules/DispatchRule";
+import { DispatchRule, DispatchRuleDto } from "../models/types/dispatch-rules/DispatchRule";
+import { DispatchRuleEntityMapper } from "../service/DispatchRuleEntityMapper";
 
 export class DispatchRulesClient {
     private readonly actor: ActorSubclass<_SERVICE>
@@ -11,44 +12,43 @@ export class DispatchRulesClient {
         this.actor = createActor(canisterId, { agent })
     }
 
-    async createDispatchRule(rule: DispatchRuleDto): Promise<DispatchRuleDto> {
-        return this.actor.createDispatchRule(rule) as Promise<DispatchRuleDto>
+    async createDispatchRule(rule: DispatchRule): Promise<DispatchRule> {
+        const created = await this.actor.createDispatchRule(rule.toDto()) as DispatchRuleDto
+        return DispatchRuleEntityMapper.fromDto(created)
     }
     
-    async createDispatchRules(rules: DispatchRuleDto[]): Promise<DispatchRuleDto[]> {
+    async createDispatchRules(rules: DispatchRule[]): Promise<DispatchRule[]> {
         const chunks = rules.reduce((acc, rule, index) => {
             const chunkIndex = Math.floor(index / 100);
             if (!acc[chunkIndex]) {
                 acc[chunkIndex] = [];
             }
-            acc[chunkIndex].push(rule);
+            acc[chunkIndex].push(rule.toDto());
             return acc;
         }, [] as DispatchRuleDto[][]);
 
-        const result: DispatchRuleDto[] = [];
+        const result: DispatchRule[] = [];
         for (const chunk of chunks) {
-            const createdRules = await this.actor.createDispatchRules(chunk);
-            result.push(...createdRules as DispatchRuleDto[]);
+            const createdRules = await this.actor.createDispatchRules(chunk) as DispatchRuleDto[];
+            result.push(...createdRules.map(DispatchRuleEntityMapper.fromDto));
         }
 
         return result;
     }
 
-    async getDispatchRules(): Promise<DispatchRuleDto[]> {
-        return this.actor.getDispatchRules() as Promise<DispatchRuleDto[]>
+    async getDispatchRules(): Promise<DispatchRule[]> {
+        return (await this.actor.getDispatchRules() as DispatchRuleDto[]).map(DispatchRuleEntityMapper.fromDto);
     }
 
     async deleteDispatchRule(id: number) {
         return this.actor.deleteDispatchRule(id);
     }
 
-    async updateDispatchRule(ruleRequest: DispatchRuleDto): Promise<DispatchRuleDto> {
+    async updateDispatchRule(ruleRequest: DispatchRule): Promise<DispatchRule> {
         if (ruleRequest.id === undefined) {
             throw new Error("Missing id on update rule request")
         }
-        return this.actor.updateDispatchRule({
-            ...ruleRequest,
-            id: ruleRequest.id
-        }) as Promise<DispatchRuleDto>
+        const updated = await this.actor.updateDispatchRule(ruleRequest.toDto()) as DispatchRuleDto
+        return DispatchRuleEntityMapper.fromDto(updated)
     }
 }

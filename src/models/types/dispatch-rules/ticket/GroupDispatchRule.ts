@@ -12,9 +12,11 @@ export class GroupDispatchRule extends StoreDispatchRule {
         groupId: string,
         storeId: number,
         accountingOperation: AccountingOperation,
+        validFrom?: Date,
+        validTo?: Date,
         dispatchRuleType: DispatchRuleType = DispatchRuleType.GROUP,
     ) {
-        super(id, statementItemIDs, storeId, accountingOperation, dispatchRuleType);
+        super(id, statementItemIDs, storeId, accountingOperation, validFrom, validTo, dispatchRuleType);
         this.groupId = groupId
     }
 
@@ -23,5 +25,17 @@ export class GroupDispatchRule extends StoreDispatchRule {
             ...super.toDto(),
             groupId: [this.groupId],
         }
+    }
+    
+    static fromDto(dto: DispatchRuleDto): GroupDispatchRule {
+        return new GroupDispatchRule(
+            dto.id,
+            dto.statementItemIDs,
+            dto.groupId[0]!,
+            dto.storeId[0]!,
+            dto.accountingOperation,
+            dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
+            dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,
+        );
     }
 }

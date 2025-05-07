@@ -11,9 +11,11 @@ export class TypeDispatchRule extends DispatchRule {
         statementItemIDs: number[],
         txType: AccountingTransactionType,
         accountingOperation: AccountingOperation,
+        validFrom?: Date,
+        validTo?: Date,
         ruleType: DispatchRuleType = DispatchRuleType.TYPE,
     ) {
-        super(id, ruleType, statementItemIDs, accountingOperation);
+        super(id, ruleType, statementItemIDs, accountingOperation, validFrom, validTo);
         this.txType = txType;
     }
 
@@ -22,5 +24,16 @@ export class TypeDispatchRule extends DispatchRule {
             ...super.toDto(),
             txType: [this.txType],
         }
+    }
+    
+    static fromDto(dto: DispatchRuleDto): TypeDispatchRule {
+        return new TypeDispatchRule(
+            dto.id,
+            dto.statementItemIDs,
+            dto.txType[0]! as AccountingTransactionType,
+            dto.accountingOperation,
+            dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
+            dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,
+        );
     }
 }

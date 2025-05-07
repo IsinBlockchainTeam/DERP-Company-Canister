@@ -18,5 +18,8 @@ export * from "./models/types/dispatch-rules/ticket/StoreDispatchRule"
 export * from "./models/types/dispatch-rules/ticket/GroupDispatchRule"
 export * from "./models/types/dispatch-rules/ticket/VatGroupDispatchRule"
 
+// Utility services
+export * from "./service/DispatchRuleEntityMapper"
+
 // Canisters
 export * from "./clients"
