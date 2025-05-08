@@ -1,82 +1,62 @@
 import { AccountingTransactionType } from "../../../models/types/accounting-transaction/AccountingTransaction";
-import { DispatchRuleDto } from "../../../models/types/dispatch-rules/DispatchRule";
+import { DispatchRule, DispatchRuleDto } from "../../../models/types/dispatch-rules/DispatchRule";
 import { DispatchRuleType } from "../../../models/types/dispatch-rules/DispatchRuleTypes";
 import { TypeDispatchRule } from "../../../models/types/dispatch-rules/TypeDispatchRule";
 import { DispatchRuleRepository } from "../../../repositories/dispatch-rules/DispatchRuleRepository";
 import { TypeDispatchRuleIndexRepository } from "../../../repositories/dispatch-rules/TypeDispatchRuleIndexRepository";
-import { IDispatchRuleService } from "../IDispatchRuleService";
+import { BaseDispatchRuleService } from "../BaseDispatchRuleService";
 
-export class TypeDispatchRuleService implements IDispatchRuleService<TypeDispatchRule> {
-    private readonly repository: DispatchRuleRepository = DispatchRuleRepository.instance;
-    private readonly typeBasedRepository: TypeDispatchRuleIndexRepository = TypeDispatchRuleIndexRepository.instance;
+export class TypeDispatchRuleService extends BaseDispatchRuleService<TypeDispatchRule> {
+    protected readonly ruleType = DispatchRuleType.TYPE;
+    protected readonly indexRepository: TypeDispatchRuleIndexRepository = TypeDispatchRuleIndexRepository.instance;
+    
+    protected override onCreate(rule: TypeDispatchRule): void {
+        this.indexRepository.addRuleIdToType(rule.txType, rule.id!);
+    }
 
-    create(ruleDto: DispatchRuleDto): TypeDispatchRule {
-        // check rule request
+    protected override onUpdate(currentRule: TypeDispatchRule, newRule: TypeDispatchRule): void {
+        if (currentRule.txType !== newRule.txType) {
+            this.indexRepository.removeRuleIdFromType(currentRule.txType, currentRule.id!);
+            this.indexRepository.addRuleIdToType(newRule.txType, newRule.id!);
+        }
+    }
+
+    protected instantiateRule(ruleDto: DispatchRuleDto): TypeDispatchRule {
+        return new TypeDispatchRule(
+            undefined,
+            ruleDto.statementItemIDs,
+            ruleDto.txType[0] as AccountingTransactionType,
+            ruleDto.accountingOperation,
+            ruleDto.validFrom[0] ? new Date(ruleDto.validFrom[0]) : undefined,
+            ruleDto.validTo[0] ? new Date(ruleDto.validTo[0]) : undefined
+        );
+    }
+
+    protected validateRuleDto(ruleDto: DispatchRuleDto | Omit<DispatchRuleDto, "id">): void {
         if (ruleDto.txType.length < 1) {
             throw new Error("Type dispatch rule must have exactly one transaction type");
-        }
+        }   
 
         const type = ruleDto.txType[0]!;
-        // check type in enum AccountingTransactionType
         if (!Object.values(AccountingTransactionType).includes(type as AccountingTransactionType)) {
             throw new Error(`Invalid transaction type: ${type}`);
         }
-
-
-        const rule = new TypeDispatchRule(
-            undefined,
-            ruleDto.statementItemIDs,
-            type as AccountingTransactionType
-        )
-
-        const savedRule = this.repository.saveDispatchRule<TypeDispatchRule>(rule);
-        if (!savedRule.id) {
-            throw new Error("Failed to save dispatch rule");
-        }
-
-        this.typeBasedRepository.addRuleIdToType(type, savedRule.id);
-        return new TypeDispatchRule(savedRule.id, savedRule.statementItemIDs, savedRule.txType);
     }
 
-    update(ruleDto: DispatchRuleDto): TypeDispatchRule {
-        if (!("id" in ruleDto)) {
-            throw new Error("Dispatch rule to be updated must have an id");
-        }
-
-        const currentRule = this.repository.getDispatchRule(ruleDto.id!) as TypeDispatchRule;
-        const rule = new TypeDispatchRule(
-            ruleDto.id,
-            ruleDto.statementItemIDs,
-            ruleDto.txType[0] as AccountingTransactionType
-        )
-
-        if (currentRule.txType !== rule.txType) {
-            this.typeBasedRepository.removeRuleIdFromType(currentRule.txType, currentRule.id!);
-            this.typeBasedRepository.addRuleIdToType(rule.txType, currentRule.id!);
-        }
-
-        const updatedRule = this.repository.saveDispatchRule<TypeDispatchRule>(rule);
-        return new TypeDispatchRule(updatedRule.id, updatedRule.statementItemIDs, updatedRule.txType);
+    protected mapToConcreteRule(rule: DispatchRule): TypeDispatchRule {
+        return new TypeDispatchRule(
+            rule.id,
+            rule.statementItemIDs,
+            (rule as TypeDispatchRule).txType,
+            rule.accountingOperation,
+            rule.validFrom,
+            rule.validTo
+        );
     }
 
-    list(): TypeDispatchRule[] {
-        return this.repository.getDispatchRules()
-            .filter(rule => rule.ruleType === DispatchRuleType.TYPE)
-            .map(rule => new TypeDispatchRule(rule.id, rule.statementItemIDs, (rule as TypeDispatchRule).txType));
-    }
-
-    listByType(type: string) {
-        return this.typeBasedRepository.getDispatchRuleIdsForType(type)
+    listByType(type: string): TypeDispatchRule[] {
+        return this.indexRepository.getDispatchRuleIdsForType(type)
             .map(id => this.get(id)!)
             .filter(rule => !!rule) as TypeDispatchRule[];
-    }
-
-    get(id: number): TypeDispatchRule | null {
-        const rule = this.repository.getDispatchRule(id);
-        if (rule && rule.ruleType === DispatchRuleType.TYPE) {
-            return new TypeDispatchRule(rule.id, rule.statementItemIDs, (rule as TypeDispatchRule).txType);
-        }
-
-        return null;
     }
 }

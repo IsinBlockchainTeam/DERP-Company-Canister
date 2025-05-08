@@ -1,6 +1,7 @@
 import { DispatchRuleDto } from "../DispatchRule";
 import { DispatchRuleType } from "../DispatchRuleTypes";
 import { StoreDispatchRule } from "./StoreDispatchRule";
+import { AccountingOperation } from "../AccountingOperation";
 
 export class VatGroupDispatchRule extends StoreDispatchRule {
     public vatGroupId: string;
@@ -8,12 +9,15 @@ export class VatGroupDispatchRule extends StoreDispatchRule {
     constructor(
         id: number | undefined,
         statementItemIDs: number[],
-        groupId: string,
+        vatGroupId: string,
         storeId: number,
+        accountingOperation: AccountingOperation,
+        validFrom?: Date,
+        validTo?: Date,
         dispatchRuleType: DispatchRuleType = DispatchRuleType.VAT_GROUP,
     ) {
-        super(id, statementItemIDs, storeId, dispatchRuleType);
-        this.vatGroupId = groupId
+        super(id, statementItemIDs, storeId, accountingOperation, validFrom, validTo, dispatchRuleType);
+        this.vatGroupId = vatGroupId
     }
 
     override toDto(): DispatchRuleDto {
@@ -21,5 +25,17 @@ export class VatGroupDispatchRule extends StoreDispatchRule {
             ...super.toDto(),
             vatGroupId: [this.vatGroupId],
         }
+    }
+    
+    static fromDto(dto: DispatchRuleDto): VatGroupDispatchRule {
+        return new VatGroupDispatchRule(
+            dto.id,
+            dto.statementItemIDs,
+            dto.vatGroupId[0]!,
+            dto.storeId[0]!,
+            dto.accountingOperation,
+            dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
+            dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,
+        );
     }
 }

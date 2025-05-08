@@ -6,6 +6,7 @@ import { StatementItem, StatementItemAggregate } from "../models/types/statement
 import { TicketAccountingTransactionDto } from "../models/types/accounting-transaction/TicketAccountingTransactionDto";
 import { TicketAccountingTransaction } from "../models/types/accounting-transaction/TicketAccountingTransaction";
 import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
+import { DailyTransactionRecord, DailyTransactionRecordDto } from "../models/types/statement-items/DailyTransactionRecord";
 
 export class StatementItemsClient {
     private readonly actor: ActorSubclass<_SERVICE>
@@ -83,14 +84,72 @@ export class StatementItemsClient {
     }
 
     /**
-     * Get all transactions by statement item id and date
-     * @param statementItemId the id of the statement item
+     * Get all transaction IDs by statement item ID and date
+     * @param statementItemId the ID of the statement item
+     * @param date the date to filter by
+     * @returns the list of transaction record IDs
+     */
+    async getStatementItemTransactionIds(statementItemId: number, date: Date): Promise<number[]> {
+        const result = await this.actor.getDailyTransactionRecordIds(statementItemId, date.toISOString());
+        return Array.from(result);
+    }
+
+    /**
+     * Get transactions by record IDs
+     * @param recordIds the list of record IDs
+     * @returns the list of transactions
+     */
+    async getTransactionsByRecordIds(recordIds: number[]): Promise<TicketAccountingTransaction[]> {
+        const resp = await this.actor.getTransactionsByRecordIds(recordIds);
+        return resp.map(t => TicketAccountingTransaction.fromDto(t as TicketAccountingTransactionDto));
+    }
+
+
+    /**
+     * Get all transactions by statement item ID and date (combined method for easier use)
+     * @param statementItemId the ID of the statement item
      * @param date the date to filter by
      * @returns the list of transactions
      */
-    async getStatementItemTransactions(statementItemId: number, date: Date): Promise<TicketAccountingTransaction[]> {
-        const resp = await this.actor.getDailyStatementItemTransactions(statementItemId, date.toISOString());
-        return resp.map(t => TicketAccountingTransaction.fromDto(t as TicketAccountingTransactionDto));
+    async getStatementItemRecordsWithTransactions(statementItemId: number, date: Date, batchSize: number = 50): Promise<{
+        record: DailyTransactionRecord,
+        transaction: TicketAccountingTransaction,
+    }[]> {
+        const recordIds = await this.getStatementItemTransactionIds(statementItemId, date);
+        
+        const batches: number[][] = [];
+        
+        for (let i = 0; i < recordIds.length; i += batchSize) {
+            batches.push(recordIds.slice(i, i + batchSize));
+        }
+        
+        const results: {
+            record: DailyTransactionRecord,
+            transaction: TicketAccountingTransaction,
+        }[] = [];
+        for (const batch of batches) {
+            const records = await this.actor.getDailyTransactionRecordsByIds(batch);
+            const trx = await this.actor.getTicketAccountingTransactionByIds(records.map(r => r.transactionId));
+            results.push(...trx.map(t => {
+                const record = records.find(r => r.transactionId === t.Header.DLTERPId[0])!;
+                return {
+                    record: DailyTransactionRecord.fromDto(record as DailyTransactionRecordDto),
+                    transaction: TicketAccountingTransaction.fromDto(t as TicketAccountingTransactionDto),
+                }
+            }));
+        }
+
+        const dayStart = new Date(date);    
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(date);
+        dayEnd.setHours(23, 59, 59, 999);
+
+        const transactions = results.filter(t => t.transaction.Header.IssueDate && t.transaction.Header.IssueDate >= dayStart && t.transaction.Header.IssueDate <= dayEnd);
+
+        return transactions.map(t => ({
+            record: t.record,
+            transaction: t.transaction,
+        }));
     }
 
     

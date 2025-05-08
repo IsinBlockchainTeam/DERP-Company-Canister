@@ -24,41 +24,29 @@ export class DailyTransactionRecordsRepository {
 
     saveDailyTransactionRecord(record: Omit<DailyTransactionRecord, 'id'> | DailyTransactionRecord): DailyTransactionRecord {
         // ID is given should perform update
-        if ("id" in record) {
+        if ((record as DailyTransactionRecord).id) {
             // check that the record exists
-            if (!this._dailyTransactionRecordsById.containsKey(record.id)) {
-                throw new Error(`DailyTransactionRecord with id ${record.id} does not exist`);
+            if (!this._dailyTransactionRecordsById.containsKey((record as DailyTransactionRecord).id)) {
+                throw new Error(`DailyTransactionRecord with id ${(record as DailyTransactionRecord).id} does not exist`);
             }
 
             // update the record
-            this._dailyTransactionRecordsById.insert(record.id, {
-                id: record.id,
-                date: record.date.toISOString(),
-                parentStatementItemId: record.parentStatementItemId,
-                total: record.total,
-                transactionId: record.transactionId,
-            });
+            this._dailyTransactionRecordsById.insert((record as DailyTransactionRecord).id, (record as DailyTransactionRecord).toDto());
 
             // update the index parentStatementId+$+date -> id[]
             const key = this.extractKey(record);
             const records = this._dailyTransactionRecordsByStatement.get(key) || [];
-            if (!records.includes(record.id)) {
-                records.push(record.id);
+            if (!records.includes((record as DailyTransactionRecord).id)) {
+                records.push((record as DailyTransactionRecord).id);
                 this._dailyTransactionRecordsByStatement.insert(key, records);
             }
 
-            return record;
+            return record as DailyTransactionRecord;
         }
 
         const id = new Number(this._dailyTransactionRecordsById.len()).valueOf() + 1;
-        const recordWithId: DailyTransactionRecord = { ...record, id };
-        const serializedRecord: DailyTransactionRecordPersisted = {
-            id,
-            date: recordWithId.date.toISOString(),
-            parentStatementItemId: recordWithId.parentStatementItemId,
-            total: recordWithId.total,
-            transactionId: recordWithId.transactionId,
-        };
+        const recordWithId: DailyTransactionRecord = new DailyTransactionRecord(id, record.parentStatementItemId, record.date, record.total, record.transactionId);
+        const serializedRecord: DailyTransactionRecordPersisted = recordWithId.toDto();
 
         this._dailyTransactionRecordsById.insert(id, serializedRecord);
 
@@ -71,29 +59,66 @@ export class DailyTransactionRecordsRepository {
         return recordWithId;
     }
 
-    getDailyTransactionRecords(statementId: number, date: Date): DailyTransactionRecord[] {
+    getDailyTransactionRecordIds(statementId: number, date: Date): number[] {
+        const dayBefore = new Date(date);   
+        dayBefore.setDate(dayBefore.getDate() - 1);
+        const dayAfter = new Date(date);
+        dayAfter.setDate(dayAfter.getDate() + 1);
+
+        const keyBefore = this.extractKey({ parentStatementItemId: statementId, date: dayBefore });
+        const keyAfter = this.extractKey({ parentStatementItemId: statementId, date: dayAfter });
         const key = this.extractKey({ parentStatementItemId: statementId, date });
-        const ids = this._dailyTransactionRecordsByStatement.get(key) || [];
-        return ids
-            .map((id) => this._dailyTransactionRecordsById.get(id))
+
+        const recordsBefore = this._dailyTransactionRecordsByStatement.get(keyBefore) || [];
+        const recordsAfter = this._dailyTransactionRecordsByStatement.get(keyAfter) || [];
+        const recordsCurrent = this._dailyTransactionRecordsByStatement.get(key) || [];
+
+        return [...recordsBefore, ...recordsCurrent, ...recordsAfter];
+    }
+
+    getDailyTransactionRecordsByIds(ids: number[]): DailyTransactionRecord[] {
+        // BUG IN MAP: despite each printed record is printed correctly in the "map" function
+        // the final "records" array is an array with just one element = 0 (????????????????)
+        // const records = ids
+        //     .map((id) => {
+        //         const record = this._dailyTransactionRecordsById.get(id);
+        //         console.log("Record", record);
+        //         return record;
+        //     });
+        // console.log("Records", JSON.stringify(records));
+        // console.log("Record", records[0]);
+        
+        const records = [];
+        for (const id of ids) {
+            const record = this._dailyTransactionRecordsById.get(id);
+            if (record) {
+                records.push(record);
+            }
+        }
+        
+
+        const result = records
             .filter((i) => !!i)
-            .map(i => new DailyTransactionRecord(i.id, i.parentStatementItemId, new Date(i.date), i.total, i.transactionId));
+        
+        let parsedRecords = [];
+        for (const record of result) {
+            parsedRecords.push(new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId));
+        }
+
+        return parsedRecords;
     }
 
     getDailyTransactionRecordById(id: number): DailyTransactionRecord | null {
         const record = this._dailyTransactionRecordsById.get(id);
         if (!record) return null;
 
-        return {
-            ...record,
-            date: new Date(record.date),
-        }
+        return new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId);
     }
 
     private extractKey(record: Pick<DailyTransactionRecord, 'parentStatementItemId' | 'date'> & {
         [key: string]: any
     }): string {
         const date = record.date;
-        return `${record.parentStatementItemId}$${date.getFullYear()}-${date.getMonth()}-${date.getDay()}`;
+        return `${record.parentStatementItemId}$${date.getUTCFullYear()}-${date.getUTCMonth()}-${date.getUTCDate()}`;
     }
 }

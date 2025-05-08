@@ -10,12 +10,16 @@ export * from "./models/types/accounting-transaction/BankAccountingTransaction"
 export * from "./models/types/accounting-transaction/InvoiceAccountingTransaction"
 
 export * from "./models/types/dispatch-rules/DispatchRule"
+export * from "./models/types/dispatch-rules/AccountingOperation"
 export * from "./models/types/dispatch-rules/DispatchRuleTypes"
 
 export * from "./models/types/dispatch-rules/TypeDispatchRule"
 export * from "./models/types/dispatch-rules/ticket/StoreDispatchRule"
 export * from "./models/types/dispatch-rules/ticket/GroupDispatchRule"
 export * from "./models/types/dispatch-rules/ticket/VatGroupDispatchRule"
+
+// Utility services
+export * from "./service/DispatchRuleEntityMapper"
 
 // Canisters
 export * from "./clients"

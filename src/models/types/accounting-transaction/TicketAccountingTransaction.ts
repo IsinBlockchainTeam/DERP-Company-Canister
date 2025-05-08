@@ -116,17 +116,16 @@ export class TicketPaymentDetails implements Presentable<TicketPaymentDetailsDto
     issueDate: Date;
     paymentType: string;
     paymentCurrency: string;
-
-    // Exchange rate of the payment currency to the ticket currency
     exchangeRate: number;
-
-    // Amount paid in the ticket currency
     amount: number;
-
-    // ID of the transaction in the payment system e.g. datatrans ID
     externalId: string;
+    creditCardDescription?: string | null;
+    creditCardNum?: string | null;
+    creditCardAuthorizationDate?: Date | null;
+    creditCardAuthorizationNum?: string | null;
+    creditCardTerminalCode?: string | null;
 
-    constructor(id: string, payerAddress: string | null, payeeAddress: string | null, paymentCurrencyAmount: number, issueDate: Date, paymentType: string, paymentCurrency: string, exchangeRate: number, amount: number, externalId: string) {
+    constructor(id: string, payerAddress: string | null, payeeAddress: string | null, paymentCurrencyAmount: number, issueDate: Date, paymentType: string, paymentCurrency: string, exchangeRate: number, amount: number, externalId: string, creditCardDescription?: string | null, creditCardNum?: string | null, creditCardAuthorizationDate?: Date | null, creditCardAuthorizationNum?: string | null, creditCardTerminalCode?: string | null) {
         this.id = id;
         this.payerAddress = payerAddress;
         this.payeeAddress = payeeAddress;
@@ -137,6 +136,11 @@ export class TicketPaymentDetails implements Presentable<TicketPaymentDetailsDto
         this.exchangeRate = exchangeRate;
         this.amount = amount;
         this.externalId = externalId;
+        this.creditCardDescription = creditCardDescription;
+        this.creditCardNum = creditCardNum;
+        this.creditCardAuthorizationDate = creditCardAuthorizationDate;
+        this.creditCardAuthorizationNum = creditCardAuthorizationNum;
+        this.creditCardTerminalCode = creditCardTerminalCode;
     }
 
     toDto(): TicketPaymentDetailsDto {
@@ -149,7 +153,12 @@ export class TicketPaymentDetails implements Presentable<TicketPaymentDetailsDto
             this.paymentCurrency,
             this.exchangeRate,
             this.amount,
-            this.externalId);
+            this.externalId,
+            this.creditCardDescription ? [this.creditCardDescription] : [],
+            this.creditCardNum ? [this.creditCardNum] : [],
+            this.creditCardAuthorizationDate ? [this.creditCardAuthorizationDate.toISOString()] : [],
+            this.creditCardAuthorizationNum ? [this.creditCardAuthorizationNum] : [],
+            this.creditCardTerminalCode ? [this.creditCardTerminalCode] : []);
     }
 
     static fromDto(dto: TicketPaymentDetailsDto): TicketPaymentDetails {
@@ -158,7 +167,16 @@ export class TicketPaymentDetails implements Presentable<TicketPaymentDetailsDto
             dto.payeeAddress.length > 0 ? dto.payeeAddress[0] ?? null : null,
             dto.paymentCurrencyAmount,
             new Date(dto.issueDate),
-            dto.paymentType, dto.paymentCurrency, dto.exchangeRate, dto.amount, dto.externalId);
+            dto.paymentType, 
+            dto.paymentCurrency, 
+            dto.exchangeRate, 
+            dto.amount, 
+            dto.externalId,
+            dto.creditCardDescription.length > 0 ? dto.creditCardDescription[0] ?? null : null,
+            dto.creditCardNum.length > 0 ? dto.creditCardNum[0] ?? null : null,
+            dto.creditCardAuthorizationDate.length > 0 ? new Date(dto.creditCardAuthorizationDate[0]!) : null,
+            dto.creditCardAuthorizationNum.length > 0 ? dto.creditCardAuthorizationNum[0] ?? null : null,
+            dto.creditCardTerminalCode.length > 0 ? dto.creditCardTerminalCode[0] ?? null : null);
     }
 }
 

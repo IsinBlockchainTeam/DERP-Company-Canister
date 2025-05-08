@@ -70,6 +70,11 @@ export class TicketPaymentDetailsDto {
     exchangeRate: number;
     amount: number;
     externalId: string;
+    creditCardDescription: [string] | [];
+    creditCardNum: [string] | [];
+    creditCardAuthorizationDate: [string] | [];
+    creditCardAuthorizationNum: [string] | [];
+    creditCardTerminalCode: [string] | [];
 
     constructor(
         id: string,
@@ -81,7 +86,12 @@ export class TicketPaymentDetailsDto {
         paymentCurrency: string,
         exchangeRate: number,
         amount: number,
-        externalId: string
+        externalId: string,
+        creditCardDescription: [string] | [],
+        creditCardNum: [string] | [],
+        creditCardAuthorizationDate: [string] | [],
+        creditCardAuthorizationNum: [string] | [],
+        creditCardTerminalCode: [string] | []
     ) {
         this.id = id;
         this.payerAddress = payerAddress;
@@ -93,6 +103,11 @@ export class TicketPaymentDetailsDto {
         this.exchangeRate = exchangeRate;
         this.amount = amount;
         this.externalId = externalId;
+        this.creditCardDescription = creditCardDescription;
+        this.creditCardNum = creditCardNum;
+        this.creditCardAuthorizationDate = creditCardAuthorizationDate;
+        this.creditCardAuthorizationNum = creditCardAuthorizationNum;
+        this.creditCardTerminalCode = creditCardTerminalCode;
     }
 }
 

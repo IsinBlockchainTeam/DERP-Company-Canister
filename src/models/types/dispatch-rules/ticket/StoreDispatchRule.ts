@@ -2,6 +2,7 @@ import { AccountingTransactionType } from "../../accounting-transaction/Accounti
 import { DispatchRuleDto } from "../DispatchRule";
 import { DispatchRuleType } from "../DispatchRuleTypes";
 import { TypeDispatchRule } from "../TypeDispatchRule";
+import { AccountingOperation } from "../AccountingOperation";
 
 export class StoreDispatchRule extends TypeDispatchRule {
     public storeId: number;
@@ -10,9 +11,12 @@ export class StoreDispatchRule extends TypeDispatchRule {
         id: number | undefined,
         statementItemIDs: number[],
         storeId: number,
+        accountingOperation: AccountingOperation,
+        validFrom?: Date,
+        validTo?: Date,
         dispatchRuleType = DispatchRuleType.STORE,
     ) {
-        super(id, statementItemIDs, AccountingTransactionType.TICKET, dispatchRuleType);
+        super(id, statementItemIDs, AccountingTransactionType.TICKET, accountingOperation, validFrom, validTo, dispatchRuleType);
         this.storeId = storeId
     }
 
@@ -21,5 +25,16 @@ export class StoreDispatchRule extends TypeDispatchRule {
             ...super.toDto(),
             storeId: [this.storeId],
         }
+    }
+    
+    static fromDto(dto: DispatchRuleDto): StoreDispatchRule {
+        return new StoreDispatchRule(
+            dto.id,
+            dto.statementItemIDs,
+            dto.storeId[0]!,
+            dto.accountingOperation,
+            dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
+            dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,
+        );
     }
 }

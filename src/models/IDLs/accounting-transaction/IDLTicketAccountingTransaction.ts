@@ -9,9 +9,9 @@ import {
 
 const IDLTicketTax = IDL.Record({
     Id: IDL.Text,
-    Amount: IDL.Float32,
+    Amount: IDL.Float64,
     TypeCode: IDL.Text,
-    RateApplicablePercent: IDL.Float32,
+    RateApplicablePercent: IDL.Float64,
 });
 
 const IDLTicketLineItemGroup = IDL.Record({
@@ -24,11 +24,11 @@ const IDLTicketLineItem = IDL.Record({
     ItemGroupId: IDL.Opt(IDL.Text),
     ItemCode: IDL.Text,
     Description: IDL.Text,
-    Quantity: IDL.Float32,
+    Quantity: IDL.Float64,
     UnitCode: IDL.Text,
-    UnitPrice: IDL.Float32,
-    TotalInclTax: IDL.Float32,
-    TotalExclTax: IDL.Opt(IDL.Float32),
+    UnitPrice: IDL.Float64,
+    TotalInclTax: IDL.Float64,
+    TotalExclTax: IDL.Opt(IDL.Float64),
     Tax: IDLAccountingTransactionLineItemTax,
 });
 
@@ -36,13 +36,18 @@ const IDLTicketPaymentDetails = IDL.Record({
     id: IDL.Text,
     payerAddress: IDL.Opt(IDL.Text),
     payeeAddress: IDL.Opt(IDL.Text),
-    paymentCurrencyAmount: IDL.Float32,
+    paymentCurrencyAmount: IDL.Float64,
     issueDate: IDL.Text,
     paymentType: IDL.Text,
     paymentCurrency: IDL.Text,
-    exchangeRate: IDL.Float32,
-    amount: IDL.Float32,
+    exchangeRate: IDL.Float64,
+    amount: IDL.Float64,
     externalId: IDL.Text,
+    creditCardDescription: IDL.Opt(IDL.Text),
+    creditCardNum: IDL.Opt(IDL.Text),
+    creditCardAuthorizationDate: IDL.Opt(IDL.Text),
+    creditCardAuthorizationNum: IDL.Opt(IDL.Text),
+    creditCardTerminalCode: IDL.Opt(IDL.Text),
 });
 
 

@@ -9,7 +9,7 @@ export const IDLCustomDate = IDL.Record({
 export const IDLAccountingTransactionLineItemTax = IDL.Record({
     Amount: IDL.Opt(IDL.Float64),
     TypeCode: IDL.Text,
-    RateApplicablePercent: IDL.Float32,
+    RateApplicablePercent: IDL.Float64,
 });
 
 export const  IDLAccountingTransactionHeader = IDL.Record({
@@ -30,9 +30,9 @@ export const  IDLAccountingTransactionHeader = IDL.Record({
 });
 
 export const IDLAccountingTransactionTotals = IDL.Record({
-    TotalExclTax: IDL.Float32,
-    TotalInclTax: IDL.Float32,
-    TotalTaxAmount: IDL.Float32,
+    TotalExclTax: IDL.Float64,
+    TotalInclTax: IDL.Float64,
+    TotalTaxAmount: IDL.Float64,
 });
 
 export const IDLAccountingTransactionAdditionalInformation = IDL.Record({

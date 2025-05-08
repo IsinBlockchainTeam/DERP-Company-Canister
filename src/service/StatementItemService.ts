@@ -1,4 +1,5 @@
 import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
+import { DailyTransactionRecord } from "../models/types/statement-items/DailyTransactionRecord";
 import { StatementItem, StatementItemAggregate } from "../models/types/statement-items/StatementItem";
 import { StatementItemCategory } from "../models/types/statement-items/StatementItemCategory";
 import { DailyTransactionRecordsRepository } from "../repositories/DailyTransactionRecordsRepository";
@@ -39,7 +40,7 @@ export class StatementItemService {
         return this._statementItemsRepository.getStatementItemById(id);
     }
 
-    addTransactionContributions(parentStatementItemId: number, date: Date, record: {
+    addStatementItemTransaction(parentStatementItemId: number, date: Date, record: {
         amount: number,
         transactionId: string,
     }): void {
@@ -49,24 +50,20 @@ export class StatementItemService {
         }
 
 
-        const yearlyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, { year: date.getFullYear() }) || new StatementItemAggregate(parentStatementItemId, 0, date.getFullYear());
-        const monthlyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, { year: date.getFullYear(), month: date.getMonth() }) || new StatementItemAggregate(parentStatementItemId, 0, date.getFullYear(), date.getMonth());
+        const yearlyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, { year: date.getUTCFullYear() }) || new StatementItemAggregate(parentStatementItemId, 0, date.getUTCFullYear());
+        const monthlyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, { year: date.getUTCFullYear(), month: date.getUTCMonth() }) || new StatementItemAggregate(parentStatementItemId, 0, date.getUTCFullYear(), date.getUTCMonth());
         const dailyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, {
-            year: date.getFullYear(),
-            month: date.getMonth(),
-            day: date.getDate()
-        }) || new StatementItemAggregate(parentStatementItemId, 0, date.getFullYear(), date.getMonth(), date.getDate());
+            year: date.getUTCFullYear(),
+            month: date.getUTCMonth(),
+            day: date.getUTCDate()
+        }) || new StatementItemAggregate(parentStatementItemId, 0, date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
 
         yearlyAggregate.total += record.amount;
         monthlyAggregate.total += record.amount;
         dailyAggregate.total += record.amount;
 
-        this._dailyTransactionsRecordRepository.saveDailyTransactionRecord({
-            parentStatementItemId,
-            date,
-            total: record.amount,
-            transactionId: record.transactionId,
-        });
+        const dailyTransactionRecord = new DailyTransactionRecord(0, parentStatementItemId, date, record.amount, record.transactionId);
+        this._dailyTransactionsRecordRepository.saveDailyTransactionRecord(dailyTransactionRecord);
 
         this._aggregatesRepository.saveStatementItemAggregate(yearlyAggregate);
         this._aggregatesRepository.saveStatementItemAggregate(monthlyAggregate);
@@ -78,20 +75,20 @@ export class StatementItemService {
     }
 
     getStatementItemAggregates(parentStatementItemId: number, date: Partial<CustomDate> & Pick<CustomDate, 'year'>): StatementItemAggregate[] {
-        if(date.month !== undefined && date.day !== undefined) {
+        if (date.month !== undefined && date.day !== undefined) {
             const item = this.getStatementItemAggregate(parentStatementItemId, date);
-            if(item) {
+            if (item) {
                 return [item];
             } else {
                 return [];
             }
-        } else if(date.month !== undefined) {
+        } else if (date.month !== undefined) {
             // loop through all days of the month stated in date.month
-            const numDays = new Date(date.year, date.month, 0).getDate();
+            const numDays = new Date(date.year, date.month, 0).getUTCDate();
             const aggregates: StatementItemAggregate[] = [];
-            for(let i = 1; i <= numDays; i++) {
-                const day = this.getStatementItemAggregate(parentStatementItemId, {year: date.year, month: date.month, day: i});
-                if(day) {
+            for (let i = 1; i <= numDays; i++) {
+                const day = this.getStatementItemAggregate(parentStatementItemId, { year: date.year, month: date.month, day: i });
+                if (day) {
                     aggregates.push(day);
                 }
             }
@@ -100,9 +97,9 @@ export class StatementItemService {
         } else {
             // loop through all months of the year stated in date.year
             const aggregates: StatementItemAggregate[] = [];
-            for(let i = 0; i <= 11; i++) {
-                const month = this.getStatementItemAggregate(parentStatementItemId, {year: date.year, month: i});
-                if(month) {
+            for (let i = 0; i <= 11; i++) {
+                const month = this.getStatementItemAggregate(parentStatementItemId, { year: date.year, month: i });
+                if (month) {
                     aggregates.push(month);
                 }
             }
@@ -111,10 +108,12 @@ export class StatementItemService {
         }
     }
 
-    getDailyTransactionRecords(parentStatementItemId: number, date: Date): {
-        total: number,
-        transactionId: string,
-    }[] {
-        return this._dailyTransactionsRecordRepository.getDailyTransactionRecords(parentStatementItemId, date);
+    getDailyTransactionRecordIds(parentStatementItemId: number, date: Date): number[] {
+        return this._dailyTransactionsRecordRepository.getDailyTransactionRecordIds(parentStatementItemId, date);
+    }
+
+    getDailyTransactionRecordsByIds(ids: number[]): DailyTransactionRecord[] {
+        const records = this._dailyTransactionsRecordRepository.getDailyTransactionRecordsByIds(ids);
+        return records;
     }
 }

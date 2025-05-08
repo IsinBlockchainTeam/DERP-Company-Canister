@@ -14,9 +14,9 @@ export class CustomDate {
 
     static fromDate(date: Date): CustomDate {
         return {
-            year: date.getFullYear(),
-            month: date.getMonth(),
-            day: date.getDate(),
+            year: date.getUTCFullYear(),
+            month: date.getUTCMonth(),
+            day: date.getUTCDate(),
         };
     }
 }
