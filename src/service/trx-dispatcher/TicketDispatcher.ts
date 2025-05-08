@@ -9,6 +9,7 @@ import { DispatchRule } from "../../models/types/dispatch-rules/DispatchRule";
 import { AccountingOperationDispatchRuleIndexRepository } from "../../repositories/dispatch-rules/AccountingOperationDispatchRuleIndexRepository";
 import { DispatchRuleRepository } from "../../repositories/dispatch-rules/DispatchRuleRepository";
 import { GroupDispatchRuleIndexRepository } from "../../repositories/dispatch-rules/GroupDispatchRuleIndexRepository";
+import { DispatchRuleType } from "../../models/types/dispatch-rules/DispatchRuleTypes";
 
 export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransaction> {
     dispatch(trx: TicketAccountingTransaction): void {
@@ -56,12 +57,16 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
 
         // If there's a non-zero total, adjust the last rule's contribution
         if (total !== 0) {
-            const lastRule = rules[rules.length - 1];
-            if (lastRule.id !== undefined) {
-                const lastRuleIdStr = String(lastRule.id);
-                if (contributionsByRule.has(lastRuleIdStr)) {
+            const firstGroupRule = rules.find(rule => rule.ruleType === DispatchRuleType.GROUP);
+            if (!firstGroupRule) {
+                throw new Error(`No group rule found for transaction ${trx.Header.DLTERPId}`);
+            }
+
+            if (firstGroupRule.id !== undefined) {
+                const firstGroupRuleIdStr = String(firstGroupRule.id);
+                if (contributionsByRule.has(firstGroupRuleIdStr)) {
                     // Adjust the contribution of the last rule
-                    const data = contributionsByRule.get(lastRuleIdStr)!;
+                    const data = contributionsByRule.get(firstGroupRuleIdStr)!;
                     data.contribution -= total;
                 }
             }
