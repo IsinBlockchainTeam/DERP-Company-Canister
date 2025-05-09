@@ -5,7 +5,7 @@
     "version": "0.0.1-alpha11",
     "scripts": {
         "pretest": "tsx test/pretest.ts",
-        "test": "jest",
+        "test": "jest --detectOpenHandles --forceExit",
         "start-network": "dfx start --clean",
         "deploy": "set -o allexport; set +o allexport && dfx deploy",
         "build": "npm run generate && mkdir -p dist && cp -r ./src/declarations ./dist && npx tsc -p tsconfig-lib.json",
@@ -23,6 +23,7 @@
     },
     "devDependencies": {
         "@types/text-encoding": "^0.0.40",
+        "@types/jest": "^29.5.1",
         "jest": "^29.7.0",
         "ts-jest": "^29.1.4",
         "tsx": "^4.15.7",

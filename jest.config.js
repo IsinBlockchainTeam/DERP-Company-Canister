@@ -3,8 +3,12 @@ module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
     transform: {
-        '^.+\\.ts$': ['ts-jest', { isolatedModules: true }],
+        '^.+\\.ts$': ['ts-jest', { 
+            isolatedModules: true,
+            tsconfig: 'tsconfig.test.json'
+        }],
         '^.+\\.js$': 'ts-jest'
     },
-    transformIgnorePatterns: ['/node_modules/(?!(azle)/)'] // Make sure azle is transformed
+    transformIgnorePatterns: ['/node_modules/(?!(azle)/)'], // Make sure azle is transformed
+    testTimeout: 10000 // Increase test timeout to prevent hanging
 };

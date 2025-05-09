@@ -13,23 +13,25 @@ export abstract class DispatchRuleHandler<
 > {
     /**
      * Assert if a rule applies to a given transaction.
+     * Should not be used from outside the class. Instead, use assertTrxActivation.
      * Must be implemented by all subclasses.
      * 
      * @param rule - The rule to assert.
      * @param trx - The transaction to assert the rule against.
      * @returns True if the rule applies to the transaction, false otherwise.
      */
-    protected abstract assert(rule: R, trx: A): boolean;
+    public  abstract assert(rule: R, trx: A): boolean;
     
     /**
      * Get the contributions of a rule for a given transaction.
+     * Should not be used from outside the class. Instead, use getComputedContributions.
      * Must be implemented by all subclasses.
      * 
      * @param rule - The rule to get the contributions for.
      * @param trx - The transaction to get the contributions for.
      * @returns The contributions of the rule for the transaction.
      */
-    protected abstract getContributions(rule: R, trx: A): number;
+    public abstract getContributions(rule: R, trx: A): number;
     
     
     /**
@@ -64,7 +66,7 @@ export abstract class DispatchRuleHandler<
     getComputedContributions(rule: R, trx: A): number {
         let contributions = this.getContributions(rule, trx);
 
-        if (rule.accountingOperation === AccountingOperation.DEBIT) {
+        if (rule.accountingOperation === AccountingOperation.CREDIT) {
             contributions = -contributions;
         }
         

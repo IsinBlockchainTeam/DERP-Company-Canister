@@ -27,6 +27,9 @@ export class AccountingTransactionService {
 
     storeBankAccountingTransaction(newTransaction: BankAccountingTransaction): void {
         this.bankAccountingTransactionRepository.save(newTransaction);
+
+        const dispatchRuleService = new DispatchRuleService();
+        dispatchRuleService.dispatch(newTransaction);
     }
 
     getAllTicketAccountingTransactions(dateFrom?: Date, dateTo?: Date): string[] {

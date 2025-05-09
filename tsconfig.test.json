@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "types": ["jest", "node"],
+        "outDir": "dist-test"
+    },
+    "include": [
+        "src/**/*",
+        "test/**/*"
+    ]
+} 

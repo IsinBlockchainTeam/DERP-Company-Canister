@@ -7,33 +7,21 @@ import { IDispatchRuleService } from "../IDispatchRuleService";
 import { BaseDispatchRuleService } from "../BaseDispatchRuleService";
 
 export class VatGroupDispatchRuleService extends BaseDispatchRuleService<VatGroupDispatchRule> {
-    private readonly vatGroupBasedRepository: VatGroupDispatchRuleIndexRepository = VatGroupDispatchRuleIndexRepository.instance;
-    protected readonly ruleType = DispatchRuleType.VAT_GROUP;
+    public readonly vatGroupBasedRepository: VatGroupDispatchRuleIndexRepository = VatGroupDispatchRuleIndexRepository.instance;
+    public readonly ruleType = DispatchRuleType.VAT_GROUP;
     
-    protected onCreate(rule: VatGroupDispatchRule): void {
+    public onCreate(rule: VatGroupDispatchRule): void {
         this.vatGroupBasedRepository.addRuleIdToGroup(rule.vatGroupId, rule.id!);
     }
 
-    protected onUpdate(currentRule: VatGroupDispatchRule, newRule: VatGroupDispatchRule): void {
+    public onUpdate(currentRule: VatGroupDispatchRule, newRule: VatGroupDispatchRule): void {
         if (currentRule.vatGroupId !== newRule.vatGroupId) {
             this.vatGroupBasedRepository.removeRuleIdFromGroup(currentRule.vatGroupId, currentRule.id!);
             this.vatGroupBasedRepository.addRuleIdToGroup(newRule.vatGroupId, newRule.id!);
         }
     }
     
-    protected instantiateRule(ruleDto: DispatchRuleDto): VatGroupDispatchRule {
-        return new VatGroupDispatchRule(
-            undefined,
-            ruleDto.statementItemIDs,
-            ruleDto.vatGroupId[0]!,
-            ruleDto.storeId[0]!,
-            ruleDto.accountingOperation,
-            ruleDto.validFrom[0] ? new Date(ruleDto.validFrom[0]) : undefined,
-            ruleDto.validTo[0] ? new Date(ruleDto.validTo[0]) : undefined
-        );
-    }
-    
-    protected mapToConcreteRule(rule: DispatchRule): VatGroupDispatchRule {
+    public mapToConcreteRule(rule: DispatchRule): VatGroupDispatchRule {
         return new VatGroupDispatchRule(
             rule.id,
             rule.statementItemIDs,
@@ -45,7 +33,7 @@ export class VatGroupDispatchRuleService extends BaseDispatchRuleService<VatGrou
         );
     }
 
-    protected validateRuleDto(ruleDto: DispatchRuleDto | Omit<DispatchRuleDto, 'id'>): void {
+    public validateRuleDto(ruleDto: DispatchRuleDto | Omit<DispatchRuleDto, 'id'>): void {
         if (ruleDto.vatGroupId.length < 1) {
             throw new Error("VatGroup dispatch rule must have exactly one vat group ID");
         }
@@ -55,10 +43,9 @@ export class VatGroupDispatchRuleService extends BaseDispatchRuleService<VatGrou
         }
     }
 
-    listByGroup(groupId: string) {
+    public listByGroup(groupId: string) {
         return this.vatGroupBasedRepository.getDispatchRuleIdsForGroup(groupId)
             .map(id => this.get(id)!)
             .filter(rule => !!rule) as VatGroupDispatchRule[];
     }
-
 }

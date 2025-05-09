@@ -18,6 +18,11 @@ export const StableTreeMapIds = {
     StoreDispatchRuleIndex: 7,
     DispatchRules: 8,
     AccountingOperationDispatchRuleIndex: 12,
+    BankAccountDispatchRuleIndex: 13,
+    BankCounterpartDispatchRuleIndex: 14,
+    BankCausalDomainDispatchRuleIndex: 15,
+    BankCausalFamilyDispatchRuleIndex: 16,
+    BankCausalSubFamilyDispatchRuleIndex: 17,
 
     DailyTransactionRecord: 9,
     DailyTransactionRecordStatementIndex: 10,

@@ -1,10 +1,14 @@
 import { DispatchRule, DispatchRuleDto } from "../models/types/dispatch-rules/DispatchRule";
 import { DispatchRuleType } from "../models/types/dispatch-rules/DispatchRuleTypes";
 import { TypeDispatchRule } from "../models/types/dispatch-rules/TypeDispatchRule";
+import { AccountDispatchRule } from "../models/types/dispatch-rules/bank/AccountDispatchRule";
+import { CounterpartDispatchRule } from "../models/types/dispatch-rules/bank/CounterpartDispatchRule";
+import { MovementTypeDispatchRule } from "../models/types/dispatch-rules/bank/MovementTypeDispatchRule";
 import { GroupDispatchRule } from "../models/types/dispatch-rules/ticket/GroupDispatchRule";
 import { StoreDispatchRule } from "../models/types/dispatch-rules/ticket/StoreDispatchRule";
 import { VatGroupDispatchRule } from "../models/types/dispatch-rules/ticket/VatGroupDispatchRule";
-
+import { CausalDispatchRule } from "../models/types/dispatch-rules/bank/CausalDispatchRule";
+import { CombinedDispatchRule } from "../models/types/dispatch-rules/CombinedDispatchRule";
 export class DispatchRuleEntityMapper {
     public static fromDto(dto: DispatchRuleDto): DispatchRule {
         switch (dto.ruleType) {
@@ -16,8 +20,17 @@ export class DispatchRuleEntityMapper {
                 return StoreDispatchRule.fromDto(dto);
             case DispatchRuleType.VAT_GROUP:
                 return VatGroupDispatchRule.fromDto(dto);
-            default:
-                throw new Error(`Invalid dispatch rule type: ${dto.ruleType}`);
+            case DispatchRuleType.BANK_ACCOUNT:
+                return AccountDispatchRule.fromDto(dto);
+            case DispatchRuleType.BANK_COUNTERPART:
+                return CounterpartDispatchRule.fromDto(dto);
+            case DispatchRuleType.BANK_MOVEMENT_TYPE:
+                return MovementTypeDispatchRule.fromDto(dto);
+            case DispatchRuleType.BANK_CAUSAL:
+                return CausalDispatchRule.fromDto(dto);
+            case DispatchRuleType.COMBINED:
+                return CombinedDispatchRule.fromDto(dto);
+            // NEVER add a default statement. This will allow to notice a missing case.
         }
     }
 }

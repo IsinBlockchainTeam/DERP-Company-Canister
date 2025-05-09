@@ -16,7 +16,7 @@ type ReplaceDate<T> = T extends Date
 export type IDLTyped<T> = Exclude<_WithIDLTypes<ReplaceDate<T>>, keyof Function>;
 
 export function isDefined<T>(value: T | undefined | null): value is T {
-    return value !== undefined;
+    return value !== undefined && value !== null;
 }
 
 export type StableBTreeMapType<K, V> = {

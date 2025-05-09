@@ -1,5 +1,6 @@
 import { StableBTreeMap } from "azle";
-import { DispatchRule } from "../../models/types/dispatch-rules/DispatchRule";
+import { DispatchRule, DispatchRuleDto } from "../../models/types/dispatch-rules/DispatchRule";
+import { DispatchRuleEntityMapper } from "../../service/DispatchRuleEntityMapper";
 import { StableTreeMapIds } from "../Utils";
 
 /**
@@ -11,7 +12,7 @@ export class DispatchRuleRepository {
     private static _instance: DispatchRuleRepository;
 
     // id -> DispatchRule
-    private _dispatchRules = StableBTreeMap<number, DispatchRule>(StableTreeMapIds.DispatchRules);
+    private _dispatchRules = StableBTreeMap<number, DispatchRuleDto>(StableTreeMapIds.DispatchRules);
 
     static get instance() {
         if (!DispatchRuleRepository._instance) {
@@ -28,15 +29,16 @@ export class DispatchRuleRepository {
                 throw new Error(`DispatchRule with id ${rule.id} does not exist`);
             }
 
-            const inserted = this._dispatchRules.insert(rule.id, rule);
-            return inserted as T;
+            this._dispatchRules.insert(rule.id, rule.toDto());
+            return rule;
         }
 
         const id = new Number(this._dispatchRules.len()).valueOf() + 1;
-        const ruleWithId: T = { ...rule, id };
+        rule.id = id;
 
-        this._dispatchRules.insert(id, ruleWithId);
-        return ruleWithId;
+        const dto = rule.toDto();
+        this._dispatchRules.insert(id, dto);
+        return DispatchRuleEntityMapper.fromDto(dto) as T;
     }
 
     getDispatchRule(id: number): DispatchRule | null {
@@ -44,23 +46,13 @@ export class DispatchRuleRepository {
         if (!rule) {
             return null;
         }
-
-        if (rule.validFrom && rule.validTo) {
-            rule.validFrom = new Date(rule.validFrom);
-            rule.validTo = new Date(rule.validTo);
-        }
         
-        return rule;
+        return DispatchRuleEntityMapper.fromDto(rule);
     }
 
     getDispatchRules(): DispatchRule[] {
         return Array.from(this._dispatchRules.values()).map(r => {
-            if (r.validFrom && r.validTo) {
-                r.validFrom = new Date(r.validFrom);
-                r.validTo = new Date(r.validTo);
-            }
-
-            return r;
+            return DispatchRuleEntityMapper.fromDto(r);
         });
     }
 

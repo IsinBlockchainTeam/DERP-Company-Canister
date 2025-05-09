@@ -4,12 +4,10 @@ import { StatementItemService } from "../StatementItemService";
 import { ITrxDispatcher } from "./ITrxDispatcher";
 import { VatGroupDispatchRuleService } from "../dispatch-rules/vat-group/VatGroupDispatchRuleService";
 import { StoreDispatchRuleService } from "../dispatch-rules/store/StoreDispatchRuleService";
-import { AccountingOperation } from "../../models/types/dispatch-rules/AccountingOperation";
 import { DispatchRule } from "../../models/types/dispatch-rules/DispatchRule";
-import { AccountingOperationDispatchRuleIndexRepository } from "../../repositories/dispatch-rules/AccountingOperationDispatchRuleIndexRepository";
-import { DispatchRuleRepository } from "../../repositories/dispatch-rules/DispatchRuleRepository";
-import { GroupDispatchRuleIndexRepository } from "../../repositories/dispatch-rules/GroupDispatchRuleIndexRepository";
 import { DispatchRuleType } from "../../models/types/dispatch-rules/DispatchRuleTypes";
+import { StoreDispatchRule } from "../../models/types/dispatch-rules/ticket/StoreDispatchRule";
+import { GroupDispatchRuleService } from "../dispatch-rules/group/GroupDispatchRuleService";
 
 export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransaction> {
     dispatch(trx: TicketAccountingTransaction): void {
@@ -17,19 +15,22 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
 
         const debitRules = this.getDebitRules(trx);
         const creditRules = this.getCreditRules(trx);
-        
+
+        // make rules array unique
         const rules = [
             ...debitRules,
             ...creditRules,
-        ];
+        ].filter((rule, index, self) =>
+            index === self.findIndex((t) => t.id === rule.id)
+        );
 
         let total = 0;
-        
+
         // Store all contributions before applying them
-        const contributionsByRule: Map<string, { 
-            rule: any, 
-            contribution: number, 
-            statementItems: number[] 
+        const contributionsByRule: Map<string, {
+            rule: any,
+            contribution: number,
+            statementItems: number[]
         }> = new Map();
 
         for (const rule of rules) {
@@ -39,7 +40,7 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
                 console.log(`Rule ${rule.id} matches transaction ${trx.Header.DLTERPId}`);
 
                 const contribution = handler.getComputedContributions(rule, trx);
-                
+
                 // Store the contribution for later use
                 if (rule.id !== undefined) {
                     contributionsByRule.set(String(rule.id), {
@@ -48,7 +49,7 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
                         statementItems: rule.statementItemIDs
                     });
                 }
-                
+
                 total += contribution;
             }
 
@@ -91,96 +92,45 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
             }
         }
     }
-    
-    private getDebitRules(trx: TicketAccountingTransaction): DispatchRule[] {
-        const operationIndexRepository = AccountingOperationDispatchRuleIndexRepository.instance;
-        const operationRuleIds = operationIndexRepository.getDispatchRuleIdsForOperation(AccountingOperation.DEBIT);
-        
-        // Get all unique rule IDs from different sources
-        const uniqueRuleIds = new Set<number>();
-        
-        // Add operation-based rule IDs
-        operationRuleIds.forEach(id => uniqueRuleIds.add(id));
-        
-        // Add group-based rule IDs
-        // But only add rules that are configured with "DEBIT" operation
-        if (trx.LineItemGroups) {
-            const groupIndexRepository = GroupDispatchRuleIndexRepository.instance;
-            trx.LineItemGroups.forEach(group => {
-                const groupRuleIds = groupIndexRepository.getDispatchRuleIdsForGroup(group.Id);
-                // Only add IDs that are also in operationRuleIds
-                groupRuleIds.forEach(id => {
-                    if (operationRuleIds.includes(id)) {
-                        uniqueRuleIds.add(id);
-                    }
-                });
-            });
-        }
-        
-        // Add VAT group-based rule IDs
-        // But only add rules that are configured with "DEBIT" operation
-        if (trx.Tax) {
-            const vatGroupService = new VatGroupDispatchRuleService();
-            trx.Tax.forEach(vatGroup => {
-                const vatGroupRules = vatGroupService.listByGroup(vatGroup.Id);
-                vatGroupRules.forEach(rule => {
-                    if (rule.id !== undefined && operationRuleIds.includes(rule.id)) {
-                        uniqueRuleIds.add(rule.id);
-                    }
-                });
-            });
-        }
-        
-        // Retrieve all rules and filter out null values
-        const rules: DispatchRule[] = [];
-        for (const ruleId of uniqueRuleIds) {
-            const rule = DispatchRuleRepository.instance.getDispatchRule(ruleId);
-            if (rule !== null) {
-                rules.push(rule);
-            }
-        }
-        
-        return rules;
-    }
 
     private getCreditRules(trx: TicketAccountingTransaction): DispatchRule[] {
-        const operationIndexRepository = AccountingOperationDispatchRuleIndexRepository.instance;
-        const operationRuleIds = operationIndexRepository.getDispatchRuleIdsForOperation(AccountingOperation.CREDIT);
-        
+        const vatGroupRulesService = new VatGroupDispatchRuleService();
+        const groupsRulesService = new GroupDispatchRuleService();
+        const rules: DispatchRule[] = [];
+
+        if (trx.LineItemGroups) {
+            trx.LineItemGroups.forEach(group => {
+                const groupRules = groupsRulesService.listByGroup(group.Id);
+                groupRules.forEach(rule => {
+                    rules.push(rule);
+                });
+            });
+        }
+
+        if (trx.Tax) {
+            trx.Tax.forEach(vatGroup => {
+                const vatGroupRules = vatGroupRulesService.listByGroup(vatGroup.Id);
+                vatGroupRules.forEach(rule => {
+                    rules.push(rule);
+                });
+            });
+        }
+
+        return rules
+    }
+
+    private getDebitRules(trx: TicketAccountingTransaction): DispatchRule[] {
         // Get all unique rule IDs from different sources
-        const uniqueRuleIds = new Set<number>();
-        
-        // Add operation-based rule IDs
-        operationRuleIds.forEach(id => uniqueRuleIds.add(id));
-        
+        const rules: StoreDispatchRule[] = [];
+
         // Add store-based rule IDs
         // But only add rules that are configured with "CREDIT" operation
         const storeRuleService = new StoreDispatchRuleService();
         const storeRules = storeRuleService.listByStore(trx.Header.StoreId);
         storeRules.forEach(rule => {
-            if (rule.id !== undefined && operationRuleIds.includes(rule.id)) {
-                uniqueRuleIds.add(rule.id);
-            }
+            rules.push(rule);
         });
         
-        // Retrieve all rules and filter out null values
-        const rules: DispatchRule[] = [];
-        for (const ruleId of uniqueRuleIds) {
-            const rule = DispatchRuleRepository.instance.getDispatchRule(ruleId);
-            if (rule !== null) {
-                rules.push(rule);
-            }
-        }
-        
         return rules;
-    }
-
-    private hashStringToInt32(str: string): number {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            hash = (hash * 31 + str.charCodeAt(i)) | 0; // Ensure int32 range
-        }
-
-        return hash;
     }
 }

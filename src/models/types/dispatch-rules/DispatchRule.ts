@@ -1,9 +1,5 @@
 import { DispatchRuleType } from "./DispatchRuleTypes";
 import { AccountingOperation } from "./AccountingOperation";
-import { TypeDispatchRule } from "./TypeDispatchRule";
-import { GroupDispatchRule } from "./ticket/GroupDispatchRule";
-import { StoreDispatchRule } from "./ticket/StoreDispatchRule";
-import { VatGroupDispatchRule } from "./ticket/VatGroupDispatchRule";
 
 export abstract class DispatchRule {
     id?: number;
@@ -36,6 +32,13 @@ export abstract class DispatchRule {
             groupId: [],
             storeId: [],
             vatGroupId: [],
+            movementType: [],
+            counterpartName: [],
+            IBAN: [],
+            domainCode: [],
+            familyCode: [],
+            subFamilyCode: [],
+            rules: [],
             validFrom: this.validFrom ? [this.validFrom.toISOString()] : [],
             validTo: this.validTo ? [this.validTo.toISOString()] : [],
         } as DispatchRuleDto;
@@ -45,6 +48,21 @@ export abstract class DispatchRule {
     
 }
 
+export type ChildDispatchRuleDto = {
+    ruleType: DispatchRuleType;
+    txType: [string] | [];
+    storeId: [number] | [];
+    groupId: [string] | [];
+    vatGroupId: [string] | [];
+    counterpartName: [string] | [];
+    movementType: [string] | [];
+    IBAN: [string] | [];
+    domainCode: [string] | [];
+    familyCode: [string] | [];
+    subFamilyCode: [string] | [];
+    contributes: [boolean] | [];
+}
+
 export type DispatchRuleDto = {
     id: number;
     statementItemIDs: number[];
@@ -52,8 +70,19 @@ export type DispatchRuleDto = {
     ruleType: DispatchRuleType;
     validFrom: [string] | [];
     validTo: [string] | [];
+    
+    // Type-specific fields
+    counterpartName: [string] | [];
+    movementType: [string] | [];
+    IBAN: [string] | [];
+    domainCode: [string] | [];
+    familyCode: [string] | [];
+    subFamilyCode: [string] | [];
     txType: [string] | [];
     storeId: [number] | [];
     groupId: [string] | [];
     vatGroupId: [string] | [];
+
+    // Only for combined rules
+    rules: [ChildDispatchRuleDto[]] | [];
 }

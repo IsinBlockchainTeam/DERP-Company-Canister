@@ -2,6 +2,7 @@ import { DispatchRule, DispatchRuleDto } from "../../models/types/dispatch-rules
 import { DispatchRuleType } from "../../models/types/dispatch-rules/DispatchRuleTypes";
 import { DispatchRuleRepository } from "../../repositories/dispatch-rules/DispatchRuleRepository";
 import { IDispatchRuleService } from "./IDispatchRuleService";
+import { DispatchRuleEntityMapper } from "../DispatchRuleEntityMapper";
 
 export abstract class BaseDispatchRuleService<T extends DispatchRule> implements IDispatchRuleService<T> {
     protected readonly repository: DispatchRuleRepository = DispatchRuleRepository.instance;
@@ -21,15 +22,12 @@ export abstract class BaseDispatchRuleService<T extends DispatchRule> implements
     list(): T[] {
         return this.repository.getDispatchRules()
             .filter(rule => rule.ruleType === this.ruleType)
-            .map(rule => this.mapToConcreteRule(rule));
+            .map(rule => rule as T);
     }
   
     get(id: number): T | null {
         const rule = this.repository.getDispatchRule(id);
-        if (rule && rule.ruleType === this.ruleType) {
-            return this.mapToConcreteRule(rule);
-        }
-        return null;
+        return rule as T | null;
     }
 
     update(ruleDto: DispatchRuleDto): T {
@@ -48,25 +46,29 @@ export abstract class BaseDispatchRuleService<T extends DispatchRule> implements
         return saved;
     }
 
+
     protected saveRule(rule: T): T {
         const savedRule = this.repository.saveDispatchRule<T>(rule);
         if (!savedRule.id) {
             throw new Error("Failed to save dispatch rule");
         }
-        return this.mapToConcreteRule(savedRule);
+
+        return savedRule;
     }
 
+    
+    protected instantiateRule(ruleDto: DispatchRuleDto): T {
+        return DispatchRuleEntityMapper.fromDto(ruleDto) as T;
+    }
+
+
+    abstract validateRuleDto(ruleDto: DispatchRuleDto | Omit<DispatchRuleDto, 'id'>): void;
+    abstract onCreate(rule: T): void;
+    abstract onUpdate(currentRule: T, newRule: T): void;
 
     private validateBaseRuleDto(ruleDto: DispatchRuleDto | Omit<DispatchRuleDto, 'id'>): void {
         if (!ruleDto.statementItemIDs || ruleDto.statementItemIDs.length === 0) {
             throw new Error("Dispatch rule must have at least one statement item ID");
         }
     }
-
-    protected abstract mapToConcreteRule(rule: DispatchRule): T;
-    protected abstract instantiateRule(ruleDto: DispatchRuleDto): T;
-    protected abstract validateRuleDto(ruleDto: DispatchRuleDto | Omit<DispatchRuleDto, 'id'>): void;
-    protected abstract onCreate(rule: T): void;
-    protected abstract onUpdate(currentRule: T, newRule: T): void;
-
 } 
