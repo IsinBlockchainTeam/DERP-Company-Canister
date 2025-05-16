@@ -45,7 +45,7 @@ export class DailyTransactionRecordsRepository {
         }
 
         const id = new Number(this._dailyTransactionRecordsById.len()).valueOf() + 1;
-        const recordWithId: DailyTransactionRecord = new DailyTransactionRecord(id, record.parentStatementItemId, record.date, record.total, record.transactionId);
+        const recordWithId: DailyTransactionRecord = new DailyTransactionRecord(id, record.parentStatementItemId, record.date, record.total, record.transactionId, record.txType);
         const serializedRecord: DailyTransactionRecordPersisted = recordWithId.toDto();
 
         this._dailyTransactionRecordsById.insert(id, serializedRecord);
@@ -102,7 +102,7 @@ export class DailyTransactionRecordsRepository {
         
         let parsedRecords = [];
         for (const record of result) {
-            parsedRecords.push(new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId));
+            parsedRecords.push(new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId, record.txType));
         }
 
         return parsedRecords;
@@ -112,7 +112,7 @@ export class DailyTransactionRecordsRepository {
         const record = this._dailyTransactionRecordsById.get(id);
         if (!record) return null;
 
-        return new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId);
+        return new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId, record.txType);
     }
 
     private extractKey(record: Pick<DailyTransactionRecord, 'parentStatementItemId' | 'date'> & {

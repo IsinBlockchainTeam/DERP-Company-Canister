@@ -3,10 +3,14 @@ import { _SERVICE } from "../declarations/dlterp_company/dlterp_company.did";
 import { createActor } from "../declarations/dlterp_company";
 import { StatementItemCategory } from "../models/types/statement-items/StatementItemCategory";
 import { StatementItem, StatementItemAggregate } from "../models/types/statement-items/StatementItem";
-import { TicketAccountingTransactionDto } from "../models/types/accounting-transaction/TicketAccountingTransactionDto";
 import { TicketAccountingTransaction } from "../models/types/accounting-transaction/TicketAccountingTransaction";
-import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
+import { AccountingTransaction, CustomDate, AccountingTransactionType } from "../models/types/accounting-transaction/AccountingTransaction";
 import { DailyTransactionRecord, DailyTransactionRecordDto } from "../models/types/statement-items/DailyTransactionRecord";
+import { InvoiceAccountingTransaction } from "../models/types/accounting-transaction/InvoiceAccountingTransaction";
+import { TicketAccountingTransactionDto } from "../models/types/accounting-transaction/TicketAccountingTransactionDto";
+import { BankAccountingTransaction } from "../models/types/accounting-transaction/BankAccountingTransaction";
+import { BankAccountingTransactionDTO } from "../models/types/accounting-transaction/BankAccountingTransactionDto";
+import { InvoiceAccountingTransactionDTO } from "../models/types/accounting-transaction/InvoiceAccountingTransactionDto";
 
 export class StatementItemsClient {
     private readonly actor: ActorSubclass<_SERVICE>
@@ -41,7 +45,7 @@ export class StatementItemsClient {
      * @returns the list of statement items
      */
     async getStatementItems(categoryId?: number): Promise<StatementItem[]> {
-        const items = await this.actor.getStatementItems(categoryId !== undefined ? [categoryId]: []);
+        const items = await this.actor.getStatementItems(categoryId !== undefined ? [categoryId] : []);
         return items.map(i => StatementItem.fromDto(i));
     }
 
@@ -53,12 +57,12 @@ export class StatementItemsClient {
      * - month: an aggregate sum for the whole month
      * - day: an aggregate sum for the whole day
      * @returns the aggregate statement
-     */ 
+     */
     async getAggregateStatement(parentStatementId: number, date: Partial<CustomDate> & Pick<CustomDate, 'year'>): Promise<StatementItemAggregate> {
         const resp = await this.actor.getStatementItemAggregate(
-            parentStatementId, 
+            parentStatementId,
             date.year,
-            date.month !== undefined ? [date.month] : [], 
+            date.month !== undefined ? [date.month] : [],
             date.day !== undefined ? [date.day] : []);
 
         return StatementItemAggregate.fromDto(resp);
@@ -75,9 +79,9 @@ export class StatementItemsClient {
      */
     async getAggregateStatements(parentStatementId: number, date: Partial<CustomDate> & Pick<CustomDate, 'year'>): Promise<StatementItemAggregate[]> {
         const resp = await this.actor.getStatementItemAggregates(
-            parentStatementId, 
+            parentStatementId,
             date.year,
-            date.month !== undefined ? [date.month] : [], 
+            date.month !== undefined ? [date.month] : [],
             date.day !== undefined ? [date.day] : []);
 
         return resp.map(StatementItemAggregate.fromDto);
@@ -89,7 +93,7 @@ export class StatementItemsClient {
      * @param date the date to filter by
      * @returns the list of transaction record IDs
      */
-    async getStatementItemTransactionIds(statementItemId: number, date: Date): Promise<number[]> {
+    async getStatementItemRecordIds(statementItemId: number, date: Date): Promise<number[]> {
         const result = await this.actor.getDailyTransactionRecordIds(statementItemId, date.toISOString());
         return Array.from(result);
     }
@@ -113,33 +117,42 @@ export class StatementItemsClient {
      */
     async getStatementItemRecordsWithTransactions(statementItemId: number, date: Date, batchSize: number = 50): Promise<{
         record: DailyTransactionRecord,
-        transaction: TicketAccountingTransaction,
+        transaction: AccountingTransaction,
     }[]> {
-        const recordIds = await this.getStatementItemTransactionIds(statementItemId, date);
-        
+        const recordIds = await this.getStatementItemRecordIds(statementItemId, date);
+
         const batches: number[][] = [];
-        
+
         for (let i = 0; i < recordIds.length; i += batchSize) {
             batches.push(recordIds.slice(i, i + batchSize));
         }
-        
+
         const results: {
             record: DailyTransactionRecord,
-            transaction: TicketAccountingTransaction,
+            transaction: AccountingTransaction,
         }[] = [];
         for (const batch of batches) {
             const records = await this.actor.getDailyTransactionRecordsByIds(batch);
-            const trx = await this.actor.getTicketAccountingTransactionByIds(records.map(r => r.transactionId));
+            
+            const ticketRecords = records.filter(r => r.txType as AccountingTransactionType === AccountingTransactionType.TICKET);
+            const invoiceRecords = records.filter(r => r.txType as AccountingTransactionType === AccountingTransactionType.INVOICE);
+            const bankTrxRecords = records.filter(r => r.txType as AccountingTransactionType === AccountingTransactionType.BANK_TRX);
+            
+            const tickets = await this.actor.getTicketAccountingTransactionByIds(ticketRecords.map(r => r.transactionId));
+            const invoices = await this.actor.getInvoiceAccountingTransactionByIds(invoiceRecords.map(r => r.transactionId));
+            const bankTrxs = await this.actor.getBankAccountingTransactionByIds(bankTrxRecords.map(r => r.transactionId));
+            
+            const trx = [...tickets, ...invoices, ...bankTrxs];
             results.push(...trx.map(t => {
                 const record = records.find(r => r.transactionId === t.Header.DLTERPId[0])!;
                 return {
                     record: DailyTransactionRecord.fromDto(record as DailyTransactionRecordDto),
-                    transaction: TicketAccountingTransaction.fromDto(t as TicketAccountingTransactionDto),
+                    transaction: this.mapTransactionTypeToClass(t.Header.TypeCode as AccountingTransactionType)(t),
                 }
             }));
         }
 
-        const dayStart = new Date(date);    
+        const dayStart = new Date(date);
         dayStart.setHours(0, 0, 0, 0);
         const dayEnd = new Date(date);
         dayEnd.setHours(23, 59, 59, 999);
@@ -152,7 +165,7 @@ export class StatementItemsClient {
         }));
     }
 
-    
+
     /**
      * Store a new statement item category
      * @param name the name of the category
@@ -161,7 +174,7 @@ export class StatementItemsClient {
     async storeStatementItemsCategory(name: string): Promise<StatementItemCategory> {
         return this.actor.storeStatementItemCategory(name);
     }
-    
+
     /**
      * Store new statement item categories
      * @param categories the list of categories to store
@@ -188,7 +201,7 @@ export class StatementItemsClient {
     /**
      * Store a new statement item
      * @param item the statement item to store
-     */ 
+     */
     async storeStatementItem(item: StatementItem): Promise<void> {
         await this.actor.storeStatementItem(item.toDto());
     }
@@ -209,6 +222,17 @@ export class StatementItemsClient {
 
         for (const chunk of chunks) {
             await this.actor.storeStatementItems(chunk.map(i => i.toDto()));
+        }
+    }
+
+    private mapTransactionTypeToClass(txType: AccountingTransactionType): Function {
+        switch (txType) {
+            case AccountingTransactionType.TICKET:
+                return TicketAccountingTransaction.fromDto;
+            case AccountingTransactionType.INVOICE:
+                return InvoiceAccountingTransaction.fromDto;
+            case AccountingTransactionType.BANK_TRX:
+                return BankAccountingTransaction.fromDto;
         }
     }
 }

@@ -1,9 +1,12 @@
+import { AccountingTransactionType } from "../accounting-transaction/AccountingTransaction";
+
 export class DailyTransactionRecord {
     id: number;
     parentStatementItemId: number;
     date: Date;
     total: number;
     transactionId: string;
+    txType: AccountingTransactionType;
 
     constructor(
         id: number,
@@ -11,12 +14,14 @@ export class DailyTransactionRecord {
         date: Date,
         total: number,
         transactionId: string,
+        txType: AccountingTransactionType,
     ) {
         this.id = id;
         this.parentStatementItemId = parentStatementItemId;
         this.date = date;
         this.total = total;
         this.transactionId = transactionId;
+        this.txType = txType;
     }
 
     toDto(): DailyTransactionRecordDto {
@@ -25,7 +30,8 @@ export class DailyTransactionRecord {
             parentStatementItemId: this.parentStatementItemId,
             date: this.date.toISOString(),
             total: this.total,
-            transactionId: this.transactionId
+            transactionId: this.transactionId,
+            txType: this.txType,
         };
     }
 
@@ -35,7 +41,8 @@ export class DailyTransactionRecord {
             dto.parentStatementItemId,
             new Date(dto.date),
             dto.total,
-            dto.transactionId
+            dto.transactionId,
+            dto.txType,
         );
     }
 }
@@ -46,6 +53,7 @@ export type DailyTransactionRecordPersisted = {
     date: string;
     total: number;
     transactionId: string;
+    txType: AccountingTransactionType;
 }
 
 export type DailyTransactionRecordDto = {
@@ -54,4 +62,5 @@ export type DailyTransactionRecordDto = {
     date: string;
     total: number;
     transactionId: string;
+    txType: AccountingTransactionType;
 }

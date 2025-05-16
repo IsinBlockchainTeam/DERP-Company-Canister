@@ -2,7 +2,7 @@
     "name": "@derp/company-canister",
     "main": "dist/src/index.js",
     "types": "dist/src/index.d.ts",
-    "version": "0.0.1-alpha16",
+    "version": "0.0.1-alpha18",
     "scripts": {
         "pretest": "tsx test/pretest.ts",
         "test": "jest --detectOpenHandles --forceExit",

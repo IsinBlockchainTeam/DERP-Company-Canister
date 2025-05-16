@@ -13,6 +13,7 @@ import { BankAccountDispatchRuleService } from "../dispatch-rules/bank-account/B
 import { DispatchRuleService } from "../DispatchRulesService";
 import { BankCausalDispatchRuleService } from "../dispatch-rules/bank-causal/BankCausalDispatchRuleService";
 import { BankCounterpartDispatchRuleService } from "../dispatch-rules/bank-counterpart/BankCounterpartDispatchRuleService";
+import { AccountingTransactionType } from "../../models/types/accounting-transaction/AccountingTransaction";
 
 export class BankDispatcher implements ITrxDispatcher<BankAccountingTransaction> {
     dispatch(trx: BankAccountingTransaction): void {
@@ -77,7 +78,8 @@ export class BankDispatcher implements ITrxDispatcher<BankAccountingTransaction>
 
                     statementItemService.addStatementItemTransaction(statementItemId, trx.Header.IssueDate, {
                         amount: contribution,
-                        transactionId: trx.Header.DLTERPId
+                        transactionId: trx.Header.DLTERPId,
+                        txType: AccountingTransactionType.BANK_TRX
                     });
 
                     console.log(`Added transaction of ${JSON.stringify(trx.Header.IssueDate)} to statement`, statementItemId)

@@ -8,7 +8,7 @@ import { DispatchRule } from "../../models/types/dispatch-rules/DispatchRule";
 import { DispatchRuleType } from "../../models/types/dispatch-rules/DispatchRuleTypes";
 import { StoreDispatchRule } from "../../models/types/dispatch-rules/ticket/StoreDispatchRule";
 import { GroupDispatchRuleService } from "../dispatch-rules/group/GroupDispatchRuleService";
-
+import { AccountingTransactionType } from "../../models/types/accounting-transaction/AccountingTransaction";
 export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransaction> {
     dispatch(trx: TicketAccountingTransaction): void {
         const statementItemService = new StatementItemService();
@@ -86,7 +86,8 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
             for (const statementItemId of statementItems) {
                 statementItemService.addStatementItemTransaction(statementItemId, trx.Header.IssueDate, {
                     amount: contribution,
-                    transactionId: trx.Header.DLTERPId
+                    transactionId: trx.Header.DLTERPId,
+                    txType: AccountingTransactionType.TICKET
                 });
                 console.log(`Added transaction of ${JSON.stringify(trx.Header.IssueDate)} to statement`, statementItemId);
             }

@@ -1,4 +1,4 @@
-import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
+import { AccountingTransactionType, CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
 import { DailyTransactionRecord } from "../models/types/statement-items/DailyTransactionRecord";
 import { StatementItem, StatementItemAggregate } from "../models/types/statement-items/StatementItem";
 import { StatementItemCategory } from "../models/types/statement-items/StatementItemCategory";
@@ -43,6 +43,7 @@ export class StatementItemService {
     addStatementItemTransaction(parentStatementItemId: number, date: Date, record: {
         amount: number,
         transactionId: string,
+        txType: AccountingTransactionType,
     }): void {
         const parentStatementItem = this.getStatementItemById(parentStatementItemId);
         if (!parentStatementItem) {
@@ -62,7 +63,7 @@ export class StatementItemService {
         monthlyAggregate.total += record.amount;
         dailyAggregate.total += record.amount;
 
-        const dailyTransactionRecord = new DailyTransactionRecord(0, parentStatementItemId, date, record.amount, record.transactionId);
+        const dailyTransactionRecord = new DailyTransactionRecord(0, parentStatementItemId, date, record.amount, record.transactionId, record.txType);
         this._dailyTransactionsRecordRepository.saveDailyTransactionRecord(dailyTransactionRecord);
 
         this._aggregatesRepository.saveStatementItemAggregate(yearlyAggregate);
