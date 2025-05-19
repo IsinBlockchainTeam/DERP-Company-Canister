@@ -38,6 +38,7 @@ export abstract class DispatchRule {
             domainCode: [],
             familyCode: [],
             subFamilyCode: [],
+            paymentMethodId: [],
             rules: [],
             validFrom: this.validFrom ? [this.validFrom.toISOString()] : [],
             validTo: this.validTo ? [this.validTo.toISOString()] : [],
@@ -48,7 +49,8 @@ export abstract class DispatchRule {
     
 }
 
-export type ChildDispatchRuleDto = {
+// Types shared between child rules and parent rules
+export type BaseDispatchRuleDto = {
     ruleType: DispatchRuleType;
     txType: [string] | [];
     storeId: [number] | [];
@@ -60,28 +62,19 @@ export type ChildDispatchRuleDto = {
     domainCode: [string] | [];
     familyCode: [string] | [];
     subFamilyCode: [string] | [];
+    paymentMethodId: [string] | [];
+}
+
+export type ChildDispatchRuleDto = BaseDispatchRuleDto & {
     contributes: [boolean] | [];
 }
 
-export type DispatchRuleDto = {
+export type DispatchRuleDto = BaseDispatchRuleDto & {
     id: number;
     statementItemIDs: number[];
     accountingOperation: AccountingOperation;
-    ruleType: DispatchRuleType;
     validFrom: [string] | [];
     validTo: [string] | [];
-    
-    // Type-specific fields
-    counterpartName: [string] | [];
-    movementType: [string] | [];
-    IBAN: [string] | [];
-    domainCode: [string] | [];
-    familyCode: [string] | [];
-    subFamilyCode: [string] | [];
-    txType: [string] | [];
-    storeId: [number] | [];
-    groupId: [string] | [];
-    vatGroupId: [string] | [];
 
     // Only for combined rules
     rules: [ChildDispatchRuleDto[]] | [];

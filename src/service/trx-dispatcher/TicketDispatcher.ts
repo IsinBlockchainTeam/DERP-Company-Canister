@@ -3,12 +3,11 @@ import { DispatchRuleServiceResolver } from "../dispatch-rules/DispatchRuleServi
 import { StatementItemService } from "../StatementItemService";
 import { ITrxDispatcher } from "./ITrxDispatcher";
 import { VatGroupDispatchRuleService } from "../dispatch-rules/vat-group/VatGroupDispatchRuleService";
-import { StoreDispatchRuleService } from "../dispatch-rules/store/StoreDispatchRuleService";
 import { DispatchRule } from "../../models/types/dispatch-rules/DispatchRule";
 import { DispatchRuleType } from "../../models/types/dispatch-rules/DispatchRuleTypes";
-import { StoreDispatchRule } from "../../models/types/dispatch-rules/ticket/StoreDispatchRule";
 import { GroupDispatchRuleService } from "../dispatch-rules/group/GroupDispatchRuleService";
 import { AccountingTransactionType } from "../../models/types/accounting-transaction/AccountingTransaction";
+import { PaymentMethodDispatchRuleService } from "../dispatch-rules/payment-method/PaymentMethodDispatchRuleService";
 export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransaction> {
     dispatch(trx: TicketAccountingTransaction): void {
         const statementItemService = new StatementItemService();
@@ -122,15 +121,20 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
 
     private getDebitRules(trx: TicketAccountingTransaction): DispatchRule[] {
         // Get all unique rule IDs from different sources
-        const rules: StoreDispatchRule[] = [];
+        const rules: DispatchRule[] = [];
 
         // Add store-based rule IDs
         // But only add rules that are configured with "CREDIT" operation
-        const storeRuleService = new StoreDispatchRuleService();
-        const storeRules = storeRuleService.listByStore(trx.Header.StoreId);
-        storeRules.forEach(rule => {
-            rules.push(rule);
-        });
+        const ruleService = new PaymentMethodDispatchRuleService();
+        
+        if (trx.PaymentDetails) {
+            for (const payment of trx.PaymentDetails) {
+                const paymentMethodRules = ruleService.listByPaymentMethod(payment.paymentTypeId);
+                paymentMethodRules.forEach(rule => {
+                    rules.push(rule);
+                });
+            }
+        }
         
         return rules;
     }

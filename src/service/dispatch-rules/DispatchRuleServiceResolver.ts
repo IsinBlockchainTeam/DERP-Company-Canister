@@ -15,7 +15,8 @@ import { CombinedDispatchRuleService } from "./combined/CombinedDispatchRuleServ
 import { DispatchRuleHandler } from "./DispatchRuleHandler";
 import { GroupDispatchRuleHandler } from "./group/GroupDispatchRuleHandler";
 import { GroupDispatchRuleService } from "./group/GroupDispatchRuleService";
-import { IDispatchRuleService } from "./IDispatchRuleService";
+import { PaymentMethodDispatchRuleHandler } from "./payment-method/PaymentMethodDispatchRuleHandler";
+import { PaymentMethodDispatchRuleService } from "./payment-method/PaymentMethodDispatchRuleService";
 import { StoreDispatchRuleHandler } from "./store/StoreDispatchRuleHandler";
 import { StoreDispatchRuleService } from "./store/StoreDispatchRuleService";
 import { TypeDispatchRuleHandler } from "./type/TypeDispatchRuleHandler";
@@ -34,6 +35,8 @@ export abstract class DispatchRuleServiceResolver {
                 return new VatGroupDispatchRuleService();
             case DispatchRuleType.STORE:
                 return new StoreDispatchRuleService();
+            case DispatchRuleType.PAYMENT_METHOD:
+                return new PaymentMethodDispatchRuleService();
             case DispatchRuleType.BANK_ACCOUNT:
                 return new BankAccountDispatchRuleService();
             case DispatchRuleType.BANK_COUNTERPART:
@@ -58,6 +61,8 @@ export abstract class DispatchRuleServiceResolver {
                 return new VatGroupDispatchRuleHandler();
             case DispatchRuleType.STORE:
                 return new StoreDispatchRuleHandler();
+            case DispatchRuleType.PAYMENT_METHOD:
+                return new PaymentMethodDispatchRuleHandler();
             case DispatchRuleType.BANK_ACCOUNT:
                 return new BankAccountDispatchRuleHandler();
             case DispatchRuleType.BANK_COUNTERPART:

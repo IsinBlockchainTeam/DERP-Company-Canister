@@ -9,6 +9,14 @@ import { StoreDispatchRule } from "../models/types/dispatch-rules/ticket/StoreDi
 import { VatGroupDispatchRule } from "../models/types/dispatch-rules/ticket/VatGroupDispatchRule";
 import { CausalDispatchRule } from "../models/types/dispatch-rules/bank/CausalDispatchRule";
 import { CombinedDispatchRule } from "../models/types/dispatch-rules/CombinedDispatchRule";
+import { PaymentMethodDispatchRule } from "../models/types/dispatch-rules/ticket/PaymentMethodDispatchRule";
+
+/**
+ * Mapper class for converting DispatchRuleDto objects to their corresponding DispatchRule domain entities.
+ * Implements a factory pattern that creates the appropriate DispatchRule subclass instance based on the ruleType.
+ * The absence of a default case in the switch statement is intentional to ensure that any new rule types
+ * added to the DispatchRuleType enum will require explicit handling in this mapper.
+ */
 export class DispatchRuleEntityMapper {
     public static fromDto(dto: DispatchRuleDto): DispatchRule {
         switch (dto.ruleType) {
@@ -30,6 +38,8 @@ export class DispatchRuleEntityMapper {
                 return CausalDispatchRule.fromDto(dto);
             case DispatchRuleType.COMBINED:
                 return CombinedDispatchRule.fromDto(dto);
+            case DispatchRuleType.PAYMENT_METHOD:
+                return PaymentMethodDispatchRule.fromDto(dto);
             // NEVER add a default statement. This will allow to notice a missing case.
         }
     }

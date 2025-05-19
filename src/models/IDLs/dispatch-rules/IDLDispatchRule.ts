@@ -10,6 +10,9 @@ const BaseDispatchRuleTypeObject = {
     // StoreDispatchRule
     storeId: IDL.Opt(IDL.Int32),
 
+    // PaymentMethodDispatchRule
+    paymentMethodId: IDL.Opt(IDL.Text),
+
     // GroupDispatchRule
     groupId: IDL.Opt(IDL.Text),
 
