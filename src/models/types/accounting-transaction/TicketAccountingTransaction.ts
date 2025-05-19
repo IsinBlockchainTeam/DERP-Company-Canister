@@ -115,6 +115,7 @@ export class TicketPaymentDetails implements Presentable<TicketPaymentDetailsDto
     paymentCurrencyAmount: number;
     issueDate: Date;
     paymentType: string;
+    paymentTypeId: string;
     paymentCurrency: string;
     exchangeRate: number;
     amount: number;
@@ -125,13 +126,14 @@ export class TicketPaymentDetails implements Presentable<TicketPaymentDetailsDto
     creditCardAuthorizationNum?: string | null;
     creditCardTerminalCode?: string | null;
 
-    constructor(id: string, payerAddress: string | null, payeeAddress: string | null, paymentCurrencyAmount: number, issueDate: Date, paymentType: string, paymentCurrency: string, exchangeRate: number, amount: number, externalId: string, creditCardDescription?: string | null, creditCardNum?: string | null, creditCardAuthorizationDate?: Date | null, creditCardAuthorizationNum?: string | null, creditCardTerminalCode?: string | null) {
+    constructor(id: string, payerAddress: string | null, payeeAddress: string | null, paymentCurrencyAmount: number, issueDate: Date, paymentType: string, paymentTypeId: string, paymentCurrency: string, exchangeRate: number, amount: number, externalId: string, creditCardDescription?: string | null, creditCardNum?: string | null, creditCardAuthorizationDate?: Date | null, creditCardAuthorizationNum?: string | null, creditCardTerminalCode?: string | null) {
         this.id = id;
         this.payerAddress = payerAddress;
         this.payeeAddress = payeeAddress;
         this.paymentCurrencyAmount = paymentCurrencyAmount;
         this.issueDate = issueDate;
         this.paymentType = paymentType;
+        this.paymentTypeId = paymentTypeId;
         this.paymentCurrency = paymentCurrency;
         this.exchangeRate = exchangeRate;
         this.amount = amount;
@@ -150,6 +152,7 @@ export class TicketPaymentDetails implements Presentable<TicketPaymentDetailsDto
             this.paymentCurrencyAmount,
             this.issueDate.toISOString(),
             this.paymentType,
+            this.paymentTypeId,
             this.paymentCurrency,
             this.exchangeRate,
             this.amount,
@@ -168,6 +171,7 @@ export class TicketPaymentDetails implements Presentable<TicketPaymentDetailsDto
             dto.paymentCurrencyAmount,
             new Date(dto.issueDate),
             dto.paymentType, 
+            dto.paymentTypeId,
             dto.paymentCurrency, 
             dto.exchangeRate, 
             dto.amount, 

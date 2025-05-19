@@ -66,6 +66,7 @@ export class TicketPaymentDetailsDto {
     paymentCurrencyAmount: number;
     issueDate: string;
     paymentType: string;
+    paymentTypeId: string;
     paymentCurrency: string;
     exchangeRate: number;
     amount: number;
@@ -83,6 +84,7 @@ export class TicketPaymentDetailsDto {
         paymentCurrencyAmount: number,
         issueDate: string,
         paymentType: string,
+        paymentTypeId: string,
         paymentCurrency: string,
         exchangeRate: number,
         amount: number,
@@ -99,6 +101,7 @@ export class TicketPaymentDetailsDto {
         this.paymentCurrencyAmount = paymentCurrencyAmount;
         this.issueDate = issueDate;
         this.paymentType = paymentType;
+        this.paymentTypeId = paymentTypeId;
         this.paymentCurrency = paymentCurrency;
         this.exchangeRate = exchangeRate;
         this.amount = amount;

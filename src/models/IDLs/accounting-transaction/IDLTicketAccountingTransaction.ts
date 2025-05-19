@@ -39,6 +39,7 @@ const IDLTicketPaymentDetails = IDL.Record({
     paymentCurrencyAmount: IDL.Float64,
     issueDate: IDL.Text,
     paymentType: IDL.Text,
+    paymentTypeId: IDL.Text,
     paymentCurrency: IDL.Text,
     exchangeRate: IDL.Float64,
     amount: IDL.Float64,
