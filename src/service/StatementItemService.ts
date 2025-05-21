@@ -85,7 +85,7 @@ export class StatementItemService {
             }
         } else if (date.month !== undefined) {
             // loop through all days of the month stated in date.month
-            const numDays = new Date(date.year, date.month, 0).getUTCDate();
+            const numDays = new Date(date.year, date.month + 1, 0).getUTCDate();
             const aggregates: StatementItemAggregate[] = [];
             for (let i = 1; i <= numDays; i++) {
                 const day = this.getStatementItemAggregate(parentStatementItemId, { year: date.year, month: date.month, day: i });
