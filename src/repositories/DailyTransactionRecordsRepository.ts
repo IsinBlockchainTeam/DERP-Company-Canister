@@ -45,7 +45,7 @@ export class DailyTransactionRecordsRepository {
         }
 
         const id = new Number(this._dailyTransactionRecordsById.len()).valueOf() + 1;
-        const recordWithId: DailyTransactionRecord = new DailyTransactionRecord(id, record.parentStatementItemId, record.date, record.total, record.transactionId, record.txType);
+        const recordWithId: DailyTransactionRecord = new DailyTransactionRecord(id, record.parentStatementItemId, record.date, record.total, record.transactionId, record.txType, record.originalRuleId);
         const serializedRecord: DailyTransactionRecordPersisted = recordWithId.toDto();
 
         this._dailyTransactionRecordsById.insert(id, serializedRecord);
@@ -77,17 +77,6 @@ export class DailyTransactionRecordsRepository {
     }
 
     getDailyTransactionRecordsByIds(ids: number[]): DailyTransactionRecord[] {
-        // BUG IN MAP: despite each printed record is printed correctly in the "map" function
-        // the final "records" array is an array with just one element = 0 (????????????????)
-        // const records = ids
-        //     .map((id) => {
-        //         const record = this._dailyTransactionRecordsById.get(id);
-        //         console.log("Record", record);
-        //         return record;
-        //     });
-        // console.log("Records", JSON.stringify(records));
-        // console.log("Record", records[0]);
-        
         const records = [];
         for (const id of ids) {
             const record = this._dailyTransactionRecordsById.get(id);
@@ -102,7 +91,7 @@ export class DailyTransactionRecordsRepository {
         
         let parsedRecords = [];
         for (const record of result) {
-            parsedRecords.push(new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId, record.txType));
+            parsedRecords.push(new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId, record.txType, record.originalRuleId));
         }
 
         return parsedRecords;
@@ -112,7 +101,7 @@ export class DailyTransactionRecordsRepository {
         const record = this._dailyTransactionRecordsById.get(id);
         if (!record) return null;
 
-        return new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId, record.txType);
+        return new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId, record.txType, record.originalRuleId);
     }
 
     private extractKey(record: Pick<DailyTransactionRecord, 'parentStatementItemId' | 'date'> & {

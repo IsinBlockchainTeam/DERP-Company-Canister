@@ -7,4 +7,5 @@ export const IDLDailyTransactionRecord = IDL.Record({
     total: IDL.Float64,
     transactionId: IDL.Text,
     txType: IDL.Text,
+    originalRuleId: IDL.Int32,
 }); 

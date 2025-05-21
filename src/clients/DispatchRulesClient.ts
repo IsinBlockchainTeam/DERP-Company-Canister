@@ -39,6 +39,10 @@ export class DispatchRulesClient {
     async getDispatchRules(): Promise<DispatchRule[]> {
         return (await this.actor.getDispatchRules() as DispatchRuleDto[]).map(DispatchRuleEntityMapper.fromDto);
     }
+    
+    async getDispatchRule(id: number): Promise<DispatchRule> {
+        return DispatchRuleEntityMapper.fromDto(await this.actor.getDispatchRule(id) as DispatchRuleDto);
+    }
 
     async deleteDispatchRule(id: number) {
         return this.actor.deleteDispatchRule(id);

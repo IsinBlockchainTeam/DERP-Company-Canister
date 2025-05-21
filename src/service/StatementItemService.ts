@@ -44,10 +44,15 @@ export class StatementItemService {
         amount: number,
         transactionId: string,
         txType: AccountingTransactionType,
+        originalRuleId: number,
     }): void {
         const parentStatementItem = this.getStatementItemById(parentStatementItemId);
         if (!parentStatementItem) {
             throw new Error(`Statement item with id ${parentStatementItemId} not found`);
+        }
+
+        if(record.originalRuleId === undefined) {
+            throw new Error(`Original rule id is undefined for transaction ${record.transactionId}`);
         }
 
 
@@ -63,7 +68,7 @@ export class StatementItemService {
         monthlyAggregate.total += record.amount;
         dailyAggregate.total += record.amount;
 
-        const dailyTransactionRecord = new DailyTransactionRecord(0, parentStatementItemId, date, record.amount, record.transactionId, record.txType);
+        const dailyTransactionRecord = new DailyTransactionRecord(0, parentStatementItemId, date, record.amount, record.transactionId, record.txType, record.originalRuleId);
         this._dailyTransactionsRecordRepository.saveDailyTransactionRecord(dailyTransactionRecord);
 
         this._aggregatesRepository.saveStatementItemAggregate(yearlyAggregate);

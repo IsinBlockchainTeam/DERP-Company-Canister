@@ -86,7 +86,8 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
                 statementItemService.addStatementItemTransaction(statementItemId, trx.Header.IssueDate, {
                     amount: contribution,
                     transactionId: trx.Header.DLTERPId,
-                    txType: AccountingTransactionType.TICKET
+                    txType: AccountingTransactionType.TICKET,
+                    originalRuleId: rule.id,
                 });
                 console.log(`Added transaction of ${JSON.stringify(trx.Header.IssueDate)} to statement`, statementItemId);
             }

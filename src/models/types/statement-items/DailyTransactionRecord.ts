@@ -7,6 +7,7 @@ export class DailyTransactionRecord {
     total: number;
     transactionId: string;
     txType: AccountingTransactionType;
+    originalRuleId: number;
 
     constructor(
         id: number,
@@ -15,6 +16,7 @@ export class DailyTransactionRecord {
         total: number,
         transactionId: string,
         txType: AccountingTransactionType,
+        originalRuleId: number,
     ) {
         this.id = id;
         this.parentStatementItemId = parentStatementItemId;
@@ -22,6 +24,7 @@ export class DailyTransactionRecord {
         this.total = total;
         this.transactionId = transactionId;
         this.txType = txType;
+        this.originalRuleId = originalRuleId;
     }
 
     toDto(): DailyTransactionRecordDto {
@@ -32,6 +35,7 @@ export class DailyTransactionRecord {
             total: this.total,
             transactionId: this.transactionId,
             txType: this.txType,
+            originalRuleId: this.originalRuleId,
         };
     }
 
@@ -43,6 +47,7 @@ export class DailyTransactionRecord {
             dto.total,
             dto.transactionId,
             dto.txType,
+            dto.originalRuleId,
         );
     }
 }
@@ -54,6 +59,7 @@ export type DailyTransactionRecordPersisted = {
     total: number;
     transactionId: string;
     txType: AccountingTransactionType;
+    originalRuleId: number;
 }
 
 export type DailyTransactionRecordDto = {
@@ -63,4 +69,5 @@ export type DailyTransactionRecordDto = {
     total: number;
     transactionId: string;
     txType: AccountingTransactionType;
+    originalRuleId: number;
 }

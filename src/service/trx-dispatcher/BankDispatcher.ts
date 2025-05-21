@@ -59,6 +59,10 @@ export class BankDispatcher implements ITrxDispatcher<BankAccountingTransaction>
 
         console.log(`Rules: ${JSON.stringify(rules)}`);
         for (const rule of rules) {
+            if(!rule.id) {
+                throw new Error(`Rule ${rule} does not have an ID`);
+            }
+
             console.log(`Checking rule ${rule.id} against transaction ${trx.Header.DLTERPId} of type ${trx.Header.TypeCode}`);
             const handler = DispatchRuleServiceResolver.handler(rule);
             if (handler.assertTrxActivation(rule, trx)) {
@@ -79,7 +83,8 @@ export class BankDispatcher implements ITrxDispatcher<BankAccountingTransaction>
                     statementItemService.addStatementItemTransaction(statementItemId, trx.Header.IssueDate, {
                         amount: contribution,
                         transactionId: trx.Header.DLTERPId,
-                        txType: AccountingTransactionType.BANK_TRX
+                        txType: AccountingTransactionType.BANK_TRX,
+                        originalRuleId: rule.id,
                     });
 
                     console.log(`Added transaction of ${JSON.stringify(trx.Header.IssueDate)} to statement`, statementItemId)
