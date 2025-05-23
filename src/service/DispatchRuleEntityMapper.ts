@@ -10,6 +10,8 @@ import { VatGroupDispatchRule } from "../models/types/dispatch-rules/ticket/VatG
 import { CausalDispatchRule } from "../models/types/dispatch-rules/bank/CausalDispatchRule";
 import { CombinedDispatchRule } from "../models/types/dispatch-rules/CombinedDispatchRule";
 import { PaymentMethodDispatchRule } from "../models/types/dispatch-rules/ticket/PaymentMethodDispatchRule";
+import { IssuerDispatchRule } from "../models/types/dispatch-rules/invoice/IssuerDispatchRule";
+import { RecipientDispatchRule } from "../models/types/dispatch-rules/invoice/RecipientDispatchRule";
 
 /**
  * Mapper class for converting DispatchRuleDto objects to their corresponding DispatchRule domain entities.
@@ -40,6 +42,10 @@ export class DispatchRuleEntityMapper {
                 return CombinedDispatchRule.fromDto(dto);
             case DispatchRuleType.PAYMENT_METHOD:
                 return PaymentMethodDispatchRule.fromDto(dto);
+            case DispatchRuleType.INVOICE_ISSUER:
+                return IssuerDispatchRule.fromDto(dto);
+            case DispatchRuleType.INVOICE_RECIPIENT:
+                return RecipientDispatchRule.fromDto(dto);
             // NEVER add a default statement. This will allow to notice a missing case.
         }
     }

@@ -1,5 +1,6 @@
 import { DispatchRuleType } from "./DispatchRuleTypes";
 import { AccountingOperation } from "./AccountingOperation";
+import { InvoicePartyReferenceDto } from "./invoice/InvoicePartyReference";
 
 export abstract class DispatchRule {
     id?: number;
@@ -39,6 +40,8 @@ export abstract class DispatchRule {
             familyCode: [],
             subFamilyCode: [],
             paymentMethodId: [],
+            issuer: [],
+            recipient: [],
             rules: [],
             validFrom: this.validFrom ? [this.validFrom.toISOString()] : [],
             validTo: this.validTo ? [this.validTo.toISOString()] : [],
@@ -63,6 +66,8 @@ export type BaseDispatchRuleDto = {
     familyCode: [string] | [];
     subFamilyCode: [string] | [];
     paymentMethodId: [string] | [];
+    issuer: [InvoicePartyReferenceDto] | [];
+    recipient: [InvoicePartyReferenceDto] | [];
 }
 
 export type ChildDispatchRuleDto = BaseDispatchRuleDto & {

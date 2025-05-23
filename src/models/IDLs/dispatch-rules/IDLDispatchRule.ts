@@ -1,5 +1,12 @@
 import { IDL } from "azle";
 
+// Define the InvoicePartyReference IDL type
+const InvoicePartyReferenceObject = {
+    id: IDL.Opt(IDL.Text),
+    name: IDL.Opt(IDL.Text),
+};
+
+export const IDLInvoicePartyReference = IDL.Record(InvoicePartyReferenceObject);
 
 const BaseDispatchRuleTypeObject = {
     ruleType: IDL.Text,
@@ -32,6 +39,12 @@ const BaseDispatchRuleTypeObject = {
     domainCode: IDL.Opt(IDL.Text),
     familyCode: IDL.Opt(IDL.Text),
     subFamilyCode: IDL.Opt(IDL.Text),
+
+    // IssuerDispatchRule
+    issuer: IDL.Opt(IDLInvoicePartyReference),
+    
+    // RecipientDispatchRule
+    recipient: IDL.Opt(IDLInvoicePartyReference),
 }
 
 // This is the type of the child rules of a combined rule.

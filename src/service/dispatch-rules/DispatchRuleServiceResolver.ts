@@ -23,6 +23,10 @@ import { TypeDispatchRuleHandler } from "./type/TypeDispatchRuleHandler";
 import { TypeDispatchRuleService } from "./type/TypeDistpatchRuleService";
 import { VatGroupDispatchRuleHandler } from "./vat-group/VatGroupDispatchRuleHandler";
 import { VatGroupDispatchRuleService } from "./vat-group/VatGroupDispatchRuleService";
+import { InvoiceIssuerDispatchRuleService } from "./invoice-issuer/InvoiceIssuerDispatchRuleService";
+import { InvoiceRecipientDispatchRuleService } from "./invoice-recipient/InvoiceRecipientDispatchRuleService";
+import { InvoiceIssuerDispatchRuleHandler } from "./invoice-issuer/InvoiceIssuerDispatchRuleHandler";
+import { InvoiceRecipientDispatchRuleHandler } from "./invoice-recipient/InvoiceRecipientDispatchRuleHandler";
 
 export abstract class DispatchRuleServiceResolver {
     static service(rule: Partial<DispatchRule> & Pick<DispatchRule, 'ruleType'>): BaseDispatchRuleService<DispatchRule> {
@@ -47,6 +51,10 @@ export abstract class DispatchRuleServiceResolver {
                 return new BankCausalDispatchRuleService();
             case DispatchRuleType.COMBINED:
                 return new CombinedDispatchRuleService();
+            case DispatchRuleType.INVOICE_ISSUER:
+                return new InvoiceIssuerDispatchRuleService();
+            case DispatchRuleType.INVOICE_RECIPIENT:
+                return new InvoiceRecipientDispatchRuleService();
             // NEVER add a default statement. This will allow to notice a missing case.
         }
     }
@@ -73,6 +81,10 @@ export abstract class DispatchRuleServiceResolver {
                 return new BankCausalDispatchRuleHandler();
             case DispatchRuleType.COMBINED:
                 return new CombinedDispatchRuleHandler();
+            case DispatchRuleType.INVOICE_ISSUER:
+                return new InvoiceIssuerDispatchRuleHandler();
+            case DispatchRuleType.INVOICE_RECIPIENT:
+                return new InvoiceRecipientDispatchRuleHandler();
             // NEVER add a default statement. This will allow to notice a missing case.
         }
     }
