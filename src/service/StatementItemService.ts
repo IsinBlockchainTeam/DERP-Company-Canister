@@ -31,6 +31,10 @@ export class StatementItemService {
         this._statementItemsRepository.saveStatementItem(item);
     }
 
+    updateStatementItem(id: number, item: Omit<StatementItem, 'id'>): void {
+        this._statementItemsRepository.updateStatementItem(id, item);
+    }
+
     getAllStatementItems(category?: number): StatementItem[] {
         const statements = this._statementItemsRepository.getStatementItems(category);
         return statements;

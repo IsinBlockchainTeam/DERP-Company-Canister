@@ -1,7 +1,7 @@
 import { IDL, query, update } from "azle";
 import { IDLCustomDate } from "../models/IDLs/accounting-transaction/IDLAccountingTransaction";
 import { IDLTicketAccountingTransaction } from "../models/IDLs/accounting-transaction/IDLTicketAccountingTransaction";
-import { IDLStatementItem, IDLStatementItemAggregate } from "../models/IDLs/statement-items/StatementItem";
+import { IDLStatementItem, IDLStatementItemAggregate, IDLStatementItemUpdate } from "../models/IDLs/statement-items/StatementItem";
 import { IDLStatementItemCategory } from "../models/IDLs/statement-items/StatementItemCategory";
 import { IDLDailyTransactionRecord } from "../models/IDLs/statement-items/IDLDailyTransactionRecord";
 import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
@@ -132,6 +132,13 @@ class StatementItemsController {
     storeStatementItem(statementItem: StatementItemDto): void {
         const statmentItemService = new StatementItemService();
         return statmentItemService.storeStatementItem(StatementItem.fromDto(statementItem));
+    }
+    
+    @update([IDL.Int32, IDLStatementItemUpdate])
+    async updateStatementItem(id: number, statementItem: Omit<StatementItemDto, 'id'>): Promise<void> {
+        const statementItemService = new StatementItemService();
+        const statementItemToUpdate = StatementItem.fromDto(statementItem as StatementItemDto);
+        statementItemService.updateStatementItem(id, statementItemToUpdate);
     }
 
     @update([IDL.Vec(IDLStatementItem)])

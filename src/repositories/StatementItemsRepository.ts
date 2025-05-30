@@ -26,6 +26,29 @@ export class StatementItemsRepository {
         return StatementItemsRepository._instance;
     }
     
+    updateStatementItem(id: number, item: Omit<StatementItem, 'id'>): void {
+        const existing = this._statementItems.get(id);
+        if (!existing) {
+            throw new Error(`Statement item with id ${id} not found`);
+        }
+
+        // Remove from old category index if category changed
+        if (existing.category !== item.category) {
+            const oldKey = `${existing.category}`;
+            const oldCategoryIds = this._statementItemIDs.get(oldKey) || [];
+            this._statementItemIDs.insert(oldKey, oldCategoryIds.filter(i => i !== id));
+
+            // Add to new category index
+            const newKey = `${item.category}`;
+            const newCategoryIds = this._statementItemIDs.get(newKey) || [];
+            newCategoryIds.push(id);
+            this._statementItemIDs.insert(newKey, newCategoryIds);
+        }
+
+        // Update the item
+        this._statementItems.insert(id, new StatementItem(id, item.name, item.currency, item.category));
+    }
+    
     saveStatementItem(item: StatementItem): void {
         const existing = this._statementItems.get(item.id);
         if (existing) {

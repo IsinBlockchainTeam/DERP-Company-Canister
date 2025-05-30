@@ -7,6 +7,12 @@ export const IDLStatementItem = IDL.Record({
     category: IDL.Opt(IDL.Int32),
 });
 
+export const IDLStatementItemUpdate = IDL.Record({
+    name: IDL.Text,
+    currency: IDL.Text,
+    category: IDL.Opt(IDL.Int32),
+});
+
 export const IDLStatementItemAggregate = IDL.Record({
     parentStatementItemId: IDL.Int32,
     total: IDL.Float64,

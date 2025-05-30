@@ -165,6 +165,16 @@ export class StatementItemsClient {
         }));
     }
 
+    
+    /**
+     * Updates a statement item given its ID
+     * @param id the ID of the statement item
+     * @param item the statement item to update
+     */
+    async updateStatementItem(id: number, item: StatementItem): Promise<void> {
+        await this.actor.updateStatementItem(id, item.toDto());
+    }
+
 
     /**
      * Store a new statement item category
