@@ -79,7 +79,63 @@ export class StatementItemService {
         this._aggregatesRepository.saveStatementItemAggregate(monthlyAggregate);
         this._aggregatesRepository.saveStatementItemAggregate(dailyAggregate);
     }
+    
+    removeStatementItemTransaction(recordId: number): void {
+        const dailyTransactionRecord = this._dailyTransactionsRecordRepository.getDailyTransactionRecordById(recordId);
+        if (!dailyTransactionRecord) {
+            throw new Error(`Daily transaction record with id ${recordId} not found`);
+        }
 
+        this._dailyTransactionsRecordRepository.removeDailyTransactionRecord(recordId);
+
+        const yearlyAggregate = this._aggregatesRepository.getStatementItemAggregate(dailyTransactionRecord.parentStatementItemId, { year: dailyTransactionRecord.date.getUTCFullYear() });
+        if (yearlyAggregate) {
+            yearlyAggregate.total -= dailyTransactionRecord.total;
+            this._aggregatesRepository.saveStatementItemAggregate(yearlyAggregate);
+        }
+
+        const monthlyAggregate = this._aggregatesRepository.getStatementItemAggregate(dailyTransactionRecord.parentStatementItemId, { year: dailyTransactionRecord.date.getUTCFullYear(), month: dailyTransactionRecord.date.getUTCMonth() });
+        if (monthlyAggregate) {
+            monthlyAggregate.total -= dailyTransactionRecord.total;
+            this._aggregatesRepository.saveStatementItemAggregate(monthlyAggregate);
+        }
+
+        const dailyAggregate = this._aggregatesRepository.getStatementItemAggregate(dailyTransactionRecord.parentStatementItemId, {
+            year: dailyTransactionRecord.date.getUTCFullYear(),
+            month: dailyTransactionRecord.date.getUTCMonth(),
+            day: dailyTransactionRecord.date.getUTCDate()
+        });
+        if (dailyAggregate) {
+            dailyAggregate.total -= dailyTransactionRecord.total;
+            this._aggregatesRepository.saveStatementItemAggregate(dailyAggregate);
+        }
+    }
+    
+    moveStatementItemTransaction(recordId: number, targetStatementItemId: number): void {
+        const dailyTransactionRecord = this._dailyTransactionsRecordRepository.getDailyTransactionRecordById(recordId);
+        if (!dailyTransactionRecord) {
+            throw new Error(`Daily transaction record with id ${recordId} not found`);
+        }
+
+        const targetStatementItem = this.getStatementItemById(targetStatementItemId);
+        if (!targetStatementItem) {
+            throw new Error(`Statement item with id ${targetStatementItemId} not found`);
+        }
+
+        this.addStatementItemTransaction(
+            targetStatementItemId,
+            dailyTransactionRecord.date,
+            {
+                amount: dailyTransactionRecord.total,
+                transactionId: dailyTransactionRecord.transactionId,
+                txType: dailyTransactionRecord.txType,
+                originalRuleId: dailyTransactionRecord.originalRuleId
+            }
+        );
+
+        this.removeStatementItemTransaction(recordId);
+    }
+    
     getStatementItemAggregate(parentStatementItemId: number, date: Partial<CustomDate> & Pick<CustomDate, 'year'>): StatementItemAggregate | null {
         return this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, date);
     }

@@ -75,6 +75,13 @@ class StatementItemsController {
 
         return aggregates.map(a => a.toDto());
     }
+    
+    @update([IDL.Int32, IDL.Int32])
+    async moveStatementItemTransaction(recordId: number, targetStatementItemId: number): Promise<void> {
+        const statementItemService = new StatementItemService();    
+        statementItemService.moveStatementItemTransaction(recordId, targetStatementItemId);
+        return;
+    }
 
     @query([IDL.Int32, IDL.Text], IDL.Vec(IDL.Int32))
     async getDailyTransactionRecordIds(statementItemId: number, date: string): Promise<number[]> {

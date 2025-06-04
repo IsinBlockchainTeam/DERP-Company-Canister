@@ -59,6 +59,20 @@ export class DailyTransactionRecordsRepository {
         return recordWithId;
     }
 
+    removeDailyTransactionRecord(id: number): void {
+        const record = this._dailyTransactionRecordsById.get(id);
+        if (!record) {
+            throw new Error(`DailyTransactionRecord with id ${id} does not exist`);
+        }
+
+        this._dailyTransactionRecordsById.remove(id);
+
+        const key = this.extractKey({ parentStatementItemId: record.parentStatementItemId, date: new Date(record.date) });
+        const records = this._dailyTransactionRecordsByStatement.get(key) || [];
+        records.splice(records.indexOf(id), 1);
+        this._dailyTransactionRecordsByStatement.insert(key, records);
+    }
+
     getDailyTransactionRecordIds(statementId: number, date: Date): number[] {
         const dayBefore = new Date(date);   
         dayBefore.setDate(dayBefore.getDate() - 1);

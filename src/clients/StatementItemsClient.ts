@@ -107,6 +107,15 @@ export class StatementItemsClient {
         const resp = await this.actor.getTransactionsByRecordIds(recordIds);
         return resp.map(t => TicketAccountingTransaction.fromDto(t as TicketAccountingTransactionDto));
     }
+    
+    /**
+     * Move a daily record from a statement item to another
+     * @param recordId the ID of the record to move
+     * @param targetStatementItemId the ID of the target statement item
+     */
+    async moveStatementItemRecord(recordId: number, targetStatementItemId: number): Promise<void> {
+        await this.actor.moveStatementItemTransaction(recordId, targetStatementItemId);
+    }
 
 
     /**
