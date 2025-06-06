@@ -112,9 +112,10 @@ export class StatementItemsClient {
      * Move a daily record from a statement item to another
      * @param recordId the ID of the record to move
      * @param targetStatementItemId the ID of the target statement item
+     * @param originalRuleId the ID of the original rule
      */
-    async moveStatementItemRecord(recordId: number, targetStatementItemId: number): Promise<void> {
-        await this.actor.moveStatementItemTransaction(recordId, targetStatementItemId);
+    async moveStatementItemRecord(recordId: number, targetStatementItemId: number, originalRuleId?: number): Promise<void> {
+        await this.actor.moveStatementItemTransaction(recordId, targetStatementItemId, originalRuleId ? [originalRuleId] : []);
     }
 
 

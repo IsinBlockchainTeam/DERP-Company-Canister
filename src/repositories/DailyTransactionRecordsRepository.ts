@@ -105,7 +105,7 @@ export class DailyTransactionRecordsRepository {
         
         let parsedRecords = [];
         for (const record of result) {
-            parsedRecords.push(new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId, record.txType, record.originalRuleId));
+            parsedRecords.push(new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId, record.txType, record.originalRuleId.length > 0 ? record.originalRuleId[0] : undefined));
         }
 
         return parsedRecords;
@@ -115,7 +115,7 @@ export class DailyTransactionRecordsRepository {
         const record = this._dailyTransactionRecordsById.get(id);
         if (!record) return null;
 
-        return new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId, record.txType, record.originalRuleId);
+        return new DailyTransactionRecord(record.id, record.parentStatementItemId, new Date(record.date), record.total, record.transactionId, record.txType, record.originalRuleId.length > 0 ? record.originalRuleId[0] : undefined);
     }
 
     private extractKey(record: Pick<DailyTransactionRecord, 'parentStatementItemId' | 'date'> & {

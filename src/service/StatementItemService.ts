@@ -48,17 +48,12 @@ export class StatementItemService {
         amount: number,
         transactionId: string,
         txType: AccountingTransactionType,
-        originalRuleId: number,
+        originalRuleId?: number,
     }): void {
         const parentStatementItem = this.getStatementItemById(parentStatementItemId);
         if (!parentStatementItem) {
             throw new Error(`Statement item with id ${parentStatementItemId} not found`);
         }
-
-        if(record.originalRuleId === undefined) {
-            throw new Error(`Original rule id is undefined for transaction ${record.transactionId}`);
-        }
-
 
         const yearlyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, { year: date.getUTCFullYear() }) || new StatementItemAggregate(parentStatementItemId, 0, date.getUTCFullYear());
         const monthlyAggregate = this._aggregatesRepository.getStatementItemAggregate(parentStatementItemId, { year: date.getUTCFullYear(), month: date.getUTCMonth() }) || new StatementItemAggregate(parentStatementItemId, 0, date.getUTCFullYear(), date.getUTCMonth());
@@ -86,8 +81,7 @@ export class StatementItemService {
             throw new Error(`Daily transaction record with id ${recordId} not found`);
         }
 
-        this._dailyTransactionsRecordRepository.removeDailyTransactionRecord(recordId);
-
+        // Update aggregates FIRST, before removing the record
         const yearlyAggregate = this._aggregatesRepository.getStatementItemAggregate(dailyTransactionRecord.parentStatementItemId, { year: dailyTransactionRecord.date.getUTCFullYear() });
         if (yearlyAggregate) {
             yearlyAggregate.total -= dailyTransactionRecord.total;
@@ -109,9 +103,12 @@ export class StatementItemService {
             dailyAggregate.total -= dailyTransactionRecord.total;
             this._aggregatesRepository.saveStatementItemAggregate(dailyAggregate);
         }
+
+        // Remove the transaction record LAST, after all aggregates are successfully updated
+        this._dailyTransactionsRecordRepository.removeDailyTransactionRecord(recordId);
     }
     
-    moveStatementItemTransaction(recordId: number, targetStatementItemId: number): void {
+    moveStatementItemTransaction(recordId: number, targetStatementItemId: number, originalRuleId?: number): void {
         const dailyTransactionRecord = this._dailyTransactionsRecordRepository.getDailyTransactionRecordById(recordId);
         if (!dailyTransactionRecord) {
             throw new Error(`Daily transaction record with id ${recordId} not found`);
@@ -129,7 +126,7 @@ export class StatementItemService {
                 amount: dailyTransactionRecord.total,
                 transactionId: dailyTransactionRecord.transactionId,
                 txType: dailyTransactionRecord.txType,
-                originalRuleId: dailyTransactionRecord.originalRuleId
+                originalRuleId: originalRuleId
             }
         );
 

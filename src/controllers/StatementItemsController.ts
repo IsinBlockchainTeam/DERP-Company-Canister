@@ -76,10 +76,10 @@ class StatementItemsController {
         return aggregates.map(a => a.toDto());
     }
     
-    @update([IDL.Int32, IDL.Int32])
-    async moveStatementItemTransaction(recordId: number, targetStatementItemId: number): Promise<void> {
+    @update([IDL.Int32, IDL.Int32, IDL.Opt(IDL.Int32)])
+    async moveStatementItemTransaction(recordId: number, targetStatementItemId: number, originalRuleId: [number] | []): Promise<void> {
         const statementItemService = new StatementItemService();    
-        statementItemService.moveStatementItemTransaction(recordId, targetStatementItemId);
+        statementItemService.moveStatementItemTransaction(recordId, targetStatementItemId, originalRuleId.length > 0 ? originalRuleId[0] : undefined);
         return;
     }
 
