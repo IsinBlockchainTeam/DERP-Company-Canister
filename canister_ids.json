@@ -1,5 +1,8 @@
 {
-  "dlterp_company": {
+  "dlterp_company-development": {
     "ic": "5xmag-jiaaa-aaaai-atcxa-cai"
+  },
+  "dlterp_company-production": {
+    "ic": "c3ov6-gqaaa-aaaam-qdu2a-cai"
   }
 }
