@@ -26,6 +26,9 @@ export * from "./models/types/dispatch-rules/ticket/GroupDispatchRule"
 export * from "./models/types/dispatch-rules/ticket/VatGroupDispatchRule"
 export * from "./models/types/dispatch-rules/ticket/PaymentMethodDispatchRule"
 
+export * from "./models/types/dispatch-rules/invoice/IssuerDispatchRule"
+export * from "./models/types/dispatch-rules/invoice/RecipientDispatchRule"
+
 // Utility services
 export * from "./service/DispatchRuleEntityMapper"
 

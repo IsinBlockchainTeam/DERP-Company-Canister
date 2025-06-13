@@ -1,18 +1,7 @@
 {
     "$schema": "https://internetcomputer.org/assets/files/dfx-json-schema-650beafb3d640d946b677cf0acc5a0e9.json",
     "canisters": {
-        "dlterp_company-development": {
-            "type": "azle",
-            "main": "src/controllers/index.ts",
-            "declarations": {
-                "output": "src/declarations/dlterp_company",
-                "node_compatibility": true
-            },
-            "custom": {
-                "experimental": true
-            }
-        },
-        "dlterp_company-production": {
+        "dlterp_company": {
             "type": "azle",
             "main": "src/controllers/index.ts",
             "declarations": {

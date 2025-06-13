@@ -23,6 +23,9 @@ export class AccountingTransactionService {
 
     storeInvoiceAccountingTransaction(newTransaction: InvoiceAccountingTransaction): void {
         this.invoiceAccountingTransactionRepository.save(newTransaction);
+        
+        const dispatchRuleService = new DispatchRuleService();
+        dispatchRuleService.dispatch(newTransaction);
     }
 
     storeBankAccountingTransaction(newTransaction: BankAccountingTransaction): void {

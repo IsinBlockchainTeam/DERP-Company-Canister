@@ -1,0 +1,5 @@
+{
+  "dlterp_company": {
+    "ic": "${ICP_COMPANY_CANISTER_ID}"
+  }
+}

@@ -2,6 +2,7 @@ import { AccountingTransaction, AccountingTransactionType } from "../../models/t
 import { ITrxDispatcher } from './ITrxDispatcher';
 import { TicketDispatcher } from "./TicketDispatcher";
 import { BankDispatcher } from "./BankDispatcher";
+import { InvoiceDispatcher } from "./InvoiceDispatcher";
 
 export class TrxDispatcher {
     private static _instance: TrxDispatcher;
@@ -9,7 +10,7 @@ export class TrxDispatcher {
     private static _dispatchMap: { [key in AccountingTransactionType]: ITrxDispatcher<AccountingTransaction> | null } = {
         [AccountingTransactionType.TICKET]: new TicketDispatcher(),
         [AccountingTransactionType.BANK_TRX]: new BankDispatcher(),
-        [AccountingTransactionType.INVOICE]: null,
+        [AccountingTransactionType.INVOICE]: new InvoiceDispatcher(),
     };
 
     private constructor() { }

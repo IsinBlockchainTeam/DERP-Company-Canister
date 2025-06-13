@@ -9,8 +9,6 @@ import { DailyTransactionRecord, DailyTransactionRecordDto } from "../models/typ
 import { InvoiceAccountingTransaction } from "../models/types/accounting-transaction/InvoiceAccountingTransaction";
 import { TicketAccountingTransactionDto } from "../models/types/accounting-transaction/TicketAccountingTransactionDto";
 import { BankAccountingTransaction } from "../models/types/accounting-transaction/BankAccountingTransaction";
-import { BankAccountingTransactionDTO } from "../models/types/accounting-transaction/BankAccountingTransactionDto";
-import { InvoiceAccountingTransactionDTO } from "../models/types/accounting-transaction/InvoiceAccountingTransactionDto";
 
 export class StatementItemsClient {
     private readonly actor: ActorSubclass<_SERVICE>

@@ -23,6 +23,10 @@ export class InvoiceIssuerDispatchRuleHandler extends BaseInvoiceDispatchRuleHan
         }
 
         const issuerRef = rule.issuerReference;
+         
+        if (issuerRef.id === '*' && issuerRef.name === '*') {
+            return true;
+        }
         
         // If rule specifies an ID, check if it matches the seller's ID
         if (issuerRef.id && trx.Seller.ID) {

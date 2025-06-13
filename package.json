@@ -2,15 +2,16 @@
     "name": "@derp/company-canister",
     "main": "dist/src/index.js",
     "types": "dist/src/index.d.ts",
-    "version": "0.0.1-alpha30",
+    "version": "0.0.1-alpha31",
     "scripts": {
         "pretest": "tsx test/pretest.ts",
         "test": "jest --detectOpenHandles --forceExit",
         "start-network": "dfx start --clean",
-        "deploy": "set -o allexport; set +o allexport && dfx deploy",
+        "deploy": "npm run prepare-env && cd dfx-${ENV} && set -o allexport; set +o allexport && dfx deploy",
         "build": "npm run generate && mkdir -p dist/src && cp -r ./src/declarations ./dist/src/ && npx tsc -p tsconfig-lib.json",
         "clean": "rm -rf dist && rm -rf src/declarations",
-        "generate": "npm run clean && set -o allexport; set +o allexport && dfx build --all && dfx generate && node transform-declarations.js"
+        "prepare-env": "envsubst < canister_ids.json.template > canister_ids.json",
+        "generate": "npm run clean && npm run prepare-env && set -o allexport; set +o allexport && dfx build --all && dfx generate && node transform-declarations.js"
     },
     "publishConfig": {
         "registry": "https://gitlab-core.supsi.ch/api/v4/projects/1104/packages/npm/"
