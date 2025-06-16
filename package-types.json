@@ -1,0 +1,24 @@
+{
+    "name": "@derp/company-types",
+    "main": "dist/types-index.js",
+    "types": "dist/types-index.d.ts",
+    "version": "0.0.1-alpha33",
+    "description": "TypeScript types for DERP Company Canister - lightweight types-only package",
+    "scripts": {
+        "build": "mkdir -p dist && npx tsc -p tsconfig-types.json",
+        "clean": "rm -rf dist"
+    },
+    "publishConfig": {
+        "registry": "https://gitlab-core.supsi.ch/api/v4/projects/1104/packages/npm/"
+    },
+    "dependencies": {
+        "uuidv4": "^6.2.13"
+    },
+    "devDependencies": {
+        "typescript": "^5.2.2"
+    },
+    "keywords": ["typescript", "types", "blockchain", "derp"],
+    "files": [
+        "dist"
+    ]
+} 
