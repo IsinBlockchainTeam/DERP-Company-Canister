@@ -15,14 +15,10 @@ import { isDefined } from "../models/types/common";
 class AccountingTransactionController {
     @query([IDL.Opt(IDL.Text), IDL.Opt(IDL.Text)], IDL.Vec(IDL.Text))
     async getAllTicketAccountingTransactions(dateFrom: [string] | [], dateTo: [string] | []): Promise<string[]> {
-        console.log("getAllTicketAccountingTransactions", dateFrom, dateTo);
         const accountingTransactionService: AccountingTransactionService = new AccountingTransactionService();
 
-        console.log("Instantiated service ", dateFrom, dateTo);
         const actualDateFrom = accountingTransactionService.getActualDate(dateFrom);
         const actualDateTo = accountingTransactionService.getActualDate(dateTo);
-        
-        console.log("Actual dates ", actualDateFrom, actualDateTo);
 
         const resp = accountingTransactionService.getAllTicketAccountingTransactions(
             actualDateFrom,

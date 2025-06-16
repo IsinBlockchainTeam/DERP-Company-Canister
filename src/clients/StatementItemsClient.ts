@@ -160,14 +160,14 @@ export class StatementItemsClient {
             }));
         }
 
-        const dayStart = new Date(date);
-        dayStart.setHours(0, 0, 0, 0);
-        const dayEnd = new Date(date);
-        dayEnd.setHours(23, 59, 59, 999);
+        // const dayStart = new Date(date);
+        // dayStart.setHours(0, 0, 0, 0);
+        // const dayEnd = new Date(date);
+        // dayEnd.setHours(23, 59, 59, 999);
 
-        const transactions = results.filter(t => t.transaction.Header.IssueDate && t.transaction.Header.IssueDate >= dayStart && t.transaction.Header.IssueDate <= dayEnd);
+        // const transactions = results.filter(t => t.transaction.Header.IssueDate && t.transaction.Header.IssueDate >= dayStart && t.transaction.Header.IssueDate <= dayEnd);
 
-        return transactions.map(t => ({
+        return results.map(t => ({
             record: t.record,
             transaction: t.transaction,
         }));

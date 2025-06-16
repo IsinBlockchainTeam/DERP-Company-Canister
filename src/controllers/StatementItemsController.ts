@@ -85,10 +85,8 @@ class StatementItemsController {
 
     @query([IDL.Int32, IDL.Text], IDL.Vec(IDL.Int32))
     async getDailyTransactionRecordIds(statementItemId: number, date: string): Promise<number[]> {
-        console.log("Date", date);
         const statementItemService = new StatementItemService();
         const dateParsed = new Date(date);
-        console.log("Date parsed", dateParsed);
         return statementItemService.getDailyTransactionRecordIds(statementItemId, dateParsed);
     }
     

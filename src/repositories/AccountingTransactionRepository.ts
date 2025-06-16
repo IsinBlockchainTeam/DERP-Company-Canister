@@ -36,36 +36,15 @@ export abstract class BaseAccountingTransactionRepository<T extends AccountingTr
       const dayFrom = CustomDate.fromDate(dateFrom);
       const dayTo = CustomDate.fromDate(dateTo);
       
-      // Fix for infinite loop - precompute all dates we need to check
-      const datesToCheck: CustomDate[] = [];
-      
-      // Create a utility function to compare dates
-      const compareCustomDates = (a: CustomDate, b: CustomDate): number => {
-        if (a.year !== b.year) return a.year - b.year;
-        if (a.month !== b.month) return a.month - b.month;
-        return a.day - b.day;
-      };
-      
       // Generate all dates between dayFrom and dayTo
       const currentDate = new Date(dayFrom.year, dayFrom.month, dayFrom.day);
       const endDate = new Date(dayTo.year, dayTo.month, dayTo.day);
       
       while (currentDate <= endDate) {
-        datesToCheck.push({
-          year: currentDate.getFullYear(),
-          month: currentDate.getMonth(),
-          day: currentDate.getDate()
-        });
-        
-        // Manually increment to next day to avoid any issues with Date handling
+        indices.push(...(this.dateIndex.get(CustomDate.fromDate(currentDate)) || []));
         currentDate.setDate(currentDate.getDate() + 1);
       }
       
-      // Get transactions for each day
-      for (const date of datesToCheck) {
-        const transactionsForDate = this.dateIndex.get(date) || [];
-        indices.push(...transactionsForDate);
-      }
     } else {
       this.dateIndex.keys().forEach(date => {
         indices.push(...(this.dateIndex.get(date) || []));

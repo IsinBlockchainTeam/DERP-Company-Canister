@@ -81,17 +81,22 @@ export class StatementItemService {
             throw new Error(`Daily transaction record with id ${recordId} not found`);
         }
 
-        // Update aggregates FIRST, before removing the record
         const yearlyAggregate = this._aggregatesRepository.getStatementItemAggregate(dailyTransactionRecord.parentStatementItemId, { year: dailyTransactionRecord.date.getUTCFullYear() });
         if (yearlyAggregate) {
+            console.log('yearlyAggregate', yearlyAggregate);
+            console.log('removing ', dailyTransactionRecord.total);
             yearlyAggregate.total -= dailyTransactionRecord.total;
             this._aggregatesRepository.saveStatementItemAggregate(yearlyAggregate);
+            console.log('result ', yearlyAggregate);
         }
 
         const monthlyAggregate = this._aggregatesRepository.getStatementItemAggregate(dailyTransactionRecord.parentStatementItemId, { year: dailyTransactionRecord.date.getUTCFullYear(), month: dailyTransactionRecord.date.getUTCMonth() });
         if (monthlyAggregate) {
+            console.log('monthlyAggregate', monthlyAggregate);
+            console.log('removing ', dailyTransactionRecord.total);
             monthlyAggregate.total -= dailyTransactionRecord.total;
             this._aggregatesRepository.saveStatementItemAggregate(monthlyAggregate);
+            console.log('result ', monthlyAggregate);
         }
 
         const dailyAggregate = this._aggregatesRepository.getStatementItemAggregate(dailyTransactionRecord.parentStatementItemId, {
@@ -100,8 +105,11 @@ export class StatementItemService {
             day: dailyTransactionRecord.date.getUTCDate()
         });
         if (dailyAggregate) {
+            console.log('dailyAggregate', dailyAggregate);
+            console.log('removing ', dailyTransactionRecord.total);
             dailyAggregate.total -= dailyTransactionRecord.total;
             this._aggregatesRepository.saveStatementItemAggregate(dailyAggregate);
+            console.log('result ', dailyAggregate);
         }
 
         // Remove the transaction record LAST, after all aggregates are successfully updated
@@ -119,6 +127,7 @@ export class StatementItemService {
             throw new Error(`Statement item with id ${targetStatementItemId} not found`);
         }
 
+        this.removeStatementItemTransaction(recordId);
         this.addStatementItemTransaction(
             targetStatementItemId,
             dailyTransactionRecord.date,
@@ -129,8 +138,6 @@ export class StatementItemService {
                 originalRuleId: originalRuleId
             }
         );
-
-        this.removeStatementItemTransaction(recordId);
     }
     
     getStatementItemAggregate(parentStatementItemId: number, date: Partial<CustomDate> & Pick<CustomDate, 'year'>): StatementItemAggregate | null {
@@ -147,7 +154,7 @@ export class StatementItemService {
             }
         } else if (date.month !== undefined) {
             // loop through all days of the month stated in date.month
-            const numDays = new Date(date.year, date.month + 1, 0).getUTCDate();
+            const numDays = new Date(Date.UTC(date.year, date.month + 1, 0)).getUTCDate();
             const aggregates: StatementItemAggregate[] = [];
             for (let i = 1; i <= numDays; i++) {
                 const day = this.getStatementItemAggregate(parentStatementItemId, { year: date.year, month: date.month, day: i });

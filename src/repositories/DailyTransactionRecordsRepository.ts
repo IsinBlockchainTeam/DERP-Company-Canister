@@ -74,20 +74,8 @@ export class DailyTransactionRecordsRepository {
     }
 
     getDailyTransactionRecordIds(statementId: number, date: Date): number[] {
-        const dayBefore = new Date(date);   
-        dayBefore.setDate(dayBefore.getDate() - 1);
-        const dayAfter = new Date(date);
-        dayAfter.setDate(dayAfter.getDate() + 1);
-
-        const keyBefore = this.extractKey({ parentStatementItemId: statementId, date: dayBefore });
-        const keyAfter = this.extractKey({ parentStatementItemId: statementId, date: dayAfter });
         const key = this.extractKey({ parentStatementItemId: statementId, date });
-
-        const recordsBefore = this._dailyTransactionRecordsByStatement.get(keyBefore) || [];
-        const recordsAfter = this._dailyTransactionRecordsByStatement.get(keyAfter) || [];
-        const recordsCurrent = this._dailyTransactionRecordsByStatement.get(key) || [];
-
-        return [...recordsBefore, ...recordsCurrent, ...recordsAfter];
+        return this._dailyTransactionRecordsByStatement.get(key) || [];
     }
 
     getDailyTransactionRecordsByIds(ids: number[]): DailyTransactionRecord[] {

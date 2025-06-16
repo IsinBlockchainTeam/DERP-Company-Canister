@@ -52,9 +52,9 @@ export class AccountingTransactionClient {
         const ids = await this.getTransactionIds('ticket', dateFrom, dateTo);
         let trxs = await this.getTransactionsByIds('ticket', ids) as TicketAccountingTransaction[];
         
-        if (dateFrom && dateTo) {
-            trxs = trxs.filter(trx => trx.Header.IssueDate && trx.Header.IssueDate >= dateFrom && trx.Header.IssueDate <= dateTo);
-        }
+        // if (dateFrom && dateTo) {
+        //     trxs = trxs.filter(trx => trx.Header.IssueDate && trx.Header.IssueDate >= dateFrom && trx.Header.IssueDate <= dateTo);
+        // }
 
         return trxs;
     }
@@ -63,9 +63,9 @@ export class AccountingTransactionClient {
         const ids = await this.getTransactionIds('invoice', dateFrom, dateTo);
         let trxs = await this.getTransactionsByIds('invoice', ids) as InvoiceAccountingTransaction[];
         
-        if (dateFrom && dateTo) {
-            trxs = trxs.filter(trx => trx.Header.IssueDate && trx.Header.IssueDate >= dateFrom && trx.Header.IssueDate <= dateTo);
-        }
+        // if (dateFrom && dateTo) {
+        //     trxs = trxs.filter(trx => trx.Header.IssueDate && trx.Header.IssueDate >= dateFrom && trx.Header.IssueDate <= dateTo);
+        // }
 
         return trxs;
     }
@@ -74,9 +74,9 @@ export class AccountingTransactionClient {
         const ids = await this.getTransactionIds('bank', dateFrom, dateTo);
         let trxs = await this.getTransactionsByIds('bank', ids) as BankAccountingTransaction[];
         
-        if (dateFrom && dateTo) {
-            trxs = trxs.filter(trx => trx.Header.IssueDate && trx.Header.IssueDate >= dateFrom && trx.Header.IssueDate <= dateTo);
-        }
+        // if (dateFrom && dateTo) {
+        //     trxs = trxs.filter(trx => trx.Header.IssueDate && trx.Header.IssueDate >= dateFrom && trx.Header.IssueDate <= dateTo);
+        // }
 
         return trxs;
     }
