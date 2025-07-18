@@ -1,4 +1,4 @@
-import { AccountingTransactionType } from "../accounting-transaction/AccountingTransaction";
+import {AccountingTransaction, AccountingTransactionType} from "../accounting-transaction/AccountingTransaction";
 
 export class DailyTransactionRecord {
     id: number;
@@ -8,6 +8,11 @@ export class DailyTransactionRecord {
     transactionId: string;
     txType: AccountingTransactionType;
     originalRuleId?: number;
+    //TODO add segno Addebito/Accredito
+    //TODO add currency
+    //TODO add controparte
+    //TODO info supplementare
+    //TODO url dettaglio DERP (solo CSV)
 
     constructor(
         id: number,
@@ -50,6 +55,7 @@ export class DailyTransactionRecord {
             dto.originalRuleId.length > 0 ? dto.originalRuleId[0] : undefined,
         );
     }
+
 }
 
 export type DailyTransactionRecordPersisted = {
@@ -70,4 +76,14 @@ export type DailyTransactionRecordDto = {
     transactionId: string;
     txType: AccountingTransactionType;
     originalRuleId: [number] | [];
+}
+
+export type DailyTransactionRecordCSV = {
+    id: number;
+    parentStatementItemName: string;
+    date: Date;
+    total: number;
+    transactionId: string;
+    txType: string;
+    originalRuleName?: string;
 }

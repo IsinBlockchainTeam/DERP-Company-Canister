@@ -93,7 +93,7 @@ export class BankDispatcher implements ITrxDispatcher<BankAccountingTransaction>
                 console.log(`Rule ${rule.id} does not match transaction ${trx.Header.DLTERPId}`);
             }
         }
-        
+        //TODO this error should be throw before inserting tx
         if(totalAmount !== 0) {
             throw new Error(`The transaction ${trx.Header.DLTERPId} does not balance itself! Remaining unbalanced amount: ${totalAmount}`);
         }

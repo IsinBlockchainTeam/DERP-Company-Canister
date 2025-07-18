@@ -10,6 +10,13 @@ import { InvoiceAccountingTransaction } from "../models/types/accounting-transac
 import { TicketAccountingTransactionDto } from "../models/types/accounting-transaction/TicketAccountingTransactionDto";
 import { BankAccountingTransaction } from "../models/types/accounting-transaction/BankAccountingTransaction";
 
+
+interface TransactionData {
+    record: DailyTransactionRecord;
+    transaction: AccountingTransaction;
+}
+
+
 export class StatementItemsClient {
     private readonly actor: ActorSubclass<_SERVICE>
 
@@ -173,7 +180,27 @@ export class StatementItemsClient {
         }));
     }
 
-    
+    // async getStatementItemRecordsCSV(statementItemId:number,date: Date): Promise<string | undefined> {
+    //     console.log("Export for statement item id:", statementItemId, "on date:", date);
+    //     const recordsAndTransactions = await this.getStatementItemRecordsWithTransactions(statementItemId,date);
+    //     console.log('Records for export');
+    //     console.log(recordsAndTransactions);
+    //     try {
+    //         const csvContent = convertTransactionsToCSV(recordsAndTransactions);
+    //
+    //         if (!csvContent) {
+    //             console.warn('Nessun dato da esportare');
+    //             return undefined;
+    //         }
+    //         console.log('CSV content generated successfully');
+    //         console.log(csvContent);
+    //         return csvContent;
+    //     } catch (error) {
+    //         console.error('Errore durante l\'esportazione del CSV:', error);
+    //         throw error;
+    //     }
+    // }
+
     /**
      * Updates a statement item given its ID
      * @param id the ID of the statement item

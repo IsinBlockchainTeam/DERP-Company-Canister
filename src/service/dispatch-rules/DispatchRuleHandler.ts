@@ -66,6 +66,7 @@ export abstract class DispatchRuleHandler<
     getComputedContributions(rule: R, trx: A): number {
         let contributions = this.getContributions(rule, trx);
 
+        //Se regola avere giro il segno
         if (rule.accountingOperation === AccountingOperation.CREDIT) {
             contributions = -contributions;
         }

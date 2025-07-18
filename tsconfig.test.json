@@ -1,12 +1,13 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "esModuleInterop": true,
+        "allowJs": true,
         "types": ["jest", "node"],
-        "outDir": "dist-test"
     },
     "include": [
-        "src/**/*",
-        "test/**/*"
+        "./src/**/*.ts",
+        "./global-setup.ts",
+        "./global-teardown.ts",
+        "./types.d.ts"
     ]
-} 
+}
