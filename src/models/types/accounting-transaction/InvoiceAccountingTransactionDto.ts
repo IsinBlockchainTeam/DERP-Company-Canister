@@ -77,12 +77,20 @@ export class InvoiceAttachmentsDTO {
     ) { }
 }
 
+export class InvoiceStatementItemDTO{
+    constructor(
+        public StatementItemId: number,
+        public Total: number
+    ) { }
+}
+
 export class InvoiceAccountingTransactionDTO extends AccountingTransactionWithTotalsDto {
     constructor(
         public Tax: InvoiceTaxDTO[],
         public Seller: InvoiceCompanyDTO,
         public Buyer: InvoiceCompanyDTO,
         public LineItem: InvoiceLineItemDTO[],
+        public InvoiceStatementItem: InvoiceStatementItemDTO[],
         public Payment: InvoicePaymentDetailsDTO,
         public Attachments: InvoiceAttachmentsDTO[],
         public AdditionalInformation: AccountingTransactionAdditionalInfoDto,

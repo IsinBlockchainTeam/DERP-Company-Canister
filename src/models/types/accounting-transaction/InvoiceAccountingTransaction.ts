@@ -9,7 +9,7 @@ import {
     type InvoicePaymentDetailsDTO,
     type InvoiceAttachmentsDTO,
     type InvoiceAccountingTransactionDTO,
-    PaymentPayeeDTO,
+    PaymentPayeeDTO, InvoiceStatementItemDTO,
 } from "./InvoiceAccountingTransactionDto";
 
 export class InvoiceAddress implements Presentable<InvoiceAddressDTO> {
@@ -158,6 +158,28 @@ export class InvoiceLineItem implements Presentable<InvoiceLineItemDTO> {
     }
 }
 
+export class InvoiceStatementItems implements Presentable<InvoiceStatementItemDTO>{
+    StatementId: number;
+    Total:number;
+
+    constructor(StatementId: number, Total: number) {
+        this.StatementId = StatementId;
+        this.Total = Total;
+    }
+
+    static fromDTO(dto: InvoiceStatementItemDTO): InvoiceStatementItems {
+        return new InvoiceStatementItems(dto.StatementItemId, dto.Total);
+    }
+
+    toDto(): InvoiceStatementItemDTO {
+        return {
+            StatementItemId: this.StatementId,
+            Total: this.Total,
+        };
+    }
+
+}
+
 export class PaymentPayee implements Presentable<PaymentPayeeDTO> {
     Name: string;
     StreetOne: string;
@@ -250,13 +272,17 @@ export class InvoiceAccountingTransaction extends AccountingTransactionWithTotal
     Seller: InvoiceCompany;
     Buyer: InvoiceCompany;
     LineItem: InvoiceLineItem[];
+    InvoiceStatementItems: InvoiceStatementItems[];
     Payment: InvoicePaymentDetails;
     Attachments: InvoiceAttachments[];
     AdditionalInformation: AccountingTransactionAdditionalInfo;
 
-    constructor(Tax: InvoiceTax[], Seller: InvoiceCompany,
+    constructor(
+        Tax: InvoiceTax[],
+        Seller: InvoiceCompany,
         Buyer: InvoiceCompany,
         LineItem: InvoiceLineItem[],
+        InvoiceStatementItems: InvoiceStatementItems[],
         Payment: InvoicePaymentDetails,
         Attachments: InvoiceAttachments[],
         AdditionalInformation: AccountingTransactionAdditionalInfo,
@@ -268,6 +294,7 @@ export class InvoiceAccountingTransaction extends AccountingTransactionWithTotal
         this.Seller = Seller;
         this.Buyer = Buyer;
         this.LineItem = LineItem;
+        this.InvoiceStatementItems = InvoiceStatementItems;
         this.Payment = Payment;
         this.Attachments = Attachments;
         this.AdditionalInformation = AdditionalInformation;
@@ -279,6 +306,7 @@ export class InvoiceAccountingTransaction extends AccountingTransactionWithTotal
             InvoiceCompany.fromDTO(dto.Seller),
             InvoiceCompany.fromDTO(dto.Buyer),
             dto.LineItem.map(InvoiceLineItem.fromDTO),
+            dto.InvoiceStatementItem?.map(InvoiceStatementItems.fromDTO),
             InvoicePaymentDetails.fromDTO(dto.Payment),
             dto.Attachments.map(InvoiceAttachments.fromDTO),
             AccountingTransactionAdditionalInfo.fromDto(dto.AdditionalInformation),
@@ -293,6 +321,7 @@ export class InvoiceAccountingTransaction extends AccountingTransactionWithTotal
             Seller: this.Seller.toDto(),
             Buyer: this.Buyer.toDto(),
             LineItem: this.LineItem.map(lineItem => lineItem.toDto()),
+            InvoiceStatementItem: this.InvoiceStatementItems.map(item => item.toDto()),
             Payment: this.Payment.toDto(),
             Attachments: this.Attachments.map(attachment => attachment.toDto()),
             AdditionalInformation: this.AdditionalInformation.toDto(),

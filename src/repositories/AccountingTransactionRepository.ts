@@ -21,10 +21,12 @@ export abstract class BaseAccountingTransactionRepository<T extends AccountingTr
 
     const issueDate = transaction.Header.IssueDate;
     if (issueDate) {
+      console.log(`Saving transaction with ID: ${id} and issue date: ${issueDate}`);
       const date = CustomDate.fromDate(issueDate);
       const indices = this.dateIndex.get(date) || [];
       this.dateIndex.insert(date, [...indices, id]);
     }
+    //TODO if not issueData use now date or some other logic
   }
 
   list(dateFrom?: Date, dateTo?: Date): string[] {
@@ -46,7 +48,9 @@ export abstract class BaseAccountingTransactionRepository<T extends AccountingTr
       }
       
     } else {
+      console.log("Listing all transactions without date filter");
       this.dateIndex.keys().forEach(date => {
+        console.log(`Processing date: ${date.year}-${date.month + 1}-${date.day}`);
         indices.push(...(this.dateIndex.get(date) || []));
       });
     }

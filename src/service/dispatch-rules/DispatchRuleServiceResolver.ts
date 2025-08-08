@@ -85,6 +85,7 @@ export abstract class DispatchRuleServiceResolver {
                 return new InvoiceIssuerDispatchRuleHandler();
             case DispatchRuleType.INVOICE_RECIPIENT:
                 return new InvoiceRecipientDispatchRuleHandler();
+
             // NEVER add a default statement. This will allow to notice a missing case.
         }
     }

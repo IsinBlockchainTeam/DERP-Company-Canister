@@ -13,6 +13,24 @@ export class InvoiceDispatcher implements ITrxDispatcher<InvoiceAccountingTransa
     console.log(`Processing invoice transaction ${trx.Header.DLTERPId}`);
     
     const statementItemService = new StatementItemService();
+
+    //TODO manage this case also as a rule, at the moment if there are specified any statement item add a new record
+    //without any rule
+    //TODO check statement item ID exists
+    if(trx.InvoiceStatementItems.length > 0){
+      trx.InvoiceStatementItems.forEach((item) => {
+        console.log(`Adding transaction to statement item ${item.StatementId}`);
+
+        statementItemService.addStatementItemTransaction(item.StatementId, trx.Header.IssueDate || new Date(), {
+          amount: item.Total,
+          transactionId: trx.Header.DLTERPId || 'Error',
+          txType: AccountingTransactionType.INVOICE,
+          originalRuleId: undefined,
+        });
+      });
+    }
+
+
     const recipientRule = this.getRuleForRecipient(trx);
     let senderRule = this.getRuleForSender(trx);
     

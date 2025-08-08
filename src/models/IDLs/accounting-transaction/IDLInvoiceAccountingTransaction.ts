@@ -39,6 +39,11 @@ export const IDLInvoiceLineItemDTO = IDL.Record({
     Tax: IDLAccountingTransactionLineItemTax,
 })
 
+export const IDLInvoiceStatementItemDTO = IDL.Record({
+    StatementItemId: IDL.Int32,
+    Total: IDL.Float64,
+})
+
 export const IDLPaymentPayeeDTO = IDL.Record({
     Name: IDL.Text,
     StreetOne: IDL.Text,
@@ -67,6 +72,7 @@ export const IDLInvoiceAccountingTransaction = IDL.Record({
     Seller: IDLInvoiceCompanyDTO,
     Buyer: IDLInvoiceCompanyDTO,
     LineItem: IDL.Vec(IDLInvoiceLineItemDTO),
+    InvoiceStatementItem: IDL.Vec(IDLInvoiceStatementItemDTO),
     Payment: IDLInvoicePaymentDetailsDTO,
     Attachments: IDL.Vec(IDLInvoiceAttachment),
     AdditionalInformation: IDLAccountingTransactionAdditionalInformation,
