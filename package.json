@@ -13,13 +13,14 @@
         "clean": "rm -rf dist && rm -rf src/declarations",
         "prepare-env": "envsubst < canister_ids.json.template > canister_ids.json",
         "generate": "npm run clean && npm run prepare-env && set -o allexport; set +o allexport && dfx build --all && dfx generate && node transform-declarations.js",
+        "publish-types": "cd types-dist && npm publish && cd ..",
         "publish-all": "cd types-dist && npm publish && cd .. && npm publish"
     },
     "publishConfig": {
         "registry": "https://gitlab-core.supsi.ch/api/v4/projects/1104/packages/npm/"
     },
     "dependencies": {
-        "@derp/company-types": "0.0.1-alpha33",
+        "@derp/company-types": "0.0.3",
         "@dfinity/agent": "^2.2.0",
         "@dfinity/candid": "^2.4.0",
         "@hadronous/pic": "^0.11.0",

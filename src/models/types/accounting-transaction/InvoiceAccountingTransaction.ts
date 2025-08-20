@@ -159,22 +159,40 @@ export class InvoiceLineItem implements Presentable<InvoiceLineItemDTO> {
 }
 
 export class InvoiceStatementItems implements Presentable<InvoiceStatementItemDTO>{
-    StatementId: number;
-    Total:number;
+    StatementItemId: number;
+    TotalExclTax:number;
+    TotalInclTax:number;
+    Description:string;
+    Tax: InvoiceTax;
 
-    constructor(StatementId: number, Total: number) {
-        this.StatementId = StatementId;
-        this.Total = Total;
+    constructor(StatementId: number,
+                TotalExclTax: number,
+                TotalInclTax:number,
+                Description: string = "",
+                Tax: InvoiceTax) {
+        this.StatementItemId = StatementId;
+        this.TotalExclTax = TotalExclTax;
+        this.TotalInclTax = TotalInclTax;
+        this.Description = Description;
+        this.Tax = Tax;
     }
 
     static fromDTO(dto: InvoiceStatementItemDTO): InvoiceStatementItems {
-        return new InvoiceStatementItems(dto.StatementItemId, dto.Total);
+        return new InvoiceStatementItems(
+            dto.StatementItemId,
+            dto.TotalExclTax,
+            dto.TotalInclTax,
+            dto.Description,
+            InvoiceTax.fromDTO(dto.Tax));
     }
 
     toDto(): InvoiceStatementItemDTO {
         return {
-            StatementItemId: this.StatementId,
-            Total: this.Total,
+            StatementItemId: this.StatementItemId,
+            TotalExclTax: this.TotalExclTax,
+            TotalInclTax: this.TotalInclTax,
+            Description: this.Description,
+            Tax: this.Tax.toDto(),
         };
     }
 

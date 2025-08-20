@@ -41,7 +41,10 @@ export const IDLInvoiceLineItemDTO = IDL.Record({
 
 export const IDLInvoiceStatementItemDTO = IDL.Record({
     StatementItemId: IDL.Int32,
-    Total: IDL.Float64,
+    TotalExclTax: IDL.Float64,
+    TotalInclTax: IDL.Float64,
+    Tax: IDLInvoiceTaxDTO,
+    Description: IDL.Text,
 })
 
 export const IDLPaymentPayeeDTO = IDL.Record({

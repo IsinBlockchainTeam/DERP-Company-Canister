@@ -80,7 +80,10 @@ export class InvoiceAttachmentsDTO {
 export class InvoiceStatementItemDTO{
     constructor(
         public StatementItemId: number,
-        public Total: number
+        public TotalExclTax: number,
+        public TotalInclTax: number,
+        public Tax: InvoiceTaxDTO,
+        public Description: string,
     ) { }
 }
 

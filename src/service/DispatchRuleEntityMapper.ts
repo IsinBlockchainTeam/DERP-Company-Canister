@@ -20,6 +20,7 @@ import { RecipientDispatchRule } from "../models/types/dispatch-rules/invoice/Re
  * added to the DispatchRuleType enum will require explicit handling in this mapper.
  */
 export class DispatchRuleEntityMapper {
+    // @ts-ignore
     public static fromDto(dto: DispatchRuleDto): DispatchRule {
         switch (dto.ruleType) {
             case DispatchRuleType.TYPE:

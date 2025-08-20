@@ -19,10 +19,10 @@ export class InvoiceDispatcher implements ITrxDispatcher<InvoiceAccountingTransa
     //TODO check statement item ID exists
     if(trx.InvoiceStatementItems.length > 0){
       trx.InvoiceStatementItems.forEach((item) => {
-        console.log(`Adding transaction to statement item ${item.StatementId}`);
+        console.log(`There is specify a statement item. Adding transaction to statement item ${item.StatementItemId}`);
 
-        statementItemService.addStatementItemTransaction(item.StatementId, trx.Header.IssueDate || new Date(), {
-          amount: item.Total,
+        statementItemService.addStatementItemTransaction(item.StatementItemId, trx.Header.IssueDate || new Date(), {
+          amount: item.TotalExclTax,
           transactionId: trx.Header.DLTERPId || 'Error',
           txType: AccountingTransactionType.INVOICE,
           originalRuleId: undefined,
