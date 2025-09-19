@@ -47,7 +47,7 @@ export class BankDispatcher implements ITrxDispatcher<BankAccountingTransaction>
                 const hash = this.integerHash(causalName);
                 statementItemService.storeStatementItem(new StatementItem(hash, causalName, 'CHF'));
 
-                const ruleToCreate = new CausalDispatchRule(undefined, [hash], AccountingOperation.CREDIT, trx.DomainCode, trx.FamilyCode, trx.SubFamilyCode);
+                const ruleToCreate = new CausalDispatchRule(undefined, [hash], trx.DomainCode, trx.FamilyCode,trx.SubFamilyCode,AccountingOperation.CREDIT);
                 const newRule = new DispatchRuleService().createDispatchRule(ruleToCreate.toDto());
                 matchingRules = [newRule];
             }

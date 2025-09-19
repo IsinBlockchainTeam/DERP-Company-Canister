@@ -6,7 +6,7 @@ export abstract class DispatchRule {
     id?: number;
     ruleType: DispatchRuleType;
     statementItemIDs: number[];
-    accountingOperation: AccountingOperation;
+    accountingOperation?: AccountingOperation;
     validFrom?: Date;
     validTo?: Date;
 
@@ -14,7 +14,7 @@ export abstract class DispatchRule {
         id: number | undefined,
         type: DispatchRuleType,
         statementItemIDs: number[],
-        accountingOperation: AccountingOperation,
+        accountingOperation?: AccountingOperation,
         validFrom?: Date,
         validTo?: Date,
     ) {
@@ -43,6 +43,7 @@ export abstract class DispatchRule {
             issuer: [],
             recipient: [],
             rules: [],
+            accountingOperation: this.accountingOperation ? [this.accountingOperation] : [],
             validFrom: this.validFrom ? [this.validFrom.toISOString()] : [],
             validTo: this.validTo ? [this.validTo.toISOString()] : [],
         } as DispatchRuleDto;
@@ -77,7 +78,7 @@ export type ChildDispatchRuleDto = BaseDispatchRuleDto & {
 export type DispatchRuleDto = BaseDispatchRuleDto & {
     id: number;
     statementItemIDs: number[];
-    accountingOperation: AccountingOperation;
+    accountingOperation: [AccountingOperation] | [];
     validFrom: [string] | [];
     validTo: [string] | [];
 

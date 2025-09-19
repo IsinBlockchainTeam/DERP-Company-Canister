@@ -21,6 +21,8 @@ export class DispatchRuleService {
         const rules: DispatchRule[] = [];
         for (const ruleType in DispatchRuleType) {
             const svc = DispatchRuleServiceResolver.service({ ruleType: ruleType as DispatchRuleType });
+            console.log(`Fetching rules of type ${ruleType}`);
+            console.log(`Service: ${svc.constructor.name}`);
             rules.push(...svc.list())
         }
 
@@ -39,15 +41,19 @@ export class DispatchRuleService {
 
     deleteDispatchRule(id: number): void {
         const rule = this.dispatchRuleRepository.getDispatchRule(id);
-        if (rule) {
+        if (rule && rule.accountingOperation) {
             this.accountingOperationIndexRepository.removeRuleIdFromOperation(rule.accountingOperation, id);
         }
         this.dispatchRuleRepository.deleteDispatchRule(id);
     }
 
+
+    //TODO rimuovere possibilità di settare Debit o credit nell'operation
     createDispatchRule(ruleRequest: DispatchRuleDto): DispatchRule {
         const svc = DispatchRuleServiceResolver.service({ ruleType: ruleRequest.ruleType as DispatchRuleType });
         const rule = svc.create(ruleRequest);
+        if(!rule.accountingOperation)
+            throw new Error("Accounting operation must be set on the rule stored");
         this.accountingOperationIndexRepository.addRuleIdToOperation(rule.accountingOperation, rule.id!);
         return rule;
     }
@@ -56,7 +62,10 @@ export class DispatchRuleService {
         const svc = DispatchRuleServiceResolver.service({ ruleType: ruleRequest.ruleType as DispatchRuleType });
         const currentRule = this.dispatchRuleRepository.getDispatchRule(ruleRequest.id!);
         const updatedRule = svc.update(ruleRequest);
-        
+
+        if(!currentRule?.accountingOperation || !updatedRule.accountingOperation)
+            throw new Error("Accounting operation must be set on the rule stored");
+
         if (currentRule && currentRule.accountingOperation !== updatedRule.accountingOperation) {
             this.accountingOperationIndexRepository.removeRuleIdFromOperation(currentRule.accountingOperation, currentRule.id!);
             this.accountingOperationIndexRepository.addRuleIdToOperation(updatedRule.accountingOperation, updatedRule.id!);

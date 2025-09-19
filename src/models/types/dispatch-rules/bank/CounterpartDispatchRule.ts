@@ -1,6 +1,6 @@
-import { DispatchRule, DispatchRuleDto } from "../DispatchRule";
-import { DispatchRuleType } from "../DispatchRuleTypes";
-import { AccountingOperation } from "../AccountingOperation";
+import {DispatchRule, DispatchRuleDto} from "../DispatchRule";
+import {DispatchRuleType} from "../DispatchRuleTypes";
+import {AccountingOperation} from "../AccountingOperation";
 
 export class CounterpartDispatchRule extends DispatchRule {
     public counterpartName: string;
@@ -8,8 +8,8 @@ export class CounterpartDispatchRule extends DispatchRule {
     constructor(
         id: number,
         statementItemIDs: number[],
-        accountingOperation: AccountingOperation,
         counterpartName: string,
+        accountingOperation?: AccountingOperation,
         validFrom?: Date,
         validTo?: Date,
         dispatchRuleType: DispatchRuleType = DispatchRuleType.BANK_COUNTERPART,
@@ -29,8 +29,8 @@ export class CounterpartDispatchRule extends DispatchRule {
         return new CounterpartDispatchRule(
             dto.id,
             dto.statementItemIDs,
-            dto.accountingOperation,
             dto.counterpartName[0]!,
+            AccountingOperation.CREDIT,
             dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
             dto.validTo[0] ? new Date(dto.validTo[0]) : undefined
         );

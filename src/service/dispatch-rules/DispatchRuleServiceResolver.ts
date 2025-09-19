@@ -29,6 +29,7 @@ import { InvoiceIssuerDispatchRuleHandler } from "./invoice-issuer/InvoiceIssuer
 import { InvoiceRecipientDispatchRuleHandler } from "./invoice-recipient/InvoiceRecipientDispatchRuleHandler";
 
 export abstract class DispatchRuleServiceResolver {
+    // @ts-ignore
     static service(rule: Partial<DispatchRule> & Pick<DispatchRule, 'ruleType'>): BaseDispatchRuleService<DispatchRule> {
         switch(rule.ruleType) {
             case DispatchRuleType.TYPE:
@@ -59,6 +60,7 @@ export abstract class DispatchRuleServiceResolver {
         }
     }
 
+    // @ts-ignore
     static handler(rule: Partial<DispatchRule> & Pick<DispatchRule, 'ruleType'>): DispatchRuleHandler<DispatchRule, AccountingTransaction> {
         switch(rule.ruleType) {
             case DispatchRuleType.TYPE:

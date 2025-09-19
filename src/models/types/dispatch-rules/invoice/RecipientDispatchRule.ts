@@ -1,7 +1,7 @@
-import { AccountingOperation } from "../AccountingOperation";
-import { DispatchRule, DispatchRuleDto } from "../DispatchRule";
-import { DispatchRuleType } from "../DispatchRuleTypes";
-import { InvoicePartyReference } from "./InvoicePartyReference";
+import { AccountingOperation } from '../AccountingOperation';
+import { DispatchRule, DispatchRuleDto } from '../DispatchRule';
+import { DispatchRuleType } from '../DispatchRuleTypes';
+import { InvoicePartyReference } from './InvoicePartyReference';
 
 export class RecipientDispatchRule extends DispatchRule {
   public recipientReference: InvoicePartyReference;
@@ -9,8 +9,8 @@ export class RecipientDispatchRule extends DispatchRule {
   constructor(
     id: number | undefined,
     statementItemIDs: number[],
-    accountingOperation: AccountingOperation,
     recipientReference: InvoicePartyReference,
+    accountingOperation?: AccountingOperation,
     validFrom?: Date,
     validTo?: Date,
     dispatchRuleType: DispatchRuleType = DispatchRuleType.INVOICE_RECIPIENT,
@@ -32,12 +32,12 @@ export class RecipientDispatchRule extends DispatchRule {
           name: dto.recipient[0]?.name || []
         })
       : new InvoicePartyReference();
-      
+     //TODO verify accounting operation
     return new RecipientDispatchRule(
       dto.id,
       dto.statementItemIDs,
-      dto.accountingOperation,
       recipientRef,
+      AccountingOperation.DEBIT,
       dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
       dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,
     );

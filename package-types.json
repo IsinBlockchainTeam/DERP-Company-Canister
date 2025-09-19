@@ -2,7 +2,7 @@
     "name": "@derp/company-types",
     "main": "dist/types-index.js",
     "types": "dist/types-index.d.ts",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "TypeScript types for DERP Company Canister - lightweight types-only package",
     "scripts": {
         "build": "mkdir -p dist && npx tsc -p tsconfig-types.json",

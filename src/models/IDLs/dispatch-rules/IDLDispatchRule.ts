@@ -61,7 +61,7 @@ const ChildDispatchRuleTypeObject = {
 const DispatchRuleTypeObject = {
     id: IDL.Int32,
     statementItemIDs: IDL.Vec(IDL.Int32),
-    accountingOperation: IDL.Text,
+    accountingOperation: IDL.Opt(IDL.Text),
     validFrom: IDL.Opt(IDL.Text),
     validTo: IDL.Opt(IDL.Text),
 
@@ -72,7 +72,7 @@ const DispatchRuleTypeObject = {
 // This is the type of the object used to create a dispatch rule.
 const CreateDispatchRuleTypeObject = {
     statementItemIDs: IDL.Vec(IDL.Int32),
-    accountingOperation: IDL.Text,
+    accountingOperation: IDL.Opt(IDL.Text),
     validFrom: IDL.Opt(IDL.Text),
     validTo: IDL.Opt(IDL.Text),
 

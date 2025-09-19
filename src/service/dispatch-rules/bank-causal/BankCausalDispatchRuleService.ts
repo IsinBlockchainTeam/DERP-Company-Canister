@@ -54,10 +54,10 @@ export class BankCausalDispatchRuleService extends BaseDispatchRuleService<Causa
         return new CausalDispatchRule(
             rule.id!,
             rule.statementItemIDs,
-            rule.accountingOperation,
             (rule as CausalDispatchRule).domainCode,
             (rule as CausalDispatchRule).familyCode,
             (rule as CausalDispatchRule).subFamilyCode,
+            rule.accountingOperation,
             rule.validFrom,
             rule.validTo
         );

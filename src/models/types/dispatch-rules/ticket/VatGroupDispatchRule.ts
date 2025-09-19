@@ -1,7 +1,7 @@
-import { DispatchRuleDto } from "../DispatchRule";
-import { DispatchRuleType } from "../DispatchRuleTypes";
-import { StoreDispatchRule } from "./StoreDispatchRule";
-import { AccountingOperation } from "../AccountingOperation";
+import {DispatchRuleDto} from "../DispatchRule";
+import {DispatchRuleType} from "../DispatchRuleTypes";
+import {StoreDispatchRule} from "./StoreDispatchRule";
+import {AccountingOperation} from "../AccountingOperation";
 
 export class VatGroupDispatchRule extends StoreDispatchRule {
     public vatGroupId: string;
@@ -11,7 +11,7 @@ export class VatGroupDispatchRule extends StoreDispatchRule {
         statementItemIDs: number[],
         vatGroupId: string,
         storeId: number,
-        accountingOperation: AccountingOperation,
+        accountingOperation?: AccountingOperation,
         validFrom?: Date,
         validTo?: Date,
         dispatchRuleType: DispatchRuleType = DispatchRuleType.VAT_GROUP,
@@ -33,7 +33,7 @@ export class VatGroupDispatchRule extends StoreDispatchRule {
             dto.statementItemIDs,
             dto.vatGroupId[0]!,
             dto.storeId[0]!,
-            dto.accountingOperation,
+            AccountingOperation.CREDIT,
             dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
             dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,
         );

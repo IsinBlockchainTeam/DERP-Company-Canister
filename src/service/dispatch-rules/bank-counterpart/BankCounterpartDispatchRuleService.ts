@@ -29,8 +29,8 @@ export class BankCounterpartDispatchRuleService extends BaseDispatchRuleService<
         return new CounterpartDispatchRule(
             rule.id!,
             rule.statementItemIDs,
-            rule.accountingOperation,
             (rule as CounterpartDispatchRule).counterpartName,
+            rule.accountingOperation,
             rule.validFrom,
             rule.validTo
         );

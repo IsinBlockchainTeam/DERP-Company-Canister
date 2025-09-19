@@ -1,7 +1,7 @@
-import { AccountingTransactionType } from "../accounting-transaction/AccountingTransaction";
-import { DispatchRule, DispatchRuleDto } from "./DispatchRule";
-import { DispatchRuleType } from "./DispatchRuleTypes";
-import { AccountingOperation } from "./AccountingOperation";
+import {AccountingTransactionType} from "../accounting-transaction/AccountingTransaction";
+import {DispatchRule, DispatchRuleDto} from "./DispatchRule";
+import {DispatchRuleType} from "./DispatchRuleTypes";
+import {AccountingOperation} from "./AccountingOperation";
 
 export class TypeDispatchRule extends DispatchRule {
     txType: AccountingTransactionType;
@@ -10,7 +10,7 @@ export class TypeDispatchRule extends DispatchRule {
         id: number | undefined,
         statementItemIDs: number[],
         txType: AccountingTransactionType,
-        accountingOperation: AccountingOperation,
+        accountingOperation?: AccountingOperation,
         validFrom?: Date,
         validTo?: Date,
         ruleType: DispatchRuleType = DispatchRuleType.TYPE,
@@ -31,7 +31,7 @@ export class TypeDispatchRule extends DispatchRule {
             dto.id,
             dto.statementItemIDs,
             dto.txType[0]! as AccountingTransactionType,
-            dto.accountingOperation,
+            AccountingOperation.DEBIT,
             dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
             dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,
         );

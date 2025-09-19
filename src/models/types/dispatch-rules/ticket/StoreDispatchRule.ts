@@ -1,8 +1,8 @@
-import { AccountingTransactionType } from "../../accounting-transaction/AccountingTransaction";
-import { DispatchRuleDto } from "../DispatchRule";
-import { DispatchRuleType } from "../DispatchRuleTypes";
-import { TypeDispatchRule } from "../TypeDispatchRule";
-import { AccountingOperation } from "../AccountingOperation";
+import {AccountingTransactionType} from "../../accounting-transaction/AccountingTransaction";
+import {DispatchRuleDto} from "../DispatchRule";
+import {DispatchRuleType} from "../DispatchRuleTypes";
+import {TypeDispatchRule} from "../TypeDispatchRule";
+import {AccountingOperation} from "../AccountingOperation";
 
 export class StoreDispatchRule extends TypeDispatchRule {
     public storeId: number;
@@ -11,7 +11,7 @@ export class StoreDispatchRule extends TypeDispatchRule {
         id: number | undefined,
         statementItemIDs: number[],
         storeId: number,
-        accountingOperation: AccountingOperation,
+        accountingOperation?: AccountingOperation,
         validFrom?: Date,
         validTo?: Date,
         dispatchRuleType = DispatchRuleType.STORE,
@@ -24,6 +24,7 @@ export class StoreDispatchRule extends TypeDispatchRule {
         return {
             ...super.toDto(),
             storeId: [this.storeId],
+
         }
     }
     
@@ -32,7 +33,7 @@ export class StoreDispatchRule extends TypeDispatchRule {
             dto.id,
             dto.statementItemIDs,
             dto.storeId[0]!,
-            dto.accountingOperation,
+            AccountingOperation.DEBIT,
             dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
             dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,
         );

@@ -1,7 +1,7 @@
-import { AccountingOperation } from "../AccountingOperation";
-import { DispatchRuleDto } from "../DispatchRule";
-import { DispatchRuleType } from "../DispatchRuleTypes";
-import { StoreDispatchRule } from "./StoreDispatchRule";
+import { AccountingOperation } from '../AccountingOperation';
+import { DispatchRuleDto } from '../DispatchRule';
+import { DispatchRuleType } from '../DispatchRuleTypes';
+import { StoreDispatchRule } from './StoreDispatchRule';
 
 export class PaymentMethodDispatchRule extends StoreDispatchRule {
   public paymentMethodId: string;
@@ -11,7 +11,7 @@ export class PaymentMethodDispatchRule extends StoreDispatchRule {
     statementItemIDs: number[],
     paymentMethodId: string,
     storeId: number,
-    accountingOperation: AccountingOperation,
+    accountingOperation?: AccountingOperation,
     validFrom?: Date,
     validTo?: Date,
     dispatchRuleType: DispatchRuleType = DispatchRuleType.PAYMENT_METHOD,
@@ -33,7 +33,7 @@ export class PaymentMethodDispatchRule extends StoreDispatchRule {
       dto.statementItemIDs,
       dto.paymentMethodId[0]!,
       dto.storeId[0]!,
-      dto.accountingOperation,
+      AccountingOperation.DEBIT,
       dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
       dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,
     );

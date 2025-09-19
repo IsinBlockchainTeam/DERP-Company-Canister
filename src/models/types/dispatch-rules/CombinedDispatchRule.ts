@@ -1,7 +1,7 @@
-import { DispatchRuleEntityMapper } from "../../../service/DispatchRuleEntityMapper";
-import { AccountingOperation } from "./AccountingOperation";
-import { DispatchRule, DispatchRuleDto } from "./DispatchRule";
-import { DispatchRuleType } from "./DispatchRuleTypes";
+import {DispatchRuleEntityMapper} from "../../../service/DispatchRuleEntityMapper";
+import {AccountingOperation} from "./AccountingOperation";
+import {DispatchRule, DispatchRuleDto} from "./DispatchRule";
+import {DispatchRuleType} from "./DispatchRuleTypes";
 
 export interface ChildRule extends DispatchRule {
   contributes: boolean | undefined;
@@ -57,7 +57,7 @@ export class CombinedDispatchRule extends DispatchRule{
     return new CombinedDispatchRule(
       dto.id,
       dto.statementItemIDs,
-      dto.accountingOperation,
+      AccountingOperation.DEBIT,
       childRules,
       dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
       dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,

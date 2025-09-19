@@ -1,6 +1,6 @@
-import { AccountingOperation } from "../AccountingOperation";
-import { DispatchRule, DispatchRuleDto } from "../DispatchRule";
-import { DispatchRuleType } from "../DispatchRuleTypes";
+import {AccountingOperation} from "../AccountingOperation";
+import {DispatchRule, DispatchRuleDto} from "../DispatchRule";
+import {DispatchRuleType} from "../DispatchRuleTypes";
 
 export class CausalDispatchRule extends DispatchRule {
   public domainCode: string;
@@ -10,10 +10,10 @@ export class CausalDispatchRule extends DispatchRule {
   constructor(
     id: number | undefined,
     statementItemIDs: number[],
-    accountingOperation: AccountingOperation,
     domainCode: string,
     familyCode: string,
     subFamilyCode: string,
+    accountingOperation?: AccountingOperation,
     validFrom?: Date,
     validTo?: Date,
     dispatchRuleType: DispatchRuleType = DispatchRuleType.BANK_CAUSAL,
@@ -37,10 +37,10 @@ export class CausalDispatchRule extends DispatchRule {
     return new CausalDispatchRule(
       dto.id,
       dto.statementItemIDs,
-      dto.accountingOperation,
       dto.domainCode[0]!,
       dto.familyCode[0]!,
       dto.subFamilyCode[0]!,
+      AccountingOperation.CREDIT,
       dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
       dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,
     );

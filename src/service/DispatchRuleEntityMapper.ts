@@ -22,6 +22,7 @@ import { RecipientDispatchRule } from "../models/types/dispatch-rules/invoice/Re
 export class DispatchRuleEntityMapper {
     // @ts-ignore
     public static fromDto(dto: DispatchRuleDto): DispatchRule {
+        //TODO modiicare il fromDTO per ogni Dispatch Rule e hardcodare DEBIT e CREDIT a seconda del caso
         switch (dto.ruleType) {
             case DispatchRuleType.TYPE:
                 return TypeDispatchRule.fromDto(dto);

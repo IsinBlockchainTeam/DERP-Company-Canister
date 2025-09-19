@@ -1,9 +1,9 @@
-import { AccountingTransactionType } from "../../accounting-transaction/AccountingTransaction";
-import { BankTransactionType } from "../../accounting-transaction/BankAccountingTransactionDto";
-import { AccountingOperation } from "../AccountingOperation";
-import { DispatchRuleDto } from "../DispatchRule";
-import { DispatchRuleType } from "../DispatchRuleTypes";
-import { TypeDispatchRule } from "../TypeDispatchRule";
+import {AccountingTransactionType} from "../../accounting-transaction/AccountingTransaction";
+import {BankTransactionType} from "../../accounting-transaction/BankAccountingTransactionDto";
+import {AccountingOperation} from "../AccountingOperation";
+import {DispatchRuleDto} from "../DispatchRule";
+import {DispatchRuleType} from "../DispatchRuleTypes";
+import {TypeDispatchRule} from "../TypeDispatchRule";
 
 export class MovementTypeDispatchRule extends TypeDispatchRule {
     public movementType: BankTransactionType;
@@ -30,7 +30,7 @@ export class MovementTypeDispatchRule extends TypeDispatchRule {
         return new MovementTypeDispatchRule(
             dto.id,
             dto.statementItemIDs,
-            dto.accountingOperation,
+            AccountingOperation.CREDIT,
             dto.movementType[0] as BankTransactionType,
             dto.validFrom[0] ? new Date(dto.validFrom[0]) : undefined,
             dto.validTo[0] ? new Date(dto.validTo[0]) : undefined,
