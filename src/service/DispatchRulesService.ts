@@ -48,7 +48,6 @@ export class DispatchRuleService {
     }
 
 
-    //TODO rimuovere possibilità di settare Debit o credit nell'operation
     createDispatchRule(ruleRequest: DispatchRuleDto): DispatchRule {
         const svc = DispatchRuleServiceResolver.service({ ruleType: ruleRequest.ruleType as DispatchRuleType });
         const rule = svc.create(ruleRequest);

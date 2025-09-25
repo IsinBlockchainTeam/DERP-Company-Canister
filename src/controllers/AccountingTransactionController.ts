@@ -38,7 +38,7 @@ class AccountingTransactionController {
             actualDateFrom,
             actualDateTo
         );
-
+        console.log(resp);
         return resp;
     }
 
