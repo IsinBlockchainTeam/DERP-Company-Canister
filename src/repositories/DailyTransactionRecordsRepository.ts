@@ -1,4 +1,4 @@
-import { StableBTreeMap } from "azle";
+import { StableBTreeMap, stableJson } from 'azle';
 import { DailyTransactionRecord, DailyTransactionRecordPersisted } from "../models/types/statement-items/DailyTransactionRecord";
 import { StableTreeMapIds } from "./Utils";
 import { CustomDate } from "../models/types/accounting-transaction/AccountingTransaction";
@@ -11,7 +11,7 @@ export class DailyTransactionRecordsRepository {
     
 
     // id -> DailyStatementTransactionRecord
-    private _dailyTransactionRecordsById = StableBTreeMap<number, DailyTransactionRecordPersisted>(StableTreeMapIds.DailyTransactionRecord);
+    private _dailyTransactionRecordsById = StableBTreeMap<number, DailyTransactionRecordPersisted>(StableTreeMapIds.DailyTransactionRecord,stableJson);
 
     private constructor() { }
 
@@ -25,6 +25,7 @@ export class DailyTransactionRecordsRepository {
     saveDailyTransactionRecord(record: Omit<DailyTransactionRecord, 'id'> | DailyTransactionRecord): DailyTransactionRecord {
         // ID is given should perform update
         if ((record as DailyTransactionRecord).id) {
+            console.log(`Updating DailyTransactionRecord with id ${(record as DailyTransactionRecord).id}`);
             // check that the record exists
             if (!this._dailyTransactionRecordsById.containsKey((record as DailyTransactionRecord).id)) {
                 throw new Error(`DailyTransactionRecord with id ${(record as DailyTransactionRecord).id} does not exist`);
@@ -43,19 +44,21 @@ export class DailyTransactionRecordsRepository {
 
             return record as DailyTransactionRecord;
         }
-
-        const id = new Number(this._dailyTransactionRecordsById.len()).valueOf() + 1;
+        console.log(this._dailyTransactionRecordsById.len())
+        const id = new Number(this._dailyTransactionRecordsById.len()).valueOf() + 800;
+        console.log(`Creating DailyTransactionRecord with id ${typeof id}`);
+        console.log(`Record: ${JSON.stringify(record)}`);
         const recordWithId: DailyTransactionRecord = new DailyTransactionRecord(id, record.parentStatementItemId, record.date, record.total, record.transactionId, record.txType, record.originalRuleId);
         const serializedRecord: DailyTransactionRecordPersisted = recordWithId.toDto();
 
         this._dailyTransactionRecordsById.insert(id, serializedRecord);
-
+        console.log(`Inserted record with id ${id}`);
         const key = this.extractKey(recordWithId);
         const currentRecordIds = this._dailyTransactionRecordsByStatement.get(key) || [];
         currentRecordIds.push(id);
 
         this._dailyTransactionRecordsByStatement.insert(key, currentRecordIds);
-
+        console.log(`Updated index for key ${key} with record ids ${JSON.stringify(currentRecordIds)}`);
         return recordWithId;
     }
 
