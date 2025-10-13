@@ -8,12 +8,17 @@ import { DispatchRuleType } from "../../models/types/dispatch-rules/DispatchRule
 import { GroupDispatchRuleService } from "../dispatch-rules/group/GroupDispatchRuleService";
 import { AccountingTransactionType } from "../../models/types/accounting-transaction/AccountingTransaction";
 import { PaymentMethodDispatchRuleService } from "../dispatch-rules/payment-method/PaymentMethodDispatchRuleService";
+import { StatementItem } from '../../models/types/statement-items/StatementItem';
+import { PaymentMethodDispatchRule } from '../../models/types/dispatch-rules/ticket/PaymentMethodDispatchRule';
+import { GroupDispatchRule } from '../../models/types/dispatch-rules/ticket/GroupDispatchRule';
+import { VatGroupDispatchRule } from '../../models/types/dispatch-rules/ticket/VatGroupDispatchRule';
 export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransaction> {
     dispatch(trx: TicketAccountingTransaction): void {
         const statementItemService = new StatementItemService();
 
-        const debitRules = this.getDebitRules(trx);
-        const creditRules = this.getCreditRules(trx);
+        const debitRules = this.getOrCreateDebitRules(trx,statementItemService);
+
+        const creditRules = this.getOrCreateCreditRules(trx,statementItemService);
 
         // make rules array unique
         const rules = [
@@ -94,7 +99,7 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
         }
     }
 
-    private getCreditRules(trx: TicketAccountingTransaction): DispatchRule[] {
+    private getOrCreateCreditRules(trx: TicketAccountingTransaction,statementItemService:StatementItemService): DispatchRule[] {
         const vatGroupRulesService = new VatGroupDispatchRuleService();
         const groupsRulesService = new GroupDispatchRuleService();
         const rules: DispatchRule[] = [];
@@ -102,6 +107,20 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
         if (trx.LineItemGroups) {
             trx.LineItemGroups.forEach(group => {
                 const groupRules = groupsRulesService.listByGroup(group.Id);
+                if(groupRules.length === 0) {
+                    const hash = this.integerHash(group.Id);
+                    const statementItem = new StatementItem(hash,group.Description,'CHF');
+                    statementItemService.storeStatementItem(statementItem);
+                    const ruleToCreate = new GroupDispatchRule(
+                        undefined,
+                        [hash],
+                        group.Id,
+                        trx.Header.StoreId
+                    )
+                    const newRule = DispatchRuleServiceResolver.service({ruleType:DispatchRuleType.GROUP})
+                        .create(ruleToCreate.toDto());
+                    groupRules.push(newRule as GroupDispatchRule);
+                }
                 groupRules.forEach(rule => {
                     rules.push(rule);
                 });
@@ -111,6 +130,20 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
         if (trx.Tax) {
             trx.Tax.forEach(vatGroup => {
                 const vatGroupRules = vatGroupRulesService.listByGroup(vatGroup.Id);
+                if(vatGroupRules.length === 0) {
+                    const hash = this.integerHash(vatGroup.Id);
+                    const statementItem = new StatementItem(hash,vatGroup.TypeCode + ' - '+ vatGroup.RateApplicablePercent,'CHF');
+                    statementItemService.storeStatementItem(statementItem);
+                    const ruleToCreate = new VatGroupDispatchRule(
+                        undefined,
+                        [hash],
+                        vatGroup.Id,
+                        trx.Header.StoreId
+                    )
+                    const newRule = DispatchRuleServiceResolver.service({ruleType:DispatchRuleType.VAT_GROUP})
+                        .create(ruleToCreate.toDto());
+                    vatGroupRules.push(newRule as VatGroupDispatchRule);
+                }
                 vatGroupRules.forEach(rule => {
                     rules.push(rule);
                 });
@@ -120,7 +153,14 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
         return rules
     }
 
-    private getDebitRules(trx: TicketAccountingTransaction): DispatchRule[] {
+    /**
+     * Get or create (each payment method must have a rule and a statement item associated)
+     * debit rules based on payment methods used in the transaction.
+     * @param trx
+     * @param statementItemService
+     * @private
+     */
+    private getOrCreateDebitRules(trx: TicketAccountingTransaction,statementItemService:StatementItemService): DispatchRule[] {
         // Get all unique rule IDs from different sources
         const rules: DispatchRule[] = [];
 
@@ -130,7 +170,21 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
         
         if (trx.PaymentDetails) {
             for (const payment of trx.PaymentDetails) {
-                const paymentMethodRules = ruleService.listByPaymentMethod(payment.paymentTypeId);
+                let paymentMethodRules = ruleService.listByPaymentMethod(payment.paymentTypeId);
+                if(paymentMethodRules.length === 0) {
+                    const hash = this.integerHash(payment.paymentType);
+                    const statementItem = new StatementItem(hash,payment.paymentType,'CHF');
+                    statementItemService.storeStatementItem(statementItem);
+                    const ruleToCreate = new PaymentMethodDispatchRule(
+                        undefined,
+                        [hash],
+                        payment.paymentTypeId,
+                        trx.Header.StoreId
+                    )
+                    const newRule = DispatchRuleServiceResolver.service({ruleType:DispatchRuleType.PAYMENT_METHOD})
+                        .create(ruleToCreate.toDto());
+                    paymentMethodRules.push(newRule as PaymentMethodDispatchRule);
+                }
                 paymentMethodRules.forEach(rule => {
                     rules.push(rule);
                 });
@@ -139,4 +193,16 @@ export class TicketDispatcher implements ITrxDispatcher<TicketAccountingTransact
         
         return rules;
     }
+
+    private integerHash(body: string): number {
+        let hash = 0;
+        for (let i = 0; i < body.length; i++) {
+            const char = body.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+        }
+
+        // Assicurarsi che il risultato sia sempre positivo e all'interno di un intero a 32 bit
+        return hash & 0x7FFFFFFF;
+    }
+
 }
