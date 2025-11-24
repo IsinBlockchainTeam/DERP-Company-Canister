@@ -6,7 +6,7 @@
     "scripts": {
         "test": "jest",
         "start-network": "dfx start --clean",
-        "deploy": "npm run prepare-env  && set -o allexport; set +o allexport && dfx deploy",
+        "deploy": "set -o allexport; set +o allexport && dfx deploy",
         "build": "npm run generate && mkdir -p dist/src && cp -r ./src/declarations ./dist/src/ && npx tsc -p tsconfig-lib.json",
         "build-types": "npx tsc -p tsconfig-types.json",
         "build-all": "./build-packages.sh",
